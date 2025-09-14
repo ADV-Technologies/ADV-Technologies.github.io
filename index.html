@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #FFD700; /* Gold tone text */
+        }
+
+        .loading-container {
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-animation {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 30px;
+        }
+
+        .outer-ring {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #FFD700; /* Gold */
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            animation: rotate-clockwise 3s linear infinite;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .inner-ring {
+            width: 140px;
+            height: 140px;
+            border: 2px solid #B8860B; /* Dark gold */
+            border-radius: 50%;
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            animation: rotate-counter 2s linear infinite;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .center-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: absolute;
+            top: 60px;
+            left: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+            overflow: hidden;
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 0 50px rgba(255, 215, 0, 0.5);
+            font-size: 28px;
+            font-weight: bold;
+            color: black; /* Makes the text ADV visible on the gold background */
+        }
+
+        .app-title {
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #FFD700, #B8860B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sub-title {
+            font-size: 18px;
+            color: #cccccc;
+            margin-bottom: 30px;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            margin-bottom: 15px;
+            animation: fade-in-out 2s ease-in-out infinite;
+            color: #FFD700;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 4px;
+            background: #333333;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #DAA520, #B8860B);
+            border-radius: 2px;
+            animation: progress-wave 2s ease-in-out infinite;
+        }
+
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #FFD700;
+            border-radius: 50%;
+            animation: dot-bounce 1.2s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes rotate-clockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-counter {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes fade-in-out {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes progress-wave {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes dot-bounce {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+        }
+
+        /* Glassmorphism effect */
+        .glass-effect {
+            background: rgba(255, 215, 0, 0.05); /* Gold tint */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container glass-effect">
+        <!-- Animated Logo -->
+        <div class="logo-animation">
+            <div class="outer-ring"></div>
+            <div class="inner-ring"></div>
+            <div class="center-logo">ADV</div>
+        </div>
+
+        <!-- App Title -->
+        <div class="app-title">
+            <div class="main-title">ADV</div>
+        </div>
+
+        <!-- Loading Status -->
+        <div class="loading-text">This site is under construction...</div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        
+        <!-- Animated Dots -->
+        <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+</body>
+</html>
