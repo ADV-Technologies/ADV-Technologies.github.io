@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
+    <title>ADV Technologies - Innovation with a One-Man Army and AI</title>
+    <meta name="description" content="ADV Technologies - Innovation with a One-Man Army and AI. Pioneering the future through cutting-edge technology and artificial intelligence.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --light-gold: #FFF8DC;
+            --black: #000000;
+            --dark-gray: #0a0a0a;
+            --darker-gray: #050505;
+            --light-gray: #1a1a1a;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 215, 0, 0.08);
+            --glass-border: rgba(255, 215, 0, 0.25);
+            --glass-hover-bg: rgba(255, 215, 0, 0.15);
+            --glass-hover-border: rgba(255, 215, 0, 0.4);
+            --shadow-gold: rgba(255, 215, 0, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 70%, #000000 100%);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* Ambient Background Glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.02) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.01) 0%, transparent 30%);
+            animation: ambientPulse 8s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes ambientPulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Particle Canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(0, 0, 0, 0.95);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navbar .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 20px var(--gold);
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .navbar .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .navbar .nav-links a:hover {
+            color: var(--gold);
+            background: var(--glass-bg);
+            transform: translateY(-2px);
+        }
+
+        .navbar .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar .nav-links a:hover::after {
+            width: 80%;
+        }
+
+        .navbar .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .navbar .btn-small {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--gold);
+            border-radius: 25px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .navbar .btn-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .navbar .btn-small:hover {
+            color: var(--black);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .navbar .btn-small:hover::before {
+            left: 0;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gold);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--glass-hover-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--black);
+            font-size: 0.9rem;
+        }
+
+        /* Glass Panel Base */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 3rem;
+            margin: 3rem 0;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-8px) perspective(1000px) rotateX(2deg);
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.25);
+            background: var(--glass-hover-bg);
+            border-color: var(--glass-hover-border);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Section Animations */
+        .section {
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .typing-container {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .typing-text {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold), var(--light-gold), var(--dark-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+            line-height: 1.2;
+        }
+
+        .typing-text.glow {
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+        }
+
+        .typing-cursor {
+            animation: blink 1s infinite;
+            color: var(--gold);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease 2s;
+        }
+
+        .hero-subtitle.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .explore-btn {
+            margin-top: 3rem;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            background: transparent;
+            border: 2px solid var(--gold);
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            animation: pulse 3s infinite;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .explore-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s ease 3s, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(255, 215, 0, 0);
+            }
+        }
+
+        .explore-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .explore-btn:hover {
+            color: var(--black);
+            transform: translateY(-5px) scale(1.05) perspective(1000px) rotateX(5deg);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+            animation: none;
+        }
+
+        .explore-btn:hover::before {
+            left: 0;
+        }
+
+        /* About Me Section */
+        .about-me {
+            padding: 5rem 0;
+        }
+
+        .about-content {
+            text-align: center;
+        }
+
+        .about-content h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .about-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            border-radius: 2px;
+        }
+
+        .about-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .learn-more-btn {
+            display: inline-block;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gold);
+            background: transparent;
+            border: 2px solid var(--gold);
+            border-radius: 50px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .learn-more-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .learn-more-btn:hover {
+            color: var(--black);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .learn-more-btn:hover::before {
+            left: 0;
+        }
+
+        /* About ADV Section */
+        .about-adv {
+            padding: 5rem 0;
+        }
+
+        .adv-content {
+            text-align: center;
+        }
+
+        .adv-content h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .adv-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            border-radius: 2px;
+        }
+
+        .adv-description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Projects Section */
+        .projects {
+            padding: 5rem 0;
+        }
+
+        .projects-content h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            position: relative;
+            text-align: center;
+        }
+
+        .projects-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            border-radius: 2px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .project-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            transition: all 0.4s ease;
+            opacity: 0;
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) perspective(1000px) rotateX(5deg) rotateY(2deg);
+            box-shadow: 0 25px 70px rgba(255, 215, 0, 0.3);
+            background: var(--glass-hover-bg);
+            border-color: var(--glass-hover-border);
+        }
+
+        .project-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .project-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .project-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gold);
+            background: transparent;
+            border: 2px solid var(--gold);
+            border-radius: 50px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .project-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .project-btn:hover {
+            color: var(--black);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .project-btn:hover::before {
+            left: 0;
+        }
+
+        .project-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .coming-soon {
+            border-color: rgba(255, 215, 0, 0.5);
+            color: rgba(255, 215, 0, 0.7);
+            animation: comingSoonGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes comingSoonGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 5rem 0;
+        }
+
+        .contact-content h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            position: relative;
+            text-align: center;
+        }
+
+        .contact-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            border-radius: 2px;
+        }
+
+        .contact-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .contact-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .contact-panel:hover {
+            transform: translateY(-8px) perspective(1000px) rotateX(3deg);
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.25);
+            background: var(--glass-hover-bg);
+        }
+
+        .contact-panel h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .contact-item {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .contact-item:hover::before {
+            opacity: 1;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover .contact-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .contact-icon i {
+            font-size: 1.8rem;
+            color: var(--black);
+        }
+
+        .contact-item h4 {
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-item p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.1) rotate(5deg);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
+            background: var(--glass-hover-bg);
+            border-color: var(--glass-hover-border);
+        }
+
+        .back-to-top i {
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--dark-gray);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: modalSlideIn 0.5s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: var(--gold);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.2);
+            color: var(--white);
+        }
+
+        .modal h3 {
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .form-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            border: none;
+            border-radius: 10px;
+            color: var(--black);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .form-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .auth-switch a {
+            color: var(--gold);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .auth-switch a:hover {
+            text-shadow: 0 0 10px var(--gold);
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #51cf66;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Enhanced Responsive Design */
+        @media (max-width: 1199px) {
+            .navbar .container { max-width: 1100px; }
+            .typing-text { font-size: 4rem; }
+            .hero-subtitle { font-size: 1.6rem; }
+        }
+
+        @media (max-width: 991px) {
+            .navbar .nav-links { display: none; }
+            .typing-text { font-size: 3.5rem; }
+            .hero-subtitle { font-size: 1.4rem; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .contact-panels { grid-template-columns: 1fr; }
+            .glass-panel { padding: 2rem; }
+        }
+
+        @media (max-width: 767px) {
+            .container { padding: 0 1rem; }
+            .typing-text { font-size: 2.8rem; }
+            .hero-subtitle { font-size: 1.2rem; }
+            .explore-btn { font-size: 1rem; padding: 15px 30px; }
+            .glass-panel { padding: 1.5rem; margin: 2rem 0; }
+            .about-content h2, .adv-content h2, .projects-content h2, .contact-content h2 {
+                font-size: 2.2rem;
+            }
+            .navbar .container { padding: 0 1rem; }
+            .navbar .logo { font-size: 1.5rem; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .projects-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .project-card { padding: 2rem; }
+        }
+
+        @media (max-width: 575px) {
+            .typing-text { font-size: 2.2rem; }
+            .hero-subtitle { font-size: 1.1rem; }
+            .about-content h2, .adv-content h2, .projects-content h2, .contact-content h2 {
+                font-size: 1.8rem;
+            }
+            .glass-panel { padding: 1rem; }
+            .modal-content { padding: 2rem; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .project-card { padding: 1.5rem; }
+            .contact-panels { grid-template-columns: 1fr; }
+            .contact-panel { padding: 1.5rem; }
+        }
+
+        /* High DPI optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .glass-panel { border-width: 0.5px; }
+        }
+
+        /* Reduced motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+            .typing-cursor { animation: none; }
+            .explore-btn { animation: none; }
+            .coming-soon { animation: none; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+    
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="logo" onclick="location.reload()">
+                <i class="fas fa-code"></i>
+                ADV Technologies
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about-me">About Me</a></li>
+                <li><a href="#about-adv">About ADV</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="auth-buttons" id="auth-buttons">
+                <button class="btn-small" onclick="openModal('login')">Login</button>
+                <button class="btn-small" onclick="openModal('signup')">Sign Up</button>
+            </div>
+            <div class="user-profile" id="user-profile" style="display: none;" onclick="redirectToProfile()">
+                <div class="user-avatar" id="user-avatar">A</div>
+                <span>Dashboard</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero section" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="typing-container">
+                    <div class="typing-text" id="typing-text-1"></div>
+                    <div class="typing-text" id="typing-text-2"></div>
+                </div>
+                <div class="hero-subtitle" id="hero-subtitle">Innovation with a One-Man Army and AI</div>
+                <button class="explore-btn" id="explore-btn" onclick="smoothScrollTo('#about-me')">
+                    <i class="fas fa-arrow-down"></i> Explore
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Me Section -->
+    <section class="about-me section" id="about-me">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="about-content">
+                    <h2>About Me</h2>
+                    <p class="about-text">
+                        I'm Aadhidev S, building ADV Technologies as a one-man army working with AI to create innovative, meaningful projects. 
+                        Combining human creativity with artificial intelligence to push the boundaries of what's possible in technology.
+                    </p>
+                    <a href="https://aadhidev-s.github.io/Portfolio" target="_blank" class="learn-more-btn">
+                        Learn More About Me <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About ADV Technologies Section -->
+    <section class="about-adv section" id="about-adv">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="adv-content">
+                    <h2>About ADV Technologies</h2>
+                    <p class="adv-description">
+                        ADV Technologies represents the future of innovation, where human ingenuity meets artificial intelligence. 
+                        We're not just building software – we're crafting experiences, solving complex problems, and pushing the envelope of what technology can achieve. 
+                        Through collaborative AI development and cutting-edge experimentation, we're creating tools and platforms that make a real difference. 
+                        Every project is a step toward a more connected, intelligent, and innovative tomorrow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects section" id="projects">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="projects-content">
+                    <h2>Our Projects</h2>
+                    <div class="projects-grid">
+                        <div class="project-card">
+                            <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
+                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance. Master programming languages through engaging, hands-on experiences designed for the modern developer.</p>
+                            <a href="#" class="project-btn" onclick="alert('ADV Code Learner - Coming Soon! This project is currently under development.')">
+                                Visit Project <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-card">
+                            <h3><i class="fas fa-rocket"></i> More Projects Coming Soon</h3>
+                            <p>We're constantly innovating and developing new solutions. Stay tuned for exciting upcoming projects that will showcase the power of AI-human collaboration in solving real-world challenges.</p>
+                            <button class="project-btn coming-soon" disabled>
+                                Coming Soon <i class="fas fa-hourglass-half"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact section" id="contact">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="contact-content">
+                    <h2>Contact Us</h2>
+                    <div class="contact-panels">
+                        <!-- ADV Technologies (Professional) -->
+                        <div class="contact-panel">
+                            <h3><i class="fas fa-building"></i> ADV Technologies (Professional)</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item" onclick="window.open('mailto:advtechlabsglobal@gmail.com')">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <h4>Email</h4>
+                                    <p>advtechlabsglobal@gmail.com</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://github.com/ADV-Technologies', '_blank')">
+                                    <div class="contact-icon">
+                                        <i class="fab fa-github"></i>
+                                    </div>
+                                    <h4>GitHub</h4>
+                                    <p>ADV-Technologies</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal -->
+                        <div class="contact-panel">
+                            <h3><i class="fas fa-user"></i> Personal</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item" onclick="window.open('mailto:aadhidevshiju@gmail.com')">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <h4>Email</h4>
+                                    <p>aadhidevshiju@gmail.com</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://github.com/Aadhidev-S', '_blank')">
+                                    <div class="contact-icon">
+                                        <i class="fab fa-github"></i>
+                                    </div>
+                                    <h4>GitHub</h4>
+                                    <p>Aadhidev-S</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://www.facebook.com/profile.php?id=61580155858865&sk=grid', '_blank')">
+                                    <div class="contact-icon">
+                                        <i class="fab fa-facebook"></i>
+                                    </div>
+                                    <h4>Facebook</h4>
+                                    <p>Aadhidev S</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://www.instagram.com/aadhidev_s_2010/', '_blank')">
+                                    <div class="contact-icon">
+                                        <i class="fab fa-instagram"></i>
+                                    </div>
+                                    <h4>Instagram</h4>
+                                    <p>@aadhidev_s_2010</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://x.com/Aadhidev_S', '_blank')">
+                                    <div class="contact-icon">
+                                        <i class="fab fa-twitter"></i>
+                                    </div>
+                                    <h4>X (Twitter)</h4>
+                                    <p>@Aadhidev_S</p>
+                                </div>
+                                <div class="contact-item" onclick="alert('LinkedIn profile coming soon!')">
+                                    <div class="contact-icon">
+                                        <i class="fab fa-linkedin"></i>
+                                    </div>
+                                    <h4>LinkedIn</h4>
+                                    <p>Coming Soon</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="back-to-top" onclick="smoothScrollTo('#home')">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('login')">&times;</span>
+            <h3>Login</h3>
+            <div id="login-error" class="error-message" style="display: none;"></div>
+            <div id="login-success" class="success-message" style="display: none;"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="form-btn" id="login-btn">
+                    <span>Login</span>
+                    <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </form>
+            <div class="auth-switch">
+                Don't have an account? <a onclick="switchModal('login', 'signup')">Sign up here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('signup')">&times;</span>
+            <h3>Sign Up</h3>
+            <div id="signup-error" class="error-message" style="display: none;"></div>
+            <div id="signup-success" class="success-message" style="display: none;"></div>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" required minlength="8">
+                </div>
+                <button type="submit" class="form-btn" id="signup-btn">
+                    <span>Sign Up</span>
+                    <i class="fas fa-user-plus"></i>
+                </button>
+            </form>
+            <div class="auth-switch">
+                Already have an account? <a onclick="switchModal('signup', 'login')">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div id="otp-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('otp')">&times;</span>
+            <h3>Email Verification</h3>
+            <p style="text-align: center; margin-bottom: 2rem; color: rgba(255,255,255,0.8);">
+                We've sent a verification code to your email. Please enter it below.
+            </p>
+            <div id="otp-error" class="error-message" style="display: none;"></div>
+            <div id="otp-success" class="success-message" style="display: none;"></div>
+            <form id="otp-form">
+                <div class="form-group">
+                    <label for="otp-code">Verification Code</label>
+                    <input type="text" id="otp-code" required maxlength="6" placeholder="Enter 6-digit code">
+                </div>
+                <button type="submit" class="form-btn" id="otp-btn">
+                    <span>Verify Email</span>
+                    <i class="fas fa-check"></i>
+                </button>
+            </form>
+            <div class="auth-switch">
+                <a onclick="resendOTP()" id="resend-otp">Resend Code</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration (Replace with your actual credentials)
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        // Initialize Supabase client (placeholder for now)
+        // const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // For demo purposes, we'll use localStorage to simulate authentication
+        let isAuthenticated = false;
+        let currentUser = null;
+
+        // Enhanced Particle System
+        class AdvancedParticleSystem {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.mouse = { x: -100, y: -100 };
+                this.connectionDistance = 120;
+                this.mouseInfluence = 100;
+                
+                this.resizeCanvas();
+                this.createParticles();
+                this.bindEvents();
+                this.animate();
+            }
+            
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            
+            createParticles() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const area = width * height;
+                
+                // Adaptive particle count based on screen size and device performance
+                let particleCount;
+                const isMobile = width < 768;
+                const isTablet = width >= 768 && width < 1200;
+                
+                if (isMobile) {
+                    particleCount = Math.floor(area / 30000);
+                    this.connectionDistance = 80;
+                    this.mouseInfluence = 60;
+                } else if (isTablet) {
+                    particleCount = Math.floor(area / 25000);
+                    this.connectionDistance = 100;
+                    this.mouseInfluence = 80;
+                } else {
+                    particleCount = Math.floor(area / 20000);
+                    this.connectionDistance = 120;
+                    this.mouseInfluence = 100;
+                }
+                
+                particleCount = Math.max(15, Math.min(particleCount, 100));
+                
+                this.particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * (isMobile ? 0.5 : 0.8),
+                        vy: (Math.random() - 0.5) * (isMobile ? 0.5 : 0.8),
+                        size: Math.random() * (isMobile ? 2.5 : 3.5) + 1,
+                        opacity: Math.random() * 0.6 + 0.3,
+                        baseOpacity: Math.random() * 0.6 + 0.3,
+                        glowIntensity: Math.random() * 0.5 + 0.5,
+                        twinkleSpeed: Math.random() * 0.02 + 0.01,
+                        twinkleOffset: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            
+            bindEvents() {
+                window.addEventListener('resize', () => {
+                    this.resizeCanvas();
+                    this.createParticles();
+                });
+                
+                const handleMove = (e) => {
+                    if (e.touches) {
+                        this.mouse.x = e.touches[0].clientX;
+                        this.mouse.y = e.touches[0].clientY;
+                    } else {
+                        this.mouse.x = e.clientX;
+                        this.mouse.y = e.clientY;
+                    }
+                };
+                
+                window.addEventListener('mousemove', handleMove);
+                window.addEventListener('touchmove', handleMove, { passive: true });
+                window.addEventListener('touchend', () => {
+                    this.mouse.x = -100;
+                    this.mouse.y = -100;
+                });
+            }
+            
+            updateParticles() {
+                const time = Date.now() * 0.001;
+                
+                this.particles.forEach(particle => {
+                    // Base movement
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    // Subtle random movement for "alive" feeling
+                    particle.vx += (Math.random() - 0.5) * 0.02;
+                    particle.vy += (Math.random() - 0.5) * 0.02;
+                    
+                    // Enhanced Mouse Displacement Effect
+                    const dx = this.mouse.x - particle.x;
+                    const dy = this.mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < this.mouseInfluence && distance > 0) {
+                        // Enhanced displacement force calculation
+                        const force = Math.pow((this.mouseInfluence - distance) / this.mouseInfluence, 2);
+                        const angle = Math.atan2(dy, dx);
+                        
+                        // Stronger displacement force
+                        const displacementForce = force * 0.8;
+                        particle.vx -= Math.cos(angle) * displacementForce;
+                        particle.vy -= Math.sin(angle) * displacementForce;
+                        
+                        // Immediate position displacement for more responsive feel
+                        const immediateDisplacement = force * 8;
+                        particle.x -= Math.cos(angle) * immediateDisplacement;
+                        particle.y -= Math.sin(angle) * immediateDisplacement;
+                        
+                        // Enhanced visual effects during displacement
+                        particle.opacity = Math.min(1, particle.baseOpacity + force * 0.7);
+                        particle.glowIntensity = Math.min(2, particle.glowIntensity + force * 0.8);
+                        
+                        // Add particle trail effect when displaced
+                        if (!particle.trail) particle.trail = [];
+                        particle.trail.push({
+                            x: particle.x,
+                            y: particle.y,
+                            opacity: particle.opacity * 0.5,
+                            life: 10
+                        });
+                        
+                        // Limit trail length
+                        if (particle.trail.length > 5) {
+                            particle.trail.shift();
+                        }
+                    } else {
+                        // Gradual return to normal state
+                        particle.opacity = particle.baseOpacity + (particle.opacity - particle.baseOpacity) * 0.95;
+                        particle.glowIntensity *= 0.96;
+                        
+                        // Fade existing trail
+                        if (particle.trail && particle.trail.length > 0) {
+                            particle.trail.forEach(trailPoint => trailPoint.life--);
+                            particle.trail = particle.trail.filter(trailPoint => trailPoint.life > 0);
+                        }
+                    }
+                    
+                    // Spring-back effect - particles slowly return to original drift
+                    if (!particle.originalVx) {
+                        particle.originalVx = particle.vx;
+                        particle.originalVy = particle.vy;
+                    }
+                    
+                    // Gentle return to original velocity when mouse is far
+                    if (distance > this.mouseInfluence * 1.5) {
+                        particle.vx += (particle.originalVx - particle.vx) * 0.01;
+                        particle.vy += (particle.originalVy - particle.vy) * 0.01;
+                    }
+                    
+                    // Boundary bouncing with enhanced displacement consideration
+                    if (particle.x < 0 || particle.x > this.canvas.width) {
+                        particle.vx *= -0.7;
+                        particle.x = Math.max(0, Math.min(this.canvas.width, particle.x));
+                    }
+                    if (particle.y < 0 || particle.y > this.canvas.height) {
+                        particle.vy *= -0.7;
+                        particle.y = Math.max(0, Math.min(this.canvas.height, particle.y));
+                    }
+                    
+                    // Enhanced velocity limiting with displacement consideration
+                    const maxVel = 2.5; // Increased to allow stronger displacement
+                    if (Math.abs(particle.vx) > maxVel) particle.vx = maxVel * Math.sign(particle.vx);
+                    if (Math.abs(particle.vy) > maxVel) particle.vy = maxVel * Math.sign(particle.vy);
+                    
+                    // Velocity damping to prevent runaway particles
+                    particle.vx *= 0.99;
+                    particle.vy *= 0.99;
+                    
+                    // Twinkling effect
+                    const twinkle = Math.sin(time * particle.twinkleSpeed + particle.twinkleOffset);
+                    particle.opacity += twinkle * 0.1;
+                });
+            }
+            
+            drawParticles() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw connections first (behind particles)
+                this.particles.forEach((particle, i) => {
+                    this.particles.slice(i + 1).forEach(otherParticle => {
+                        const dx = particle.x - otherParticle.x;
+                        const dy = particle.y - otherParticle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < this.connectionDistance) {
+                            const opacity = (1 - distance / this.connectionDistance) * 0.4;
+                            
+                            // Enhanced connection with mouse proximity effect
+                            let connectionOpacity = opacity;
+                            const avgX = (particle.x + otherParticle.x) / 2;
+                            const avgY = (particle.y + otherParticle.y) / 2;
+                            const mouseDistance = Math.sqrt(
+                                (this.mouse.x - avgX) ** 2 + (this.mouse.y - avgY) ** 2
+                            );
+                            
+                            if (mouseDistance < this.mouseInfluence) {
+                                const mouseEffect = 1 - (mouseDistance / this.mouseInfluence);
+                                connectionOpacity = Math.min(1, opacity + mouseEffect * 0.5);
+                            }
+                            
+                            const gradient = this.ctx.createLinearGradient(
+                                particle.x, particle.y, otherParticle.x, otherParticle.y
+                            );
+                            gradient.addColorStop(0, `rgba(255, 215, 0, ${connectionOpacity * particle.opacity})`);
+                            gradient.addColorStop(1, `rgba(255, 215, 0, ${connectionOpacity * otherParticle.opacity})`);
+                            
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(particle.x, particle.y);
+                            this.ctx.lineTo(otherParticle.x, otherParticle.y);
+                            this.ctx.strokeStyle = gradient;
+                            this.ctx.lineWidth = 0.8;
+                            this.ctx.stroke();
+                        }
+                    });
+                });
+                
+                // Draw particle trails
+                this.particles.forEach(particle => {
+                    if (particle.trail && particle.trail.length > 0) {
+                        particle.trail.forEach((trailPoint, index) => {
+                            const trailOpacity = (trailPoint.life / 10) * trailPoint.opacity * 0.6;
+                            const trailSize = particle.size * 0.7 * (trailPoint.life / 10);
+                            
+                            // Trail glow
+                            const trailGradient = this.ctx.createRadialGradient(
+                                trailPoint.x, trailPoint.y, 0,
+                                trailPoint.x, trailPoint.y, trailSize * 3
+                            );
+                            trailGradient.addColorStop(0, `rgba(255, 215, 0, ${trailOpacity})`);
+                            trailGradient.addColorStop(0.5, `rgba(255, 215, 0, ${trailOpacity * 0.4})`);
+                            trailGradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+                            
+                            this.ctx.beginPath();
+                            this.ctx.arc(trailPoint.x, trailPoint.y, trailSize * 2, 0, Math.PI * 2);
+                            this.ctx.fillStyle = trailGradient;
+                            this.ctx.fill();
+                            
+                            // Trail core
+                            this.ctx.beginPath();
+                            this.ctx.arc(trailPoint.x, trailPoint.y, trailSize, 0, Math.PI * 2);
+                            this.ctx.fillStyle = `rgba(255, 215, 0, ${trailOpacity})`;
+                            this.ctx.fill();
+                        });
+                    }
+                });
+                
+                // Draw particles (on top)
+                this.particles.forEach(particle => {
+                    const glowSize = particle.size * particle.glowIntensity * 4;
+                    
+                    // Enhanced glow effect with displacement intensity
+                    const gradient = this.ctx.createRadialGradient(
+                        particle.x, particle.y, 0,
+                        particle.x, particle.y, glowSize
+                    );
+                    gradient.addColorStop(0, `rgba(255, 215, 0, ${particle.opacity * 0.9})`);
+                    gradient.addColorStop(0.3, `rgba(255, 215, 0, ${particle.opacity * 0.5})`);
+                    gradient.addColorStop(0.7, `rgba(255, 215, 0, ${particle.opacity * 0.2})`);
+                    gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, glowSize, 0, Math.PI * 2);
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.fill();
+                    
+                    // Core particle with enhanced displacement glow
+                    const coreSize = particle.size * (1 + particle.glowIntensity * 0.3);
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, coreSize, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(255, 215, 0, ${particle.opacity})`;
+                    this.ctx.fill();
+                    
+                    // Inner bright core for enhanced visibility during displacement
+                    if (particle.glowIntensity > 1) {
+                        this.ctx.beginPath();
+                        this.ctx.arc(particle.x, particle.y, particle.size * 0.5, 0, Math.PI * 2);
+                        this.ctx.fillStyle = `rgba(255, 255, 255, ${(particle.glowIntensity - 1) * 0.5})`;
+                        this.ctx.fill();
+                    }
+                });
+            }
+            
+            animate() {
+                this.updateParticles();
+                this.drawParticles();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize particle system
+        const canvas = document.getElementById('particles-canvas');
+        const particleSystem = new AdvancedParticleSystem(canvas);
+
+        // Typing Animation
+        function typeWriter(element, text, speed = 75, callback) {
+            let i = 0;
+            element.innerHTML = '';
+            element.classList.add('glow');
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.innerHTML += '<span class="typing-cursor">|</span>';
+                    setTimeout(() => {
+                        element.innerHTML = element.innerHTML.replace('<span class="typing-cursor">|</span>', '');
+                        if (callback) callback();
+                    }, 500);
+                }
+            }
+            type();
+        }
+
+        // Initialize hero animations
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                typeWriter(document.getElementById('typing-text-1'), 'Welcome to ADV Technologies', 75, () => {
+                    setTimeout(() => {
+                        typeWriter(document.getElementById('typing-text-2'), 'Innovation with AI', 75, () => {
+                            setTimeout(() => {
+                                document.getElementById('hero-subtitle').classList.add('show');
+                                setTimeout(() => {
+                                    document.getElementById('explore-btn').classList.add('show');
+                                }, 500);
+                            }, 300);
+                        });
+                    }, 300);
+                });
+            }, 1000);
+        });
+
+        // Smooth scrolling
+        function smoothScrollTo(target) {
+            document.querySelector(target).scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            const backToTop = document.getElementById('back-to-top');
+            
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+                backToTop.classList.add('visible');
+            } else {
+                navbar.classList.remove('scrolled');
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // Modal functions
+        function openModal(modalType) {
+            document.getElementById(`${modalType}-modal`).classList.add('active');
+            clearMessages(modalType);
+        }
+
+        function closeModal(modalType) {
+            document.getElementById(`${modalType}-modal`).classList.remove('active');
+            clearMessages(modalType);
+        }
+
+        function switchModal(from, to) {
+            closeModal(from);
+            setTimeout(() => openModal(to), 300);
+        }
+
+        function clearMessages(modalType) {
+            const errorElement = document.getElementById(`${modalType}-error`);
+            const successElement = document.getElementById(`${modalType}-success`);
+            if (errorElement) {
+                errorElement.style.display = 'none';
+                errorElement.textContent = '';
+            }
+            if (successElement) {
+                successElement.style.display = 'none';
+                successElement.textContent = '';
+            }
+        }
+
+        function showMessage(modalType, type, message) {
+            const element = document.getElementById(`${modalType}-${type}`);
+            if (element) {
+                element.textContent = message;
+                element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Authentication functions (placeholder implementation)
+        async function handleLogin(email, password) {
+            try {
+                // Placeholder for Supabase authentication
+                showMessage('login', 'error', 'Authentication system is currently under construction. Please check back soon!');
+                return false;
+                
+                /* 
+                // Real implementation would look like:
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) throw error;
+                
+                currentUser = data.user;
+                isAuthenticated = true;
+                updateAuthUI();
+                closeModal('login');
+                showMessage('login', 'success', 'Login successful!');
+                return true;
+                */
+            } catch (error) {
+                showMessage('login', 'error', error.message);
+                return false;
+            }
+        }
+
+        async function handleSignup(email, password, confirmPassword) {
+            try {
+                if (password !== confirmPassword) {
+                    showMessage('signup', 'error', 'Passwords do not match!');
+                    return false;
+                }
+
+                if (password.length < 8) {
+                    showMessage('signup', 'error', 'Password must be at least 8 characters long!');
+                    return false;
+                }
+
+                // Check password complexity
+                const hasUpper = /[A-Z]/.test(password);
+                const hasLower = /[a-z]/.test(password);
+                const hasNumber = /\d/.test(password);
+                const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+                if (!(hasUpper && hasLower && hasNumber && hasSpecial)) {
+                    showMessage('signup', 'error', 'Password must contain uppercase, lowercase, number, and special character!');
+                    return false;
+                }
+
+                // Placeholder for Supabase signup
+                showMessage('signup', 'error', 'Registration system is currently under construction. Please check back soon!');
+                return false;
+
+                /* 
+                // Real implementation would look like:
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) throw error;
+                
+                closeModal('signup');
+                openModal('otp');
+                showMessage('otp', 'success', 'Verification email sent! Please check your inbox.');
+                return true;
+                */
+            } catch (error) {
+                showMessage('signup', 'error', error.message);
+                return false;
+            }
+        }
+
+        async function handleOTPVerification(otpCode) {
+            try {
+                if (otpCode.length !== 6) {
+                    showMessage('otp', 'error', 'Please enter a valid 6-digit code!');
+                    return false;
+                }
+
+                // Placeholder for OTP verification
+                showMessage('otp', 'error', 'OTP verification is currently under construction. Please check back soon!');
+                return false;
+
+                /* 
+                // Real implementation would look like:
+                const { data, error } = await supabaseClient.auth.verifyOtp({
+                    email: currentUser.email,
+                    token: otpCode,
+                    type: 'signup'
+                });
+                
+                if (error) throw error;
+                
+                currentUser = data.user;
+                isAuthenticated = true;
+                updateAuthUI();
+                closeModal('otp');
+                showMessage('otp', 'success', 'Email verified successfully!');
+                return true;
+                */
+            } catch (error) {
+                showMessage('otp', 'error', error.message);
+                return false;
+            }
+        }
+
+        function updateAuthUI() {
+            const authButtons = document.getElementById('auth-buttons');
+            const userProfile = document.getElementById('user-profile');
+            const userAvatar = document.getElementById('user-avatar');
+
+            if (isAuthenticated && currentUser) {
+                authButtons.style.display = 'none';
+                userProfile.style.display = 'flex';
+                
+                // Set first letter of user's email as avatar
+                const firstLetter = currentUser.email ? currentUser.email.charAt(0).toUpperCase() : 'U';
+                userAvatar.textContent = firstLetter;
+            } else {
+                authButtons.style.display = 'flex';
+                userProfile.style.display = 'none';
+            }
+        }
+
+        function redirectToProfile() {
+            alert('Profile dashboard is currently under construction. Advanced user management features coming soon!');
+        }
+
+        async function resendOTP() {
+            try {
+                // Placeholder for resend OTP
+                showMessage('otp', 'error', 'Resend OTP feature is currently under construction. Please check back soon!');
+                
+                /* 
+                // Real implementation would look like:
+                const { error } = await supabaseClient.auth.resend({
+                    type: 'signup',
+                    email: currentUser.email
+                });
+                
+                if (error) throw error;
+                showMessage('otp', 'success', 'Verification code resent!');
+                */
+            } catch (error) {
+                showMessage('otp', 'error', error.message);
+            }
+        }
+
+        // Form event listeners
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Logging in...</span><i class="fas fa-spinner fa-spin"></i>';
+            
+            await handleLogin(email, password);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>Login</span><i class="fas fa-sign-in-alt"></i>';
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            
+            const btn = document.getElementById('signup-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Signing up...</span><i class="fas fa-spinner fa-spin"></i>';
+            
+            await handleSignup(email, password, confirmPassword);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>Sign Up</span><i class="fas fa-user-plus"></i>';
+        });
+
+        document.getElementById('otp-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const otpCode = document.getElementById('otp-code').value;
+            
+            const btn = document.getElementById('otp-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Verifying...</span><i class="fas fa-spinner fa-spin"></i>';
+            
+            await handleOTPVerification(otpCode);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>Verify Email</span><i class="fas fa-check"></i>';
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                const modalId = e.target.id.replace('-modal', '');
+                closeModal(modalId);
+            }
+        });
+
+        // Check authentication status on page load
+        window.addEventListener('load', () => {
+            // In real implementation, check if user is already logged in
+            updateAuthUI();
+        });
+
+        // Enhanced hover effects for buttons and cards
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add hover sound effects (optional)
+            const interactiveElements = document.querySelectorAll('.btn, .project-btn, .contact-item, .glass-panel');
+            
+            interactiveElements.forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    // Optional: Add subtle sound effects here
+                });
+            });
+
+            // Add scroll-triggered animations for glass panels
+            const panels = document.querySelectorAll('.glass-panel');
+            panels.forEach((panel, index) => {
+                panel.style.animationDelay = `${index * 0.2}s`;
+            });
+
+            // Initialize navbar links active state
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = link.getAttribute('href');
+                    smoothScrollTo(target);
+                });
+            });
+        });
+
+        // Performance optimization for mobile devices
+        if (window.innerWidth < 768) {
+            // Reduce particle system complexity on mobile
+            const style = document.createElement('style');
+            style.textContent = `
+                .glass-panel:hover {
+                    transform: translateY(-5px);
+                }
+                .contact-item:hover {
+                    transform: translateY(-3px) scale(1.02);
+                }
+                .project-card:hover {
+                    transform: translateY(-5px);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Add keyboard navigation support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                // Close any open modals
+                const activeModals = document.querySelectorAll('.modal.active');
+                activeModals.forEach(modal => {
+                    const modalId = modal.id.replace('-modal', '');
+                    closeModal(modalId);
+                });
+            }
+        });
+
+        // Add focus management for accessibility
+        const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+        function trapFocus(element) {
+            const focusableContent = element.querySelectorAll(focusableElements);
+            const firstFocusableElement = focusableContent[0];
+            const lastFocusableElement = focusableContent[focusableContent.length - 1];
+
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstFocusableElement) {
+                            lastFocusableElement.focus();
+                            e.preventDefault();
+                        }
+                    } else {
+                        if (document.activeElement === lastFocusableElement) {
+                            firstFocusableElement.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Apply focus trap to modals
+        document.querySelectorAll('.modal').forEach(modal => {
+            trapFocus(modal);
+        });
+
+        console.log('🚀 ADV Technologies Website Loaded Successfully!');
+        console.log('✨ Features: Premium particle system, glassmorphic design, responsive layout');
+        console.log('🔐 Authentication: Supabase integration ready (configure credentials)');
+        console.log('📱 Responsive: Optimized for all devices');
+        console.log('🎨 Animations: Hundreds of micro-interactions');
+    </script>
+</body>
+</html>
