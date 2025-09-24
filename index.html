@@ -251,7 +251,7 @@
         }
 
         .glass-panel:hover {
-            transform: translateY(-8px) perspective(1000px) rotateX(2deg);
+            transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 60px rgba(255, 215, 0, 0.25);
             background: var(--glass-hover-bg);
             border-color: var(--glass-hover-border);
@@ -571,7 +571,7 @@
         }
 
         .project-card:hover {
-            transform: translateY(-10px) perspective(1000px) rotateX(5deg) rotateY(2deg);
+            transform: translateY(-10px) scale(1.03);
             box-shadow: 0 25px 70px rgba(255, 215, 0, 0.3);
             background: var(--glass-hover-bg);
             border-color: var(--glass-hover-border);
@@ -688,7 +688,7 @@
         }
 
         .contact-panel:hover {
-            transform: translateY(-8px) perspective(1000px) rotateX(3deg);
+            transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 60px rgba(255, 215, 0, 0.25);
             background: var(--glass-hover-bg);
         }
@@ -736,7 +736,7 @@
         }
 
         .contact-item:hover {
-            transform: translateY(-5px) scale(1.05);
+            transform: translateY(-5px) scale(1.08);
             box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
             background: rgba(255, 215, 0, 0.1);
             border-color: rgba(255, 215, 0, 0.4);
@@ -804,7 +804,7 @@
         }
 
         .back-to-top:hover {
-            transform: translateY(-5px) scale(1.1) rotate(5deg);
+            transform: translateY(-5px) scale(1.15);
             box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
             background: var(--glass-hover-bg);
             border-color: var(--glass-hover-border);
@@ -1030,8 +1030,7 @@
     <nav class="navbar" id="navbar">
         <div class="container">
             <div class="logo" onclick="location.reload()">
-                <i class="fas fa-code"></i>
-                ADV Technologies
+                <img src="assets/logo.png" alt="ADV Technologies" style="height: 40px; width: auto;">
             </div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
@@ -1189,12 +1188,12 @@
                                     <h4>Instagram</h4>
                                     <p>@aadhidev_s_2010</p>
                                 </div>
-                                <div class="contact-item" onclick="window.open('https://x.com/Aadhidev_S', '_blank')">
+                                <div class="contact-item" onclick="window.open('https://x.com/_Aadhidev_S_', '_blank')">
                                     <div class="contact-icon">
-                                        <i class="fab fa-twitter"></i>
+                                        <i class="fab fa-x-twitter"></i>
                                     </div>
-                                    <h4>X (Twitter)</h4>
-                                    <p>@Aadhidev_S</p>
+                                    <h4>X</h4>
+                                    <p>@_Aadhidev_S_</p>
                                 </div>
                                 <div class="contact-item" onclick="alert('LinkedIn profile coming soon!')">
                                     <div class="contact-icon">
@@ -1364,8 +1363,8 @@
                     this.particles.push({
                         x: Math.random() * this.canvas.width,
                         y: Math.random() * this.canvas.height,
-                        vx: (Math.random() - 0.5) * (isMobile ? 0.5 : 0.8),
-                        vy: (Math.random() - 0.5) * (isMobile ? 0.5 : 0.8),
+                        vx: (Math.random() - 0.5) * (isMobile ? 1.2 : 1.8),
+                        vy: (Math.random() - 0.5) * (isMobile ? 1.2 : 1.8),
                         size: Math.random() * (isMobile ? 2.5 : 3.5) + 1,
                         opacity: Math.random() * 0.6 + 0.3,
                         baseOpacity: Math.random() * 0.6 + 0.3,
@@ -1404,21 +1403,20 @@
                 const time = Date.now() * 0.001;
                 
                 this.particles.forEach(particle => {
-                    // Base movement
-                    particle.x += particle.vx;
-                    particle.y += particle.vy;
+                    // Simple linear movement (like your portfolio)
+                    particle.x += particle.vx * 1.5; // Increased speed multiplier
+                    particle.y += particle.vy * 1.5;
                     
-                    // Subtle random movement for "alive" feeling
+                    // Add slight random movement for dynamic effect
                     particle.vx += (Math.random() - 0.5) * 0.02;
                     particle.vy += (Math.random() - 0.5) * 0.02;
                     
-                    // Enhanced Mouse Displacement Effect
+                    // Enhanced Mouse Displacement Effect (keeping this from ADV site)
                     const dx = this.mouse.x - particle.x;
                     const dy = this.mouse.y - particle.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
                     if (distance < this.mouseInfluence && distance > 0) {
-                        // Enhanced displacement force calculation
                         const force = Math.pow((this.mouseInfluence - distance) / this.mouseInfluence, 2);
                         const angle = Math.atan2(dy, dx);
                         
@@ -1445,52 +1443,61 @@
                             life: 10
                         });
                         
-                        // Limit trail length
                         if (particle.trail.length > 5) {
                             particle.trail.shift();
                         }
                     } else {
-                        // Gradual return to normal state
                         particle.opacity = particle.baseOpacity + (particle.opacity - particle.baseOpacity) * 0.95;
                         particle.glowIntensity *= 0.96;
                         
-                        // Fade existing trail
                         if (particle.trail && particle.trail.length > 0) {
                             particle.trail.forEach(trailPoint => trailPoint.life--);
                             particle.trail = particle.trail.filter(trailPoint => trailPoint.life > 0);
                         }
                     }
                     
-                    // Spring-back effect - particles slowly return to original drift
-                    if (!particle.originalVx) {
-                        particle.originalVx = particle.vx;
-                        particle.originalVy = particle.vy;
+                    // Enhanced boundary bouncing (improved from portfolio style)
+                    const margin = 20;
+                    
+                    if (particle.x <= margin) {
+                        particle.x = margin + 1;
+                        particle.vx = Math.abs(particle.vx) * 0.8 + 0.2;
+                    } else if (particle.x >= this.canvas.width - margin) {
+                        particle.x = this.canvas.width - margin - 1;
+                        particle.vx = -Math.abs(particle.vx) * 0.8 - 0.2;
                     }
                     
-                    // Gentle return to original velocity when mouse is far
-                    if (distance > this.mouseInfluence * 1.5) {
-                        particle.vx += (particle.originalVx - particle.vx) * 0.01;
-                        particle.vy += (particle.originalVy - particle.vy) * 0.01;
+                    if (particle.y <= margin) {
+                        particle.y = margin + 1;
+                        particle.vy = Math.abs(particle.vy) * 0.8 + 0.2;
+                    } else if (particle.y >= this.canvas.height - margin) {
+                        particle.y = this.canvas.height - margin - 1;
+                        particle.vy = -Math.abs(particle.vy) * 0.8 - 0.2;
                     }
                     
-                    // Boundary bouncing with enhanced displacement consideration
-                    if (particle.x < 0 || particle.x > this.canvas.width) {
-                        particle.vx *= -0.7;
-                        particle.x = Math.max(0, Math.min(this.canvas.width, particle.x));
-                    }
-                    if (particle.y < 0 || particle.y > this.canvas.height) {
-                        particle.vy *= -0.7;
-                        particle.y = Math.max(0, Math.min(this.canvas.height, particle.y));
+                    // Gentle edge repulsion to prevent clustering
+                    const edgeRepulsion = 0.02;
+                    
+                    if (particle.x < this.canvas.width * 0.1) {
+                        particle.vx += edgeRepulsion * (1 - particle.x / (this.canvas.width * 0.1));
+                    } else if (particle.x > this.canvas.width * 0.9) {
+                        particle.vx -= edgeRepulsion * (1 - (this.canvas.width - particle.x) / (this.canvas.width * 0.1));
                     }
                     
-                    // Enhanced velocity limiting with displacement consideration
-                    const maxVel = 2.5; // Increased to allow stronger displacement
+                    if (particle.y < this.canvas.height * 0.1) {
+                        particle.vy += edgeRepulsion * (1 - particle.y / (this.canvas.height * 0.1));
+                    } else if (particle.y > this.canvas.height * 0.9) {
+                        particle.vy -= edgeRepulsion * (1 - (this.canvas.height - particle.y) / (this.canvas.height * 0.1));
+                    }
+                    
+                    // Velocity limiting
+                    const maxVel = 2.5;
                     if (Math.abs(particle.vx) > maxVel) particle.vx = maxVel * Math.sign(particle.vx);
                     if (Math.abs(particle.vy) > maxVel) particle.vy = maxVel * Math.sign(particle.vy);
                     
-                    // Velocity damping to prevent runaway particles
-                    particle.vx *= 0.99;
-                    particle.vy *= 0.99;
+                    // Light velocity damping
+                    particle.vx *= 0.995;
+                    particle.vy *= 0.995;
                     
                     // Twinkling effect
                     const twinkle = Math.sin(time * particle.twinkleSpeed + particle.twinkleOffset);
