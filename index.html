@@ -85,15 +85,18 @@
             right: 0;
             z-index: 1000;
             padding: 1rem 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 215, 0, 0.08);
+            backdrop-filter: blur(25px);
             border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
             transition: all 0.3s ease;
         }
 
         .navbar.scrolled {
             padding: 0.5rem 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(255, 215, 0, 0.12);
+            backdrop-filter: blur(30px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.2);
         }
 
         .navbar .container {
@@ -1190,7 +1193,9 @@
                                 </div>
                                 <div class="contact-item" onclick="window.open('https://x.com/_Aadhidev_S_', '_blank')">
                                     <div class="contact-icon">
-                                        <i class="fab fa-x-twitter"></i>
+                                        <svg width="35" height="35" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                        </svg>
                                     </div>
                                     <h4>X</h4>
                                     <p>@_Aadhidev_S_</p>
@@ -1632,15 +1637,15 @@
             
             function type() {
                 if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
+                    element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
                     i++;
                     setTimeout(type, speed);
                 } else {
-                    element.innerHTML += '<span class="typing-cursor">|</span>';
+                    // Keep cursor blinking for a moment before removing it
                     setTimeout(() => {
-                        element.innerHTML = element.innerHTML.replace('<span class="typing-cursor">|</span>', '');
+                        element.innerHTML = text;
                         if (callback) callback();
-                    }, 500);
+                    }, 1000);
                 }
             }
             type();
@@ -1661,7 +1666,7 @@
                         });
                     }, 300);
                 });
-            }, 1000);
+            }, 500); // Reduced from 1000ms to 500ms for earlier appearance
         });
 
         // Smooth scrolling
