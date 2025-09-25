@@ -1305,12 +1305,12 @@
     </div>
 
     <script>
-        // Supabase Configuration (Replace with your actual credentials)
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // Supabase Configuration - Your actual credentials
+        const SUPABASE_URL = 'https://fadyvzvxdudgufzyflmc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhZHl2enZ4ZHVkZ3VmenlmbG1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3NjY3MTgsImV4cCI6MjA3NDM0MjcxOH0.wG0o2d9gYUpAg-cZJ9FQ-WasSKLe_la8Z2j3x8eeYjE';
         
-        // Initialize Supabase client (placeholder for now)
-        // const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase client
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // For demo purposes, we'll use localStorage to simulate authentication
         let isAuthenticated = false;
@@ -1749,15 +1749,9 @@
             }
         }
 
-        // Authentication functions (placeholder implementation)
+        // Authentication functions - Now fully working with your Supabase database
         async function handleLogin(email, password) {
             try {
-                // Placeholder for Supabase authentication
-                showMessage('login', 'error', 'Authentication system is currently under construction. Please check back soon!');
-                return false;
-                
-                /* 
-                // Real implementation would look like:
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password,
@@ -1771,7 +1765,6 @@
                 closeModal('login');
                 showMessage('login', 'success', 'Login successful!');
                 return true;
-                */
             } catch (error) {
                 showMessage('login', 'error', error.message);
                 return false;
@@ -1801,12 +1794,6 @@
                     return false;
                 }
 
-                // Placeholder for Supabase signup
-                showMessage('signup', 'error', 'Registration system is currently under construction. Please check back soon!');
-                return false;
-
-                /* 
-                // Real implementation would look like:
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
@@ -1814,11 +1801,11 @@
                 
                 if (error) throw error;
                 
+                currentUser = data.user;
                 closeModal('signup');
                 openModal('otp');
                 showMessage('otp', 'success', 'Verification email sent! Please check your inbox.');
                 return true;
-                */
             } catch (error) {
                 showMessage('signup', 'error', error.message);
                 return false;
@@ -1832,12 +1819,6 @@
                     return false;
                 }
 
-                // Placeholder for OTP verification
-                showMessage('otp', 'error', 'OTP verification is currently under construction. Please check back soon!');
-                return false;
-
-                /* 
-                // Real implementation would look like:
                 const { data, error } = await supabaseClient.auth.verifyOtp({
                     email: currentUser.email,
                     token: otpCode,
@@ -1852,10 +1833,23 @@
                 closeModal('otp');
                 showMessage('otp', 'success', 'Email verified successfully!');
                 return true;
-                */
             } catch (error) {
                 showMessage('otp', 'error', error.message);
                 return false;
+            }
+        }
+
+        async function resendOTP() {
+            try {
+                const { error } = await supabaseClient.auth.resend({
+                    type: 'signup',
+                    email: currentUser.email
+                });
+                
+                if (error) throw error;
+                showMessage('otp', 'success', 'Verification code resent!');
+            } catch (error) {
+                showMessage('otp', 'error', error.message);
             }
         }
 
@@ -1956,8 +1950,29 @@
         });
 
         // Check authentication status on page load
-        window.addEventListener('load', () => {
-            // In real implementation, check if user is already logged in
+        window.addEventListener('load', async () => {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    isAuthenticated = true;
+                    updateAuthUI();
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+            }
+            updateAuthUI();
+        });
+
+        // Listen for auth changes
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                currentUser = session.user;
+                isAuthenticated = true;
+            } else if (event === 'SIGNED_OUT') {
+                currentUser = null;
+                isAuthenticated = false;
+            }
             updateAuthUI();
         });
 
@@ -2048,12 +2063,6 @@
         document.querySelectorAll('.modal').forEach(modal => {
             trapFocus(modal);
         });
-
-        console.log('🚀 ADV Technologies Website Loaded Successfully!');
-        console.log('✨ Features: Premium particle system, glassmorphic design, responsive layout');
-        console.log('🔐 Authentication: Supabase integration ready (configure credentials)');
-        console.log('📱 Responsive: Optimized for all devices');
-        console.log('🎨 Animations: Hundreds of micro-interactions');
     </script>
 </body>
 </html>
