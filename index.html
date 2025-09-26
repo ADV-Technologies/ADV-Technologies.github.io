@@ -818,7 +818,7 @@
             font-size: 1.5rem;
         }
 
-        /* Modal Styles */
+        /* Modal Styles - Full Screen */
         .modal {
             display: none;
             position: fixed;
@@ -827,30 +827,36 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+            backdrop-filter: blur(20px);
+            overflow-y: auto;
         }
 
         .modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 2rem 1rem;
         }
 
         .modal-content {
-            background: var(--dark-gray);
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
             border: 2px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: 25px;
             padding: 3rem;
-            max-width: 500px;
-            width: 90%;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
             position: relative;
-            animation: modalSlideIn 0.5s ease;
+            animation: modalSlideIn 0.6s ease;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.2);
         }
 
         @keyframes modalSlideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { transform: translateY(-30px); opacity: 0; scale: 0.95; }
+            to { transform: translateY(0); opacity: 1; scale: 1; }
         }
 
         .modal-close {
@@ -858,25 +864,33 @@
             top: 20px;
             right: 25px;
             color: var(--gold);
-            font-size: 2rem;
+            font-size: 2.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            z-index: 10;
         }
 
         .modal-close:hover {
-            transform: scale(1.2);
+            transform: scale(1.2) rotate(90deg);
             color: var(--white);
         }
 
         .modal h3 {
             color: var(--gold);
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
             text-align: center;
+            font-weight: 800;
         }
 
         .form-group {
             margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
         .form-group label {
@@ -884,52 +898,152 @@
             color: var(--gold);
             margin-bottom: 0.5rem;
             font-weight: 600;
+            font-size: 0.95rem;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
             color: var(--white);
             font-size: 1rem;
             transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Custom date picker styling */
+        input[type="date"] {
+            position: relative;
+            color: var(--white);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            bottom: 0;
+            color: var(--gold);
+            cursor: pointer;
+            height: auto;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+            filter: invert(80%) sepia(50%) saturate(500%) hue-rotate(10deg) brightness(120%);
+        }
+
+        /* Custom select styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23FFD700' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1rem;
+            padding-right: 3rem;
+        }
+
+        select option {
+            background-color: var(--dark-gray);
+            color: var(--white);
+            padding: 0.5rem;
+        }
+
+        .username-suggestions {
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .username-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin: 0.3rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--gold);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .suggestion-available {
+            font-size: 0.8rem;
+            color: #51cf66;
+        }
+
+        .username-validation {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .username-validation.error {
+            color: #ff6b6b;
+            display: block;
+        }
+
+        .username-validation.success {
+            color: #51cf66;
+            display: block;
         }
 
         .form-btn {
             width: 100%;
-            padding: 1rem;
+            padding: 1.2rem;
             background: linear-gradient(45deg, var(--gold), var(--dark-gold));
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             color: var(--black);
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 1rem;
+            font-family: 'Montserrat', sans-serif;
         }
 
         .form-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+            background: linear-gradient(45deg, var(--light-gold), var(--gold));
         }
 
         .form-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
 
         .auth-switch {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
             color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
         }
 
         .auth-switch a {
@@ -941,29 +1055,55 @@
         }
 
         .auth-switch a:hover {
-            text-shadow: 0 0 10px var(--gold);
+            text-shadow: 0 0 15px var(--gold);
+            color: var(--light-gold);
+        }
+
+        .error-message, .success-message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
         .error-message {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
+            background: rgba(255, 0, 0, 0.15);
+            border: 2px solid rgba(255, 0, 0, 0.4);
             color: #ff6b6b;
-            padding: 0.8rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            text-align: center;
-            font-size: 0.9rem;
         }
 
         .success-message {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid rgba(0, 255, 0, 0.3);
+            background: rgba(0, 255, 0, 0.15);
+            border: 2px solid rgba(0, 255, 0, 0.4);
             color: #51cf66;
-            padding: 0.8rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            text-align: center;
-            font-size: 0.9rem;
+        }
+
+        .profession-custom {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .profession-custom.show {
+            display: block;
+        }
+
+        /* Mobile responsiveness for modals */
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal h3 {
+                font-size: 2rem;
+            }
         }
 
         /* Enhanced Responsive Design */
@@ -1255,20 +1395,96 @@
             <div id="signup-error" class="error-message" style="display: none;"></div>
             <div id="signup-success" class="success-message" style="display: none;"></div>
             <form id="signup-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signup-first-name">First Name</label>
+                        <input type="text" id="signup-first-name" required minlength="2" placeholder="Your first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-last-name">Last Name</label>
+                        <input type="text" id="signup-last-name" required minlength="2" placeholder="Your last name">
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" required>
+                    <input type="email" id="signup-email" required placeholder="your.email@example.com">
                 </div>
+                
                 <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" required minlength="8">
+                    <label for="signup-dob">Date of Birth</label>
+                    <input type="date" id="signup-dob" required>
                 </div>
+                
                 <div class="form-group">
-                    <label for="signup-confirm-password">Confirm Password</label>
-                    <input type="password" id="signup-confirm-password" required minlength="8">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" required minlength="3" placeholder="Click for suggestions or create your own">
+                    <div class="username-validation" id="username-validation"></div>
+                    <div class="username-suggestions" id="username-suggestions">
+                        <div class="suggestion-item" data-suggestion="">
+                            <span class="suggestion-text"></span>
+                            <span class="suggestion-available">Available</span>
+                        </div>
+                        <div class="suggestion-item" data-suggestion="">
+                            <span class="suggestion-text"></span>
+                            <span class="suggestion-available">Available</span>
+                        </div>
+                        <div class="suggestion-item" data-suggestion="">
+                            <span class="suggestion-text"></span>
+                            <span class="suggestion-available">Available</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <div class="form-group">
+                    <label for="signup-profession">Profession</label>
+                    <select id="signup-profession" required>
+                        <option value="">Select your profession</option>
+                        <option value="Student">Student</option>
+                        <option value="Software Developer">Software Developer</option>
+                        <option value="Data Scientist">Data Scientist</option>
+                        <option value="Web Developer">Web Developer</option>
+                        <option value="Mobile App Developer">Mobile App Developer</option>
+                        <option value="AI/ML Engineer">AI/ML Engineer</option>
+                        <option value="DevOps Engineer">DevOps Engineer</option>
+                        <option value="UI/UX Designer">UI/UX Designer</option>
+                        <option value="Product Manager">Product Manager</option>
+                        <option value="Business Analyst">Business Analyst</option>
+                        <option value="Cybersecurity Specialist">Cybersecurity Specialist</option>
+                        <option value="Database Administrator">Database Administrator</option>
+                        <option value="System Administrator">System Administrator</option>
+                        <option value="Teacher/Educator">Teacher/Educator</option>
+                        <option value="Researcher">Researcher</option>
+                        <option value="Entrepreneur">Entrepreneur</option>
+                        <option value="Freelancer">Freelancer</option>
+                        <option value="Consultant">Consultant</option>
+                        <option value="Marketing Professional">Marketing Professional</option>
+                        <option value="Sales Professional">Sales Professional</option>
+                        <option value="Healthcare Professional">Healthcare Professional</option>
+                        <option value="Engineer (Other)">Engineer (Other)</option>
+                        <option value="Finance Professional">Finance Professional</option>
+                        <option value="Legal Professional">Legal Professional</option>
+                        <option value="Creative Professional">Creative Professional</option>
+                        <option value="Other">Other (specify below)</option>
+                    </select>
+                    <div class="profession-custom" id="profession-custom">
+                        <input type="text" id="signup-profession-custom" placeholder="Please specify your profession">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required minlength="8" placeholder="Strong password">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" required minlength="8" placeholder="Repeat password">
+                    </div>
+                </div>
+                
                 <button type="submit" class="form-btn" id="signup-btn">
-                    <span>Sign Up</span>
+                    <span>Create Account</span>
                     <i class="fas fa-user-plus"></i>
                 </button>
             </form>
@@ -1709,15 +1925,32 @@
             }
         });
 
-        // Modal functions
+        // Modal functions with secure OTP handling
+        let pendingVerification = false;
+
         function openModal(modalType) {
             document.getElementById(`${modalType}-modal`).classList.add('active');
             clearMessages(modalType);
+            // Prevent body scrolling when modal is open
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal(modalType) {
+            // Prevent closing OTP modal until verification is complete
+            if (modalType === 'otp' && pendingVerification) {
+                showMessage('otp', 'error', 'Please verify your email before continuing.');
+                return;
+            }
+            
             document.getElementById(`${modalType}-modal`).classList.remove('active');
             clearMessages(modalType);
+            // Restore body scrolling
+            document.body.style.overflow = 'auto';
+            
+            // Reset pending verification if login/signup is closed
+            if (modalType === 'login' || modalType === 'signup') {
+                pendingVerification = false;
+            }
         }
 
         function switchModal(from, to) {
@@ -1771,7 +2004,7 @@
             }
         }
 
-        async function handleSignup(email, password, confirmPassword) {
+        async function handleSignup(firstName, lastName, username, email, dateOfBirth, profession, password, confirmPassword) {
             try {
                 if (password !== confirmPassword) {
                     showMessage('signup', 'error', 'Passwords do not match!');
@@ -1780,6 +2013,13 @@
 
                 if (password.length < 8) {
                     showMessage('signup', 'error', 'Password must be at least 8 characters long!');
+                    return false;
+                }
+
+                // Validate username format
+                const usernameValidation = validateUsername(username);
+                if (!usernameValidation.valid) {
+                    showMessage('signup', 'error', usernameValidation.message);
                     return false;
                 }
 
@@ -1794,20 +2034,51 @@
                     return false;
                 }
 
+                // Validate age (must be 13 or older)
+                const today = new Date();
+                const birthDate = new Date(dateOfBirth);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+
+                if (age < 13) {
+                    showMessage('signup', 'error', 'You must be at least 13 years old to register!');
+                    return false;
+                }
+
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
+                    options: {
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                            username: username,
+                            date_of_birth: dateOfBirth,
+                            profession: profession
+                        }
+                    }
                 });
                 
                 if (error) throw error;
                 
                 currentUser = data.user;
+                pendingVerification = true; // Set verification flag
                 closeModal('signup');
                 openModal('otp');
-                showMessage('otp', 'success', 'Verification email sent! Please check your inbox.');
+                showMessage('otp', 'success', 'Verification email sent! Please check your inbox and enter the 6-digit code.');
                 return true;
             } catch (error) {
-                showMessage('signup', 'error', error.message);
+                if (error.message.includes('already registered')) {
+                    showMessage('signup', 'error', 'This email is already registered. Please use the login form.');
+                } else if (error.message.includes('username')) {
+                    showMessage('signup', 'error', 'This username is already taken. Please choose a different one.');
+                } else {
+                    showMessage('signup', 'error', error.message);
+                }
                 return false;
             }
         }
@@ -1829,9 +2100,10 @@
                 
                 currentUser = data.user;
                 isAuthenticated = true;
+                pendingVerification = false; // Clear verification flag
                 updateAuthUI();
                 closeModal('otp');
-                showMessage('otp', 'success', 'Email verified successfully!');
+                showMessage('otp', 'success', 'Email verified successfully! Welcome to ADV Technologies!');
                 return true;
             } catch (error) {
                 showMessage('otp', 'error', error.message);
@@ -1862,9 +2134,21 @@
                 authButtons.style.display = 'none';
                 userProfile.style.display = 'flex';
                 
-                // Set first letter of user's email as avatar
-                const firstLetter = currentUser.email ? currentUser.email.charAt(0).toUpperCase() : 'U';
-                userAvatar.textContent = firstLetter;
+                // Get user profile information
+                const firstName = currentUser.user_metadata?.first_name || '';
+                const lastName = currentUser.user_metadata?.last_name || '';
+                
+                // Create avatar with initials
+                let avatarText = '';
+                if (firstName && lastName) {
+                    avatarText = firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
+                } else if (firstName) {
+                    avatarText = firstName.charAt(0).toUpperCase();
+                } else {
+                    avatarText = currentUser.email ? currentUser.email.charAt(0).toUpperCase() : 'U';
+                }
+                
+                userAvatar.textContent = avatarText;
             } else {
                 authButtons.style.display = 'flex';
                 userProfile.style.display = 'none';
@@ -1872,7 +2156,15 @@
         }
 
         function redirectToProfile() {
-            alert('Profile dashboard is currently under construction. Advanced user management features coming soon!');
+            // For now, show user information
+            const firstName = currentUser.user_metadata?.first_name || 'Unknown';
+            const lastName = currentUser.user_metadata?.last_name || 'User';
+            const username = currentUser.user_metadata?.username || 'N/A';
+            const profession = currentUser.user_metadata?.profession || 'Not specified';
+            
+            alert(`Welcome ${firstName} ${lastName}!\n\nUsername: ${username}\nProfession: ${profession}\n\nProfile dashboard coming soon!`);
+            
+            // In the future, this could redirect to: window.location.href = '/profile';
         }
 
         async function resendOTP() {
@@ -1913,18 +2205,156 @@
 
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const firstName = document.getElementById('signup-first-name').value;
+            const lastName = document.getElementById('signup-last-name').value;
+            const username = document.getElementById('signup-username').value;
             const email = document.getElementById('signup-email').value;
+            const dateOfBirth = document.getElementById('signup-dob').value;
+            
+            let profession = document.getElementById('signup-profession').value;
+            if (profession === 'Other') {
+                profession = document.getElementById('signup-profession-custom').value;
+                if (!profession.trim()) {
+                    showMessage('signup', 'error', 'Please specify your profession.');
+                    return;
+                }
+            }
+            
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-confirm-password').value;
             
             const btn = document.getElementById('signup-btn');
             btn.disabled = true;
-            btn.innerHTML = '<span>Signing up...</span><i class="fas fa-spinner fa-spin"></i>';
+            btn.innerHTML = '<span>Creating Account...</span><i class="fas fa-spinner fa-spin"></i>';
             
-            await handleSignup(email, password, confirmPassword);
+            await handleSignup(firstName, lastName, username, email, dateOfBirth, profession, password, confirmPassword);
             
             btn.disabled = false;
-            btn.innerHTML = '<span>Sign Up</span><i class="fas fa-user-plus"></i>';
+            btn.innerHTML = '<span>Create Account</span><i class="fas fa-user-plus"></i>';
+        });
+
+        // Handle profession dropdown change
+        document.getElementById('signup-profession').addEventListener('change', function() {
+            const customField = document.getElementById('profession-custom');
+            if (this.value === 'Other') {
+                customField.classList.add('show');
+                document.getElementById('signup-profession-custom').required = true;
+            } else {
+                customField.classList.remove('show');
+                document.getElementById('signup-profession-custom').required = false;
+                document.getElementById('signup-profession-custom').value = '';
+            }
+        });
+
+        // Username validation and suggestions
+        function validateUsername(username) {
+            const regex = /^[a-zA-Z0-9_-]+$/;
+            if (!regex.test(username)) {
+                return { valid: false, message: 'Username can only contain letters, numbers, underscores, and hyphens' };
+            }
+            if (username.length < 3) {
+                return { valid: false, message: 'Username must be at least 3 characters long' };
+            }
+            if (username.length > 20) {
+                return { valid: false, message: 'Username must be 20 characters or less' };
+            }
+            return { valid: true, message: 'Username looks good!' };
+        }
+
+        function generateUsernameSuggestions(firstName, lastName, dob) {
+            const suggestions = [];
+            const currentYear = new Date().getFullYear();
+            const birthYear = dob ? new Date(dob).getFullYear() : currentYear;
+            
+            if (firstName && lastName) {
+                const firstInitial = firstName.charAt(0).toLowerCase();
+                const lastInitial = lastName.charAt(0).toLowerCase();
+                const firstLower = firstName.toLowerCase().replace(/[^a-z]/g, '');
+                const lastLower = lastName.toLowerCase().replace(/[^a-z]/g, '');
+                
+                // Style 1: firstname + lastname + year
+                suggestions.push(`${firstLower}${lastLower}${birthYear}`);
+                
+                // Style 2: firstname + last initial + random numbers
+                const randomNum1 = Math.floor(Math.random() * 999) + 1;
+                suggestions.push(`${firstLower}${lastInitial}${randomNum1}`);
+                
+                // Style 3: initials + year + random
+                const randomNum2 = Math.floor(Math.random() * 99) + 1;
+                suggestions.push(`${firstInitial}${lastInitial}${birthYear}${randomNum2}`);
+                
+                // Additional suggestions if name is common
+                suggestions.push(`${firstLower}_${lastLower}`);
+                suggestions.push(`${firstLower}-${lastInitial}${String(birthYear).slice(-2)}`);
+                suggestions.push(`${firstInitial}${lastLower}${Math.floor(Math.random() * 999)}`);
+            }
+            
+            // Return first 3 unique suggestions
+            return [...new Set(suggestions)].slice(0, 3);
+        }
+
+        function showUsernameSuggestions() {
+            const firstName = document.getElementById('signup-first-name').value.trim();
+            const lastName = document.getElementById('signup-last-name').value.trim();
+            const dob = document.getElementById('signup-dob').value;
+            const suggestionsContainer = document.getElementById('username-suggestions');
+            const suggestionItems = suggestionsContainer.querySelectorAll('.suggestion-item');
+            
+            if (firstName || lastName) {
+                const suggestions = generateUsernameSuggestions(firstName, lastName, dob);
+                
+                suggestions.forEach((suggestion, index) => {
+                    if (suggestionItems[index]) {
+                        suggestionItems[index].dataset.suggestion = suggestion;
+                        suggestionItems[index].querySelector('.suggestion-text').textContent = suggestion;
+                    }
+                });
+                
+                suggestionsContainer.classList.add('show');
+            } else {
+                suggestionsContainer.classList.remove('show');
+            }
+        }
+
+        // Username input event handlers
+        document.getElementById('signup-username').addEventListener('focus', function() {
+            showUsernameSuggestions();
+        });
+
+        document.getElementById('signup-username').addEventListener('input', function() {
+            const username = this.value;
+            const validation = document.getElementById('username-validation');
+            
+            if (username) {
+                const result = validateUsername(username);
+                validation.textContent = result.message;
+                validation.className = result.valid ? 'username-validation success' : 'username-validation error';
+            } else {
+                validation.className = 'username-validation';
+                validation.textContent = '';
+            }
+        });
+
+        // Name and DOB changes trigger new suggestions
+        ['signup-first-name', 'signup-last-name', 'signup-dob'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function() {
+                if (document.getElementById('username-suggestions').classList.contains('show')) {
+                    showUsernameSuggestions();
+                }
+            });
+        });
+
+        // Suggestion click handlers
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.suggestion-item')) {
+                const suggestionItem = e.target.closest('.suggestion-item');
+                const suggestion = suggestionItem.dataset.suggestion;
+                const usernameInput = document.getElementById('signup-username');
+                
+                usernameInput.value = suggestion;
+                usernameInput.dispatchEvent(new Event('input'));
+                document.getElementById('username-suggestions').classList.remove('show');
+            }
         });
 
         document.getElementById('otp-form').addEventListener('submit', async (e) => {
