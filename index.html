@@ -999,20 +999,279 @@
             position: relative;
         }
 
-        /* Custom date picker styling with proper calendar icon */
-        input[type="date"] {
+        /* Custom date picker styling with working calendar */
+        .date-container {
             position: relative;
-            color: var(--white);
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23FFD700'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .date-container input[type="date"] {
+            background-image: none;
             padding-right: 3rem;
         }
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
+        .date-container input[type="date"]::-webkit-calendar-picker-indicator {
             opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* Hide the native calendar picker completely */
+        .date-container input[type="date"]::-webkit-inner-spin-button,
+        .date-container input[type="date"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .calendar-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
             cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .calendar-icon:hover {
+            color: var(--light-gold);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Custom calendar modal */
+        .calendar-modal {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(30px);
+            border: 2px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .calendar-modal.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: scale(1.1);
+        }
+
+        .calendar-title {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            color: var(--gold);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.5rem;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.other-month {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .calendar-day.selected {
+            background: var(--gold);
+            color: var(--black);
+            font-weight: bold;
+        }
+
+        .calendar-day.today {
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+
+        .year-month-selectors {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .year-selector, .month-selector {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--white);
+            padding: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Custom profession dropdown */
+        .profession-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .profession-dropdown {
+            width: 100%;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            appearance: none;
+            padding-right: 3rem;
+        }
+
+        .profession-dropdown:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .profession-arrow {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .profession-dropdown.open .profession-arrow {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Custom profession dropdown modal */
+        .profession-modal {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(30px);
+            border: 2px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .profession-modal.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profession-option {
+            padding: 0.8rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .profession-option:hover {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+            transform: translateX(5px);
+        }
+
+        .profession-option.selected {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Custom scrollbar for profession dropdown */
+        .profession-modal::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .profession-modal::-webkit-scrollbar-track {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        .profession-modal::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
+
+        .profession-modal::-webkit-scrollbar-thumb:hover {
+            background: var(--light-gold);
         }
 
         /* Custom select styling */
@@ -1481,7 +1740,7 @@
                     </div>
                     <div class="form-group">
                         <label for="signup-last-name">Last Name</label>
-                        <input type="text" id="signup-last-name" required minlength="2" placeholder="Your last name">
+                        <input type="text" id="signup-last-name" placeholder="Your last name (optional)">
                         <div class="input-validation" id="signup-last-name-validation"></div>
                     </div>
                 </div>
@@ -1494,7 +1753,43 @@
                 
                 <div class="form-group">
                     <label for="signup-dob">Date of Birth</label>
-                    <input type="date" id="signup-dob" required>
+                    <div class="date-container">
+                        <input type="date" id="signup-dob" required>
+                        <i class="fas fa-calendar-alt calendar-icon" onclick="toggleCalendar('signup-dob')"></i>
+                        <div class="calendar-modal" id="signup-dob-calendar">
+                            <div class="year-month-selectors">
+                                <select class="year-selector" id="signup-dob-year"></select>
+                                <select class="month-selector" id="signup-dob-month">
+                                    <option value="0">January</option>
+                                    <option value="1">February</option>
+                                    <option value="2">March</option>
+                                    <option value="3">April</option>
+                                    <option value="4">May</option>
+                                    <option value="5">June</option>
+                                    <option value="6">July</option>
+                                    <option value="7">August</option>
+                                    <option value="8">September</option>
+                                    <option value="9">October</option>
+                                    <option value="10">November</option>
+                                    <option value="11">December</option>
+                                </select>
+                            </div>
+                            <div class="calendar-header">
+                                <button type="button" class="calendar-nav" onclick="previousMonth('signup-dob')">‹</button>
+                                <div class="calendar-title" id="signup-dob-title"></div>
+                                <button type="button" class="calendar-nav" onclick="nextMonth('signup-dob')">›</button>
+                            </div>
+                            <div class="calendar-grid" id="signup-dob-grid">
+                                <div class="calendar-day-header">Sun</div>
+                                <div class="calendar-day-header">Mon</div>
+                                <div class="calendar-day-header">Tue</div>
+                                <div class="calendar-day-header">Wed</div>
+                                <div class="calendar-day-header">Thu</div>
+                                <div class="calendar-day-header">Fri</div>
+                                <div class="calendar-day-header">Sat</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -1519,35 +1814,40 @@
                 
                 <div class="form-group">
                     <label for="signup-profession">Profession</label>
-                    <select id="signup-profession" required>
-                        <option value="">Select your profession</option>
-                        <option value="Student">Student</option>
-                        <option value="Software Developer">Software Developer</option>
-                        <option value="Data Scientist">Data Scientist</option>
-                        <option value="Web Developer">Web Developer</option>
-                        <option value="Mobile App Developer">Mobile App Developer</option>
-                        <option value="AI/ML Engineer">AI/ML Engineer</option>
-                        <option value="DevOps Engineer">DevOps Engineer</option>
-                        <option value="UI/UX Designer">UI/UX Designer</option>
-                        <option value="Product Manager">Product Manager</option>
-                        <option value="Business Analyst">Business Analyst</option>
-                        <option value="Cybersecurity Specialist">Cybersecurity Specialist</option>
-                        <option value="Database Administrator">Database Administrator</option>
-                        <option value="System Administrator">System Administrator</option>
-                        <option value="Teacher/Educator">Teacher/Educator</option>
-                        <option value="Researcher">Researcher</option>
-                        <option value="Entrepreneur">Entrepreneur</option>
-                        <option value="Freelancer">Freelancer</option>
-                        <option value="Consultant">Consultant</option>
-                        <option value="Marketing Professional">Marketing Professional</option>
-                        <option value="Sales Professional">Sales Professional</option>
-                        <option value="Healthcare Professional">Healthcare Professional</option>
-                        <option value="Engineer (Other)">Engineer (Other)</option>
-                        <option value="Finance Professional">Finance Professional</option>
-                        <option value="Legal Professional">Legal Professional</option>
-                        <option value="Creative Professional">Creative Professional</option>
-                        <option value="Other">Other (specify below)</option>
-                    </select>
+                    <div class="profession-container">
+                        <div class="profession-dropdown" id="signup-profession" onclick="toggleProfessionDropdown()">
+                            <span id="profession-display">Select your profession</span>
+                            <i class="fas fa-chevron-down profession-arrow"></i>
+                        </div>
+                        <div class="profession-modal" id="profession-modal">
+                            <div class="profession-option" data-value="Student">Student</div>
+                            <div class="profession-option" data-value="Software Developer">Software Developer</div>
+                            <div class="profession-option" data-value="Data Scientist">Data Scientist</div>
+                            <div class="profession-option" data-value="Web Developer">Web Developer</div>
+                            <div class="profession-option" data-value="Mobile App Developer">Mobile App Developer</div>
+                            <div class="profession-option" data-value="AI/ML Engineer">AI/ML Engineer</div>
+                            <div class="profession-option" data-value="DevOps Engineer">DevOps Engineer</div>
+                            <div class="profession-option" data-value="UI/UX Designer">UI/UX Designer</div>
+                            <div class="profession-option" data-value="Product Manager">Product Manager</div>
+                            <div class="profession-option" data-value="Business Analyst">Business Analyst</div>
+                            <div class="profession-option" data-value="Cybersecurity Specialist">Cybersecurity Specialist</div>
+                            <div class="profession-option" data-value="Database Administrator">Database Administrator</div>
+                            <div class="profession-option" data-value="System Administrator">System Administrator</div>
+                            <div class="profession-option" data-value="Teacher/Educator">Teacher/Educator</div>
+                            <div class="profession-option" data-value="Researcher">Researcher</div>
+                            <div class="profession-option" data-value="Entrepreneur">Entrepreneur</div>
+                            <div class="profession-option" data-value="Freelancer">Freelancer</div>
+                            <div class="profession-option" data-value="Consultant">Consultant</div>
+                            <div class="profession-option" data-value="Marketing Professional">Marketing Professional</div>
+                            <div class="profession-option" data-value="Sales Professional">Sales Professional</div>
+                            <div class="profession-option" data-value="Healthcare Professional">Healthcare Professional</div>
+                            <div class="profession-option" data-value="Engineer (Other)">Engineer (Other)</div>
+                            <div class="profession-option" data-value="Finance Professional">Finance Professional</div>
+                            <div class="profession-option" data-value="Legal Professional">Legal Professional</div>
+                            <div class="profession-option" data-value="Creative Professional">Creative Professional</div>
+                            <div class="profession-option" data-value="Other">Other (specify below)</div>
+                        </div>
+                    </div>
                     <div class="profession-custom" id="profession-custom">
                         <input type="text" id="signup-profession-custom" placeholder="Please specify your profession">
                     </div>
@@ -2047,6 +2347,228 @@
             }
         }
 
+        // Custom Profession Dropdown Functions
+        let selectedProfession = '';
+
+        function toggleProfessionDropdown() {
+            const modal = document.getElementById('profession-modal');
+            const dropdown = document.getElementById('signup-profession');
+            const isVisible = modal.classList.contains('show');
+            
+            if (isVisible) {
+                modal.classList.remove('show');
+                dropdown.classList.remove('open');
+            } else {
+                // Close calendar if open
+                document.querySelectorAll('.calendar-modal').forEach(cal => cal.classList.remove('show'));
+                
+                modal.classList.add('show');
+                dropdown.classList.add('open');
+            }
+        }
+
+        function selectProfession(value, text) {
+            selectedProfession = value;
+            document.getElementById('profession-display').textContent = text;
+            document.getElementById('profession-modal').classList.remove('show');
+            document.getElementById('signup-profession').classList.remove('open');
+            
+            // Handle "Other" option
+            const customField = document.getElementById('profession-custom');
+            if (value === 'Other') {
+                customField.classList.add('show');
+                document.getElementById('signup-profession-custom').required = true;
+            } else {
+                customField.classList.remove('show');
+                document.getElementById('signup-profession-custom').required = false;
+                document.getElementById('signup-profession-custom').value = '';
+            }
+            
+            // Update selected state
+            document.querySelectorAll('.profession-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`[data-value="${value}"]`).classList.add('selected');
+        }
+
+        function getProfessionValue() {
+            if (selectedProfession === 'Other') {
+                return document.getElementById('signup-profession-custom').value || '';
+            }
+            return selectedProfession;
+        }
+
+        // Add click handlers to profession options
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.profession-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    const text = this.textContent;
+                    selectProfession(value, text);
+                });
+            });
+        });
+
+        // Close profession dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.profession-container') && !e.target.closest('.profession-modal')) {
+                document.getElementById('profession-modal').classList.remove('show');
+                document.getElementById('signup-profession').classList.remove('open');
+            }
+        });
+
+        // Custom Calendar Functions
+        let currentCalendarDate = new Date();
+        let selectedDate = null;
+        let activeCalendar = null;
+
+        function toggleCalendar(inputId) {
+            const calendarModal = document.getElementById(`${inputId}-calendar`);
+            const isVisible = calendarModal.classList.contains('show');
+            
+            // Close all calendars first
+            document.querySelectorAll('.calendar-modal').forEach(modal => {
+                modal.classList.remove('show');
+            });
+            
+            if (!isVisible) {
+                activeCalendar = inputId;
+                const input = document.getElementById(inputId);
+                if (input.value) {
+                    currentCalendarDate = new Date(input.value);
+                    selectedDate = new Date(input.value);
+                } else {
+                    currentCalendarDate = new Date();
+                    selectedDate = null;
+                }
+                
+                initializeCalendar(inputId);
+                calendarModal.classList.add('show');
+            }
+        }
+
+        function initializeCalendar(inputId) {
+            // Get current year dynamically from device - this updates automatically each year
+            const currentYear = new Date().getFullYear();
+            const yearSelect = document.getElementById(`${inputId}-year`);
+            const monthSelect = document.getElementById(`${inputId}-month`);
+            
+            // Populate year selector (100 years back from current year)
+            // Example: 2025 = 1925-2025, 2026 = 1926-2026, etc.
+            yearSelect.innerHTML = '';
+            const startYear = currentYear - 100;
+            
+            for (let year = startYear; year <= currentYear; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                if (year === currentCalendarDate.getFullYear()) {
+                    option.selected = true;
+                }
+                yearSelect.appendChild(option);
+            }
+            
+            // Set current month
+            monthSelect.value = currentCalendarDate.getMonth();
+            
+            // Add event listeners
+            yearSelect.onchange = () => {
+                currentCalendarDate.setFullYear(parseInt(yearSelect.value));
+                renderCalendar(inputId);
+            };
+            
+            monthSelect.onchange = () => {
+                currentCalendarDate.setMonth(parseInt(monthSelect.value));
+                renderCalendar(inputId);
+            };
+            
+            renderCalendar(inputId);
+        }
+
+        function renderCalendar(inputId) {
+            const grid = document.getElementById(`${inputId}-grid`);
+            const title = document.getElementById(`${inputId}-title`);
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            
+            title.textContent = `${monthNames[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
+            
+            // Clear existing days (keep headers)
+            const existingDays = grid.querySelectorAll('.calendar-day');
+            existingDays.forEach(day => day.remove());
+            
+            const firstDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1);
+            const lastDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            const today = new Date();
+            
+            for (let i = 0; i < 42; i++) {
+                const cellDate = new Date(startDate);
+                cellDate.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = cellDate.getDate();
+                
+                if (cellDate.getMonth() !== currentCalendarDate.getMonth()) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                if (cellDate.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                if (selectedDate && cellDate.toDateString() === selectedDate.toDateString()) {
+                    dayElement.classList.add('selected');
+                }
+                
+                dayElement.onclick = () => selectDate(inputId, cellDate);
+                grid.appendChild(dayElement);
+            }
+        }
+
+        function selectDate(inputId, date) {
+            selectedDate = new Date(date);
+            const input = document.getElementById(inputId);
+            const formattedDate = date.getFullYear() + '-' + 
+                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                String(date.getDate()).padStart(2, '0');
+            
+            input.value = formattedDate;
+            renderCalendar(inputId);
+            
+            // Close calendar after selection
+            setTimeout(() => {
+                document.getElementById(`${inputId}-calendar`).classList.remove('show');
+            }, 200);
+        }
+
+        function previousMonth(inputId) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            document.getElementById(`${inputId}-year`).value = currentCalendarDate.getFullYear();
+            document.getElementById(`${inputId}-month`).value = currentCalendarDate.getMonth();
+            renderCalendar(inputId);
+        }
+
+        function nextMonth(inputId) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            document.getElementById(`${inputId}-year`).value = currentCalendarDate.getFullYear();
+            document.getElementById(`${inputId}-month`).value = currentCalendarDate.getMonth();
+            renderCalendar(inputId);
+        }
+
+        // Close calendar when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.date-container') && !e.target.closest('.calendar-modal')) {
+                document.querySelectorAll('.calendar-modal').forEach(modal => {
+                    modal.classList.remove('show');
+                });
+            }
+        });
+
         // Password visibility toggle
         function togglePassword(inputId, button) {
             const passwordInput = document.getElementById(inputId);
@@ -2144,10 +2666,11 @@
                     return false;
                 }
 
-                if (!lastName || lastName.length < 2) {
-                    showInputValidation('signup-last-name', 'Last name must be at least 2 characters long');
-                    return false;
-                }
+                // Remove last name validation since it's now optional
+                // if (!lastName || lastName.length < 2) {
+                //     showInputValidation('signup-last-name', 'Last name must be at least 2 characters long');
+                //     return false;
+                // }
 
                 if (!email) {
                     showInputValidation('signup-email', 'Please enter a valid email address');
@@ -2448,13 +2971,11 @@
             const email = document.getElementById('signup-email').value;
             const dateOfBirth = document.getElementById('signup-dob').value;
             
-            let profession = document.getElementById('signup-profession').value;
-            if (profession === 'Other') {
-                profession = document.getElementById('signup-profession-custom').value;
-                if (!profession.trim()) {
-                    showMessage('signup', 'error', 'Please specify your profession.');
-                    return;
-                }
+            // Get profession from custom dropdown
+            let profession = getProfessionValue();
+            if (!profession || profession.trim() === '') {
+                showMessage('signup', 'error', 'Please select your profession.');
+                return;
             }
             
             const password = document.getElementById('signup-password').value;
@@ -2470,18 +2991,18 @@
             btn.innerHTML = '<span>Create Account</span><i class="fas fa-user-plus"></i>';
         });
 
-        // Handle profession dropdown change
-        document.getElementById('signup-profession').addEventListener('change', function() {
-            const customField = document.getElementById('profession-custom');
-            if (this.value === 'Other') {
-                customField.classList.add('show');
-                document.getElementById('signup-profession-custom').required = true;
-            } else {
-                customField.classList.remove('show');
-                document.getElementById('signup-profession-custom').required = false;
-                document.getElementById('signup-profession-custom').value = '';
-            }
-        });
+        // Handle profession dropdown change - Remove old handler since we now use custom dropdown
+        // document.getElementById('signup-profession').addEventListener('change', function() {
+        //     const customField = document.getElementById('profession-custom');
+        //     if (this.value === 'Other') {
+        //         customField.classList.add('show');
+        //         document.getElementById('signup-profession-custom').required = true;
+        //     } else {
+        //         customField.classList.remove('show');
+        //         document.getElementById('signup-profession-custom').required = false;
+        //         document.getElementById('signup-profession-custom').value = '';
+        //     }
+        // });
 
         document.getElementById('otp-form').addEventListener('submit', async (e) => {
             e.preventDefault();
