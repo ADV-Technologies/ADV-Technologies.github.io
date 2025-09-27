@@ -924,24 +924,95 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
-        /* Custom date picker styling */
+        /* Password input with eye icon */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-container input {
+            padding-right: 3rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .password-toggle:hover {
+            color: var(--light-gold);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Input validation messages (bubble style) */
+        .input-validation {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(255, 107, 107, 0.95);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            border: 1px solid rgba(255, 107, 107, 0.6);
+        }
+
+        .input-validation::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 1rem;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(255, 107, 107, 0.95);
+        }
+
+        .input-validation.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        /* Custom date picker styling with proper calendar icon */
         input[type="date"] {
             position: relative;
             color: var(--white);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23FFD700'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+            padding-right: 3rem;
         }
 
         input[type="date"]::-webkit-calendar-picker-indicator {
-            background: transparent;
-            bottom: 0;
-            color: var(--gold);
+            opacity: 0;
             cursor: pointer;
-            height: auto;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: auto;
-            filter: invert(80%) sepia(50%) saturate(500%) hue-rotate(10deg) brightness(120%);
         }
 
         /* Custom select styling */
@@ -1371,10 +1442,17 @@
                 <div class="form-group">
                     <label for="login-email">Email</label>
                     <input type="email" id="login-email" required>
+                    <div class="input-validation" id="login-email-validation"></div>
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="password" id="login-password" required>
+                    <div class="password-container">
+                        <input type="password" id="login-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="input-validation" id="login-password-validation"></div>
                 </div>
                 <button type="submit" class="form-btn" id="login-btn">
                     <span>Login</span>
@@ -1398,17 +1476,20 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="signup-first-name">First Name</label>
-                        <input type="text" id="signup-first-name" required minlength="3" placeholder="Your first name">
+                        <input type="text" id="signup-first-name" required minlength="2" placeholder="Your first name">
+                        <div class="input-validation" id="signup-first-name-validation"></div>
                     </div>
                     <div class="form-group">
                         <label for="signup-last-name">Last Name</label>
-                        <input type="text" id="signup-last-name" required minlength="1" placeholder="Your last name">
+                        <input type="text" id="signup-last-name" required minlength="2" placeholder="Your last name">
+                        <div class="input-validation" id="signup-last-name-validation"></div>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="signup-email">Email</label>
                     <input type="email" id="signup-email" required placeholder="your.email@example.com">
+                    <div class="input-validation" id="signup-email-validation"></div>
                 </div>
                 
                 <div class="form-group">
@@ -1475,11 +1556,23 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="signup-password">Password</label>
-                        <input type="password" id="signup-password" required minlength="8" placeholder="Strong password">
+                        <div class="password-container">
+                            <input type="password" id="signup-password" required minlength="8" placeholder="Strong password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('signup-password', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="input-validation" id="signup-password-validation"></div>
                     </div>
                     <div class="form-group">
                         <label for="signup-confirm-password">Confirm Password</label>
-                        <input type="password" id="signup-confirm-password" required minlength="8" placeholder="Repeat password">
+                        <div class="password-container">
+                            <input type="password" id="signup-confirm-password" required minlength="8" placeholder="Repeat password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('signup-confirm-password', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="input-validation" id="signup-confirm-password-validation"></div>
                     </div>
                 </div>
                 
@@ -1528,7 +1621,6 @@
         // Initialize Supabase client
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // For demo purposes, we'll use localStorage to simulate authentication
         let isAuthenticated = false;
         let currentUser = null;
 
@@ -1558,7 +1650,6 @@
                 const height = window.innerHeight;
                 const area = width * height;
                 
-                // Adaptive particle count based on screen size and device performance
                 let particleCount;
                 const isMobile = width < 768;
                 const isTablet = width >= 768 && width < 1200;
@@ -1624,15 +1715,12 @@
                 const time = Date.now() * 0.001;
                 
                 this.particles.forEach(particle => {
-                    // Simple linear movement (like your portfolio)
-                    particle.x += particle.vx * 1.5; // Increased speed multiplier
-                    particle.y += particle.vy * 1.5;
+                    particle.x += particle.vx * 2.2;
+                    particle.y += particle.vy * 2.2;
                     
-                    // Add slight random movement for dynamic effect
                     particle.vx += (Math.random() - 0.5) * 0.02;
                     particle.vy += (Math.random() - 0.5) * 0.02;
                     
-                    // Enhanced Mouse Displacement Effect (keeping this from ADV site)
                     const dx = this.mouse.x - particle.x;
                     const dy = this.mouse.y - particle.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -1641,21 +1729,17 @@
                         const force = Math.pow((this.mouseInfluence - distance) / this.mouseInfluence, 2);
                         const angle = Math.atan2(dy, dx);
                         
-                        // Stronger displacement force
                         const displacementForce = force * 0.8;
                         particle.vx -= Math.cos(angle) * displacementForce;
                         particle.vy -= Math.sin(angle) * displacementForce;
                         
-                        // Immediate position displacement for more responsive feel
                         const immediateDisplacement = force * 8;
                         particle.x -= Math.cos(angle) * immediateDisplacement;
                         particle.y -= Math.sin(angle) * immediateDisplacement;
                         
-                        // Enhanced visual effects during displacement
                         particle.opacity = Math.min(1, particle.baseOpacity + force * 0.7);
                         particle.glowIntensity = Math.min(2, particle.glowIntensity + force * 0.8);
                         
-                        // Add particle trail effect when displaced
                         if (!particle.trail) particle.trail = [];
                         particle.trail.push({
                             x: particle.x,
@@ -1677,7 +1761,6 @@
                         }
                     }
                     
-                    // Enhanced boundary bouncing (improved from portfolio style)
                     const margin = 20;
                     
                     if (particle.x <= margin) {
@@ -1696,7 +1779,6 @@
                         particle.vy = -Math.abs(particle.vy) * 0.8 - 0.2;
                     }
                     
-                    // Gentle edge repulsion to prevent clustering
                     const edgeRepulsion = 0.02;
                     
                     if (particle.x < this.canvas.width * 0.1) {
@@ -1711,16 +1793,13 @@
                         particle.vy -= edgeRepulsion * (1 - (this.canvas.height - particle.y) / (this.canvas.height * 0.1));
                     }
                     
-                    // Velocity limiting
                     const maxVel = 2.5;
                     if (Math.abs(particle.vx) > maxVel) particle.vx = maxVel * Math.sign(particle.vx);
                     if (Math.abs(particle.vy) > maxVel) particle.vy = maxVel * Math.sign(particle.vy);
                     
-                    // Light velocity damping
                     particle.vx *= 0.995;
                     particle.vy *= 0.995;
                     
-                    // Twinkling effect
                     const twinkle = Math.sin(time * particle.twinkleSpeed + particle.twinkleOffset);
                     particle.opacity += twinkle * 0.1;
                 });
@@ -1729,7 +1808,6 @@
             drawParticles() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
-                // Draw connections first (behind particles)
                 this.particles.forEach((particle, i) => {
                     this.particles.slice(i + 1).forEach(otherParticle => {
                         const dx = particle.x - otherParticle.x;
@@ -1739,7 +1817,6 @@
                         if (distance < this.connectionDistance) {
                             const opacity = (1 - distance / this.connectionDistance) * 0.4;
                             
-                            // Enhanced connection with mouse proximity effect
                             let connectionOpacity = opacity;
                             const avgX = (particle.x + otherParticle.x) / 2;
                             const avgY = (particle.y + otherParticle.y) / 2;
@@ -1768,14 +1845,12 @@
                     });
                 });
                 
-                // Draw particle trails
                 this.particles.forEach(particle => {
                     if (particle.trail && particle.trail.length > 0) {
                         particle.trail.forEach((trailPoint, index) => {
                             const trailOpacity = (trailPoint.life / 10) * trailPoint.opacity * 0.6;
                             const trailSize = particle.size * 0.7 * (trailPoint.life / 10);
                             
-                            // Trail glow
                             const trailGradient = this.ctx.createRadialGradient(
                                 trailPoint.x, trailPoint.y, 0,
                                 trailPoint.x, trailPoint.y, trailSize * 3
@@ -1789,7 +1864,6 @@
                             this.ctx.fillStyle = trailGradient;
                             this.ctx.fill();
                             
-                            // Trail core
                             this.ctx.beginPath();
                             this.ctx.arc(trailPoint.x, trailPoint.y, trailSize, 0, Math.PI * 2);
                             this.ctx.fillStyle = `rgba(255, 215, 0, ${trailOpacity})`;
@@ -1798,11 +1872,9 @@
                     }
                 });
                 
-                // Draw particles (on top)
                 this.particles.forEach(particle => {
                     const glowSize = particle.size * particle.glowIntensity * 4;
                     
-                    // Enhanced glow effect with displacement intensity
                     const gradient = this.ctx.createRadialGradient(
                         particle.x, particle.y, 0,
                         particle.x, particle.y, glowSize
@@ -1817,14 +1889,12 @@
                     this.ctx.fillStyle = gradient;
                     this.ctx.fill();
                     
-                    // Core particle with enhanced displacement glow
                     const coreSize = particle.size * (1 + particle.glowIntensity * 0.3);
                     this.ctx.beginPath();
                     this.ctx.arc(particle.x, particle.y, coreSize, 0, Math.PI * 2);
                     this.ctx.fillStyle = `rgba(255, 215, 0, ${particle.opacity})`;
                     this.ctx.fill();
                     
-                    // Inner bright core for enhanced visibility during displacement
                     if (particle.glowIntensity > 1) {
                         this.ctx.beginPath();
                         this.ctx.arc(particle.x, particle.y, particle.size * 0.5, 0, Math.PI * 2);
@@ -1857,7 +1927,6 @@
                     i++;
                     setTimeout(type, speed);
                 } else {
-                    // Keep cursor blinking for a moment before removing it
                     setTimeout(() => {
                         element.innerHTML = text;
                         if (callback) callback();
@@ -1882,7 +1951,7 @@
                         });
                     }, 300);
                 });
-            }, 500); // Reduced from 1000ms to 500ms for earlier appearance
+            }, 500);
         });
 
         // Smooth scrolling
@@ -1925,18 +1994,16 @@
             }
         });
 
-        // Modal functions with secure OTP handling
+        // Modal functions
         let pendingVerification = false;
 
         function openModal(modalType) {
             document.getElementById(`${modalType}-modal`).classList.add('active');
             clearMessages(modalType);
-            // Prevent body scrolling when modal is open
             document.body.style.overflow = 'hidden';
         }
 
         function closeModal(modalType) {
-            // Prevent closing OTP modal until verification is complete
             if (modalType === 'otp' && pendingVerification) {
                 showMessage('otp', 'error', 'Please verify your email before continuing.');
                 return;
@@ -1944,10 +2011,8 @@
             
             document.getElementById(`${modalType}-modal`).classList.remove('active');
             clearMessages(modalType);
-            // Restore body scrolling
             document.body.style.overflow = 'auto';
             
-            // Reset pending verification if login/signup is closed
             if (modalType === 'login' || modalType === 'signup') {
                 pendingVerification = false;
             }
@@ -1982,15 +2047,76 @@
             }
         }
 
-        // Authentication functions - Now fully working with your Supabase database
+        // Password visibility toggle
+        function togglePassword(inputId, button) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Show bubble validation message
+        function showInputValidation(inputId, message) {
+            const validationElement = document.getElementById(`${inputId}-validation`);
+            if (validationElement) {
+                validationElement.textContent = message;
+                validationElement.classList.add('show');
+                
+                // Hide after 4 seconds
+                setTimeout(() => {
+                    validationElement.classList.remove('show');
+                }, 4000);
+            }
+        }
+
+        // Hide bubble validation message
+        function hideInputValidation(inputId) {
+            const validationElement = document.getElementById(`${inputId}-validation`);
+            if (validationElement) {
+                validationElement.classList.remove('show');
+            }
+        }
+
+        // Fixed Authentication functions with bubble validation
         async function handleLogin(email, password) {
             try {
+                // Clear any existing bubble validations
+                hideInputValidation('login-email');
+                hideInputValidation('login-password');
+
+                if (!email) {
+                    showInputValidation('login-email', 'Please enter your email address');
+                    return false;
+                }
+
+                if (!password) {
+                    showInputValidation('login-password', 'Please enter your password');
+                    return false;
+                }
+
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password,
                 });
                 
-                if (error) throw error;
+                if (error) {
+                    if (error.message.includes('Invalid login credentials')) {
+                        showInputValidation('login-password', 'Invalid email or password. Please check your credentials.');
+                    } else if (error.message.includes('Email not confirmed')) {
+                        showInputValidation('login-email', 'Please verify your email before logging in.');
+                    } else {
+                        showInputValidation('login-password', error.message);
+                    }
+                    throw error;
+                }
                 
                 currentUser = data.user;
                 isAuthenticated = true;
@@ -1999,24 +2125,46 @@
                 showMessage('login', 'success', 'Login successful!');
                 return true;
             } catch (error) {
-                showMessage('login', 'error', error.message);
                 return false;
             }
         }
 
         async function handleSignup(firstName, lastName, username, email, dateOfBirth, profession, password, confirmPassword) {
             try {
+                // Clear any existing bubble validations
+                hideInputValidation('signup-first-name');
+                hideInputValidation('signup-last-name');
+                hideInputValidation('signup-email');
+                hideInputValidation('signup-password');
+                hideInputValidation('signup-confirm-password');
+
+                // Validate inputs with bubble messages
+                if (!firstName || firstName.length < 2) {
+                    showInputValidation('signup-first-name', 'First name must be at least 2 characters long');
+                    return false;
+                }
+
+                if (!lastName || lastName.length < 2) {
+                    showInputValidation('signup-last-name', 'Last name must be at least 2 characters long');
+                    return false;
+                }
+
+                if (!email) {
+                    showInputValidation('signup-email', 'Please enter a valid email address');
+                    return false;
+                }
+
                 if (password !== confirmPassword) {
-                    showMessage('signup', 'error', 'Passwords do not match!');
+                    showInputValidation('signup-confirm-password', 'Passwords do not match!');
                     return false;
                 }
 
                 if (password.length < 8) {
-                    showMessage('signup', 'error', 'Password must be at least 8 characters long!');
+                    showInputValidation('signup-password', 'Password must be at least 8 characters long');
                     return false;
                 }
 
-                // Validate username format
+                // Fixed username validation - only lowercase letters, numbers, underscore, hyphen
                 const usernameValidation = validateUsername(username);
                 if (!usernameValidation.valid) {
                     showMessage('signup', 'error', usernameValidation.message);
@@ -2030,7 +2178,7 @@
                 const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
                 if (!(hasUpper && hasLower && hasNumber && hasSpecial)) {
-                    showMessage('signup', 'error', 'Password must contain uppercase, lowercase, number, and special character!');
+                    showInputValidation('signup-password', 'Password must contain uppercase, lowercase, number, and special character');
                     return false;
                 }
 
@@ -2049,6 +2197,7 @@
                     return false;
                 }
 
+                // Create user with Supabase Auth
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
@@ -2063,22 +2212,27 @@
                     }
                 });
                 
-                if (error) throw error;
+                if (error) {
+                    if (error.message.includes('already registered')) {
+                        showInputValidation('signup-email', 'This email is already registered. Please use the login form.');
+                    } else if (error.message.includes('username')) {
+                        showMessage('signup', 'error', 'This username is already taken. Please choose a different one.');
+                    } else {
+                        showInputValidation('signup-email', error.message);
+                    }
+                    throw error;
+                }
+                
+                // The user_profiles table will be automatically populated via the trigger
+                // when the user confirms their email
                 
                 currentUser = data.user;
-                pendingVerification = true; // Set verification flag
+                pendingVerification = true;
                 closeModal('signup');
                 openModal('otp');
                 showMessage('otp', 'success', 'Verification email sent! Please check your inbox and enter the 6-digit code.');
                 return true;
             } catch (error) {
-                if (error.message.includes('already registered')) {
-                    showMessage('signup', 'error', 'This email is already registered. Please use the login form.');
-                } else if (error.message.includes('username')) {
-                    showMessage('signup', 'error', 'This username is already taken. Please choose a different one.');
-                } else {
-                    showMessage('signup', 'error', error.message);
-                }
                 return false;
             }
         }
@@ -2100,7 +2254,7 @@
                 
                 currentUser = data.user;
                 isAuthenticated = true;
-                pendingVerification = false; // Clear verification flag
+                pendingVerification = false;
                 updateAuthUI();
                 closeModal('otp');
                 showMessage('otp', 'success', 'Email verified successfully! Welcome to ADV Technologies!');
@@ -2134,11 +2288,9 @@
                 authButtons.style.display = 'none';
                 userProfile.style.display = 'flex';
                 
-                // Get user profile information
                 const firstName = currentUser.user_metadata?.first_name || '';
                 const lastName = currentUser.user_metadata?.last_name || '';
                 
-                // Create avatar with initials
                 let avatarText = '';
                 if (firstName && lastName) {
                     avatarText = firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
@@ -2156,101 +2308,19 @@
         }
 
         function redirectToProfile() {
-            // For now, show user information
             const firstName = currentUser.user_metadata?.first_name || 'Unknown';
             const lastName = currentUser.user_metadata?.last_name || 'User';
             const username = currentUser.user_metadata?.username || 'N/A';
             const profession = currentUser.user_metadata?.profession || 'Not specified';
             
             alert(`Welcome ${firstName} ${lastName}!\n\nUsername: ${username}\nProfession: ${profession}\n\nProfile dashboard coming soon!`);
-            
-            // In the future, this could redirect to: window.location.href = '/profile';
         }
 
-        async function resendOTP() {
-            try {
-                // Placeholder for resend OTP
-                showMessage('otp', 'error', 'Resend OTP feature is currently under construction. Please check back soon!');
-                
-                /* 
-                // Real implementation would look like:
-                const { error } = await supabaseClient.auth.resend({
-                    type: 'signup',
-                    email: currentUser.email
-                });
-                
-                if (error) throw error;
-                showMessage('otp', 'success', 'Verification code resent!');
-                */
-            } catch (error) {
-                showMessage('otp', 'error', error.message);
-            }
-        }
-
-        // Form event listeners
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            const btn = document.getElementById('login-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span>Logging in...</span><i class="fas fa-spinner fa-spin"></i>';
-            
-            await handleLogin(email, password);
-            
-            btn.disabled = false;
-            btn.innerHTML = '<span>Login</span><i class="fas fa-sign-in-alt"></i>';
-        });
-
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const firstName = document.getElementById('signup-first-name').value;
-            const lastName = document.getElementById('signup-last-name').value;
-            const username = document.getElementById('signup-username').value;
-            const email = document.getElementById('signup-email').value;
-            const dateOfBirth = document.getElementById('signup-dob').value;
-            
-            let profession = document.getElementById('signup-profession').value;
-            if (profession === 'Other') {
-                profession = document.getElementById('signup-profession-custom').value;
-                if (!profession.trim()) {
-                    showMessage('signup', 'error', 'Please specify your profession.');
-                    return;
-                }
-            }
-            
-            const password = document.getElementById('signup-password').value;
-            const confirmPassword = document.getElementById('signup-confirm-password').value;
-            
-            const btn = document.getElementById('signup-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span>Creating Account...</span><i class="fas fa-spinner fa-spin"></i>';
-            
-            await handleSignup(firstName, lastName, username, email, dateOfBirth, profession, password, confirmPassword);
-            
-            btn.disabled = false;
-            btn.innerHTML = '<span>Create Account</span><i class="fas fa-user-plus"></i>';
-        });
-
-        // Handle profession dropdown change
-        document.getElementById('signup-profession').addEventListener('change', function() {
-            const customField = document.getElementById('profession-custom');
-            if (this.value === 'Other') {
-                customField.classList.add('show');
-                document.getElementById('signup-profession-custom').required = true;
-            } else {
-                customField.classList.remove('show');
-                document.getElementById('signup-profession-custom').required = false;
-                document.getElementById('signup-profession-custom').value = '';
-            }
-        });
-
-        // Username validation and suggestions
+        // Fixed username validation - only lowercase allowed
         function validateUsername(username) {
-            const regex = /^[a-zA-Z0-9_-]+$/;
+            const regex = /^[a-z0-9_-]+$/; // Changed to only allow lowercase
             if (!regex.test(username)) {
-                return { valid: false, message: 'Username can only contain letters, numbers, underscores, and hyphens' };
+                return { valid: false, message: 'Username can only contain lowercase letters, numbers, underscore (_), and hyphen (-)' };
             }
             if (username.length < 3) {
                 return { valid: false, message: 'Username must be at least 3 characters long' };
@@ -2261,6 +2331,7 @@
             return { valid: true, message: 'Username looks good!' };
         }
 
+        // Fixed username suggestions - only lowercase
         function generateUsernameSuggestions(firstName, lastName, dob) {
             const suggestions = [];
             const currentYear = new Date().getFullYear();
@@ -2272,24 +2343,20 @@
                 const firstLower = firstName.toLowerCase().replace(/[^a-z]/g, '');
                 const lastLower = lastName.toLowerCase().replace(/[^a-z]/g, '');
                 
-                // Style 1: firstname + lastname + year
+                // All suggestions in lowercase
                 suggestions.push(`${firstLower}${lastLower}${birthYear}`);
                 
-                // Style 2: firstname + last initial + random numbers
                 const randomNum1 = Math.floor(Math.random() * 999) + 1;
                 suggestions.push(`${firstLower}${lastInitial}${randomNum1}`);
                 
-                // Style 3: initials + year + random
                 const randomNum2 = Math.floor(Math.random() * 99) + 1;
                 suggestions.push(`${firstInitial}${lastInitial}${birthYear}${randomNum2}`);
                 
-                // Additional suggestions if name is common
                 suggestions.push(`${firstLower}_${lastLower}`);
                 suggestions.push(`${firstLower}-${lastInitial}${String(birthYear).slice(-2)}`);
                 suggestions.push(`${firstInitial}${lastLower}${Math.floor(Math.random() * 999)}`);
             }
             
-            // Return first 3 unique suggestions
             return [...new Set(suggestions)].slice(0, 3);
         }
 
@@ -2357,6 +2424,65 @@
             }
         });
 
+        // Form event listeners
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Logging in...</span><i class="fas fa-spinner fa-spin"></i>';
+            
+            await handleLogin(email, password);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>Login</span><i class="fas fa-sign-in-alt"></i>';
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const firstName = document.getElementById('signup-first-name').value;
+            const lastName = document.getElementById('signup-last-name').value;
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const dateOfBirth = document.getElementById('signup-dob').value;
+            
+            let profession = document.getElementById('signup-profession').value;
+            if (profession === 'Other') {
+                profession = document.getElementById('signup-profession-custom').value;
+                if (!profession.trim()) {
+                    showMessage('signup', 'error', 'Please specify your profession.');
+                    return;
+                }
+            }
+            
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            
+            const btn = document.getElementById('signup-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Creating Account...</span><i class="fas fa-spinner fa-spin"></i>';
+            
+            await handleSignup(firstName, lastName, username, email, dateOfBirth, profession, password, confirmPassword);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>Create Account</span><i class="fas fa-user-plus"></i>';
+        });
+
+        // Handle profession dropdown change
+        document.getElementById('signup-profession').addEventListener('change', function() {
+            const customField = document.getElementById('profession-custom');
+            if (this.value === 'Other') {
+                customField.classList.add('show');
+                document.getElementById('signup-profession-custom').required = true;
+            } else {
+                customField.classList.remove('show');
+                document.getElementById('signup-profession-custom').required = false;
+                document.getElementById('signup-profession-custom').value = '';
+            }
+        });
+
         document.getElementById('otp-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const otpCode = document.getElementById('otp-code').value;
@@ -2408,7 +2534,6 @@
 
         // Enhanced hover effects for buttons and cards
         document.addEventListener('DOMContentLoaded', () => {
-            // Add hover sound effects (optional)
             const interactiveElements = document.querySelectorAll('.btn, .project-btn, .contact-item, .glass-panel');
             
             interactiveElements.forEach(element => {
@@ -2436,7 +2561,6 @@
 
         // Performance optimization for mobile devices
         if (window.innerWidth < 768) {
-            // Reduce particle system complexity on mobile
             const style = document.createElement('style');
             style.textContent = `
                 .glass-panel:hover {
@@ -2455,7 +2579,6 @@
         // Add keyboard navigation support
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                // Close any open modals
                 const activeModals = document.querySelectorAll('.modal.active');
                 activeModals.forEach(modal => {
                     const modalId = modal.id.replace('-modal', '');
