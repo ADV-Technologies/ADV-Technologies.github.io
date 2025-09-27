@@ -2912,6 +2912,15 @@
         });
 
         document.getElementById('signup-username').addEventListener('input', function() {
+            // Convert to lowercase automatically (like Instagram)
+            const originalValue = this.value;
+            const lowercaseValue = originalValue.toLowerCase();
+            
+            // Update the input value to lowercase
+            if (originalValue !== lowercaseValue) {
+                this.value = lowercaseValue;
+            }
+            
             const username = this.value;
             const validation = document.getElementById('username-validation');
             
