@@ -325,8 +325,12 @@
         }
 
         .typing-cursor {
-            animation: blink 1s infinite;
+            animation: blink 0.8s infinite;
             color: var(--gold);
+            background: linear-gradient(135deg, var(--gold), var(--light-gold), var(--dark-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         @keyframes blink {
@@ -341,7 +345,7 @@
             margin-bottom: 2rem;
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.8s ease 2s;
+            transition: all 0.6s ease 1.2s;
         }
 
         .hero-subtitle.show {
@@ -370,7 +374,7 @@
         .explore-btn.show {
             opacity: 1;
             transform: translateY(0);
-            transition: all 0.8s ease 3s, transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.6s ease 1.8s, transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         @keyframes pulse {
@@ -1758,6 +1762,7 @@
                     <div class="date-container">
                         <input type="date" id="signup-dob" required>
                         <i class="fas fa-calendar-alt calendar-icon" onclick="toggleCalendar('signup-dob')"></i>
+                        <div class="input-validation" id="signup-dob-validation"></div>
                         <div class="calendar-modal" id="signup-dob-calendar">
                             <div class="year-month-selectors">
                                 <select class="year-selector" id="signup-dob-year"></select>
@@ -1797,6 +1802,7 @@
                 <div class="form-group">
                     <label for="signup-username">Username</label>
                     <input type="text" id="signup-username" required minlength="3" placeholder="Click for suggestions or create your own">
+                    <div class="input-validation" id="signup-username-validation"></div>
                     <div class="username-validation" id="username-validation"></div>
                     <div class="username-suggestions" id="username-suggestions">
                         <div class="suggestion-item" data-suggestion="">
@@ -2217,8 +2223,8 @@
         const canvas = document.getElementById('particles-canvas');
         const particleSystem = new AdvancedParticleSystem(canvas);
 
-        // Typing Animation
-        function typeWriter(element, text, speed = 75, callback) {
+        // Typing Animation - Made faster and more responsive
+        function typeWriter(element, text, speed = 50, callback) {
             let i = 0;
             element.innerHTML = '';
             element.classList.add('glow');
@@ -2232,28 +2238,28 @@
                     setTimeout(() => {
                         element.innerHTML = text;
                         if (callback) callback();
-                    }, 1000);
+                    }, 600); // Reduced from 1000ms to 600ms
                 }
             }
             type();
         }
 
-        // Initialize hero animations
+        // Initialize hero animations - Much faster timing
         window.addEventListener('load', () => {
             setTimeout(() => {
-                typeWriter(document.getElementById('typing-text-1'), 'Welcome to ADV Technologies', 75, () => {
+                typeWriter(document.getElementById('typing-text-1'), 'Welcome to ADV Technologies', 50, () => {
                     setTimeout(() => {
-                        typeWriter(document.getElementById('typing-text-2'), 'Innovation with AI', 75, () => {
+                        typeWriter(document.getElementById('typing-text-2'), 'Innovation with AI', 50, () => {
                             setTimeout(() => {
                                 document.getElementById('hero-subtitle').classList.add('show');
                                 setTimeout(() => {
                                     document.getElementById('explore-btn').classList.add('show');
-                                }, 500);
-                            }, 300);
+                                }, 300); // Reduced from 500ms
+                            }, 200); // Reduced from 300ms
                         });
-                    }, 300);
+                    }, 200); // Reduced from 300ms
                 });
-            }, 500);
+            }, 300); // Reduced from 500ms for earlier start
         });
 
         // Smooth scrolling
@@ -2609,7 +2615,99 @@
             }
         }
 
-        // Fixed Authentication functions with bubble validation
+        // Automatic logout system for inactivity
+        let inactivityTimer = null;
+        let lastActivityTime = Date.now();
+        const INACTIVITY_TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
+
+        // Activity tracking events
+        const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+
+        function resetInactivityTimer() {
+            lastActivityTime = Date.now();
+            
+            // Clear existing timer
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+            
+            // Only set timer if user is authenticated
+            if (isAuthenticated) {
+                inactivityTimer = setTimeout(() => {
+                    handleInactivityLogout();
+                }, INACTIVITY_TIMEOUT);
+            }
+        }
+
+        function handleInactivityLogout() {
+            if (isAuthenticated) {
+                // Log out the user
+                supabaseClient.auth.signOut();
+                currentUser = null;
+                isAuthenticated = false;
+                updateAuthUI();
+                
+                // Show notification
+                alert('You have been logged out due to inactivity. Please log in again to continue.');
+                
+                // Clear any open modals
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Initialize activity tracking
+        function initializeActivityTracking() {
+            // Add event listeners for activity detection
+            activityEvents.forEach(event => {
+                document.addEventListener(event, resetInactivityTimer, true);
+            });
+            
+            // Handle page visibility changes (tab switching, window minimizing)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    // Page is hidden, store the current time
+                    localStorage.setItem('lastActiveTime', Date.now().toString());
+                } else {
+                    // Page is visible again, check if too much time has passed
+                    const lastActiveTime = localStorage.getItem('lastActiveTime');
+                    if (lastActiveTime && isAuthenticated) {
+                        const timeAway = Date.now() - parseInt(lastActiveTime);
+                        if (timeAway > INACTIVITY_TIMEOUT) {
+                            handleInactivityLogout();
+                            return;
+                        }
+                    }
+                    // Reset timer when page becomes visible again
+                    resetInactivityTimer();
+                }
+            });
+            
+            // Handle page load/reload - check for expired sessions
+            window.addEventListener('load', () => {
+                const lastActiveTime = localStorage.getItem('lastActiveTime');
+                if (lastActiveTime && isAuthenticated) {
+                    const timeAway = Date.now() - parseInt(lastActiveTime);
+                    if (timeAway > INACTIVITY_TIMEOUT) {
+                        handleInactivityLogout();
+                        return;
+                    }
+                }
+                // Start timer on page load if authenticated
+                if (isAuthenticated) {
+                    resetInactivityTimer();
+                }
+            });
+            
+            // Handle window/tab closing
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem('lastActiveTime', Date.now().toString());
+            });
+        }
+
+        // Update authentication functions to work with inactivity timer
         async function handleLogin(email, password) {
             try {
                 // Clear any existing bubble validations
@@ -2647,6 +2745,10 @@
                 updateAuthUI();
                 closeModal('login');
                 showMessage('login', 'success', 'Login successful!');
+                
+                // Start inactivity timer
+                resetInactivityTimer();
+                
                 return true;
             } catch (error) {
                 return false;
@@ -2692,7 +2794,14 @@
                 // Fixed username validation - only lowercase letters, numbers, underscore, hyphen
                 const usernameValidation = validateUsername(username);
                 if (!usernameValidation.valid) {
-                    showMessage('signup', 'error', usernameValidation.message);
+                    showInputValidation('signup-username', usernameValidation.message);
+                    return false;
+                }
+
+                // Check username uniqueness
+                const isUsernameAvailable = await checkUsernameAvailability(username);
+                if (!isUsernameAvailable) {
+                    showInputValidation('signup-username', 'This username is already taken. Please choose a different one.');
                     return false;
                 }
 
@@ -2704,21 +2813,6 @@
 
                 if (!(hasUpper && hasLower && hasNumber && hasSpecial)) {
                     showInputValidation('signup-password', 'Password must contain uppercase, lowercase, number, and special character');
-                    return false;
-                }
-
-                // Validate age (must be 13 or older)
-                const today = new Date();
-                const birthDate = new Date(dateOfBirth);
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-                
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-
-                if (age < 13) {
-                    showMessage('signup', 'error', 'You must be at least 13 years old to register!');
                     return false;
                 }
 
@@ -2741,7 +2835,7 @@
                     if (error.message.includes('already registered')) {
                         showInputValidation('signup-email', 'This email is already registered. Please use the login form.');
                     } else if (error.message.includes('username')) {
-                        showMessage('signup', 'error', 'This username is already taken. Please choose a different one.');
+                        showInputValidation('signup-username', 'This username is already taken. Please choose a different one.');
                     } else {
                         showInputValidation('signup-email', error.message);
                     }
@@ -2759,6 +2853,27 @@
                 return true;
             } catch (error) {
                 return false;
+            }
+        }
+
+        // Check username availability function
+        async function checkUsernameAvailability(username) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('username')
+                    .eq('username', username.toLowerCase())
+                    .limit(1);
+
+                if (error) {
+                    console.error('Error checking username:', error);
+                    return true; // Assume available if we can't check
+                }
+
+                return data.length === 0; // Available if no matching records found
+            } catch (error) {
+                console.error('Error checking username availability:', error);
+                return true; // Assume available if there's an error
             }
         }
 
@@ -2783,6 +2898,10 @@
                 updateAuthUI();
                 closeModal('otp');
                 showMessage('otp', 'success', 'Email verified successfully! Welcome to ADV Technologies!');
+                
+                // Start inactivity timer for new user
+                resetInactivityTimer();
+                
                 return true;
             } catch (error) {
                 showMessage('otp', 'error', error.message);
@@ -2829,6 +2948,12 @@
             } else {
                 authButtons.style.display = 'flex';
                 userProfile.style.display = 'none';
+                
+                // Clear inactivity timer when logged out
+                if (inactivityTimer) {
+                    clearTimeout(inactivityTimer);
+                    inactivityTimer = null;
+                }
             }
         }
 
@@ -2908,7 +3033,9 @@
             }
         }
 
-        // Username input event handlers
+        // Username input event handlers with real-time availability checking
+        let usernameCheckTimeout = null;
+
         document.getElementById('signup-username').addEventListener('focus', function() {
             showUsernameSuggestions();
         });
@@ -2926,10 +3053,33 @@
             const username = this.value;
             const validation = document.getElementById('username-validation');
             
+            // Clear previous timeout
+            if (usernameCheckTimeout) {
+                clearTimeout(usernameCheckTimeout);
+            }
+            
             if (username) {
                 const result = validateUsername(username);
-                validation.textContent = result.message;
-                validation.className = result.valid ? 'username-validation success' : 'username-validation error';
+                
+                if (result.valid) {
+                    validation.textContent = 'Checking availability...';
+                    validation.className = 'username-validation';
+                    
+                    // Check username availability with a delay to avoid too many requests
+                    usernameCheckTimeout = setTimeout(async () => {
+                        const isAvailable = await checkUsernameAvailability(username);
+                        if (isAvailable) {
+                            validation.textContent = 'Username is available!';
+                            validation.className = 'username-validation success';
+                        } else {
+                            validation.textContent = 'Username is already taken';
+                            validation.className = 'username-validation error';
+                        }
+                    }, 800); // 800ms delay
+                } else {
+                    validation.textContent = result.message;
+                    validation.className = result.valid ? 'username-validation success' : 'username-validation error';
+                }
             } else {
                 validation.className = 'username-validation';
                 validation.textContent = '';
@@ -3029,13 +3179,13 @@
             btn.innerHTML = '<span>Verify Email</span><i class="fas fa-check"></i>';
         });
 
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                const modalId = e.target.id.replace('-modal', '');
-                closeModal(modalId);
-            }
-        });
+        // Close modals when clicking outside - REMOVED FOR BETTER UX
+        // window.addEventListener('click', (e) => {
+        //     if (e.target.classList.contains('modal')) {
+        //         const modalId = e.target.id.replace('-modal', '');
+        //         closeModal(modalId);
+        //     }
+        // });
 
         // Check authentication status on page load
         window.addEventListener('load', async () => {
@@ -3050,6 +3200,9 @@
                 console.error('Error checking auth status:', error);
             }
             updateAuthUI();
+            
+            // Initialize activity tracking system
+            initializeActivityTracking();
         });
 
         // Listen for auth changes
@@ -3057,9 +3210,16 @@
             if (event === 'SIGNED_IN' && session) {
                 currentUser = session.user;
                 isAuthenticated = true;
+                resetInactivityTimer(); // Start timer on sign in
             } else if (event === 'SIGNED_OUT') {
                 currentUser = null;
                 isAuthenticated = false;
+                // Clear timer on sign out
+                if (inactivityTimer) {
+                    clearTimeout(inactivityTimer);
+                    inactivityTimer = null;
+                }
+                localStorage.removeItem('lastActiveTime');
             }
             updateAuthUI();
         });
