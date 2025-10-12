@@ -39,11 +39,9 @@ function initializeActivityTracking() {
 
 function resetInactivityTimer() {
     lastActivityTime = Date.now();
-    
     if (inactivityTimer) {
         clearTimeout(inactivityTimer);
     }
-    
     if (isAuthenticated) {
         inactivityTimer = setTimeout(() => {
             handleInactivityLogout();
@@ -53,7 +51,7 @@ function resetInactivityTimer() {
 
 async function handleInactivityLogout() {
     if (isAuthenticated) {
-        await supabaseClient.auth.signOut();
+        await window.supabaseClient.auth.signOut();
         currentUser = null;
         isAuthenticated = false;
         alert('You have been logged out due to inactivity. Please log in again to continue.');
@@ -64,19 +62,18 @@ async function handleInactivityLogout() {
 // Check authentication status
 async function checkAuthStatus() {
     try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
         if (session) {
             currentUser = session.user;
             isAuthenticated = true;
             
             // Get user profile with role
-            const { data: profile, error } = await supabaseClient
+            const { data: profile, error } = await window.supabaseClient
                 .from('user_profiles')
                 .select('*')
                 .eq('id', session.user.id)
                 .single();
-            
+
             if (profile) {
                 currentUser.profile = profile;
             }
@@ -84,7 +81,6 @@ async function checkAuthStatus() {
             resetInactivityTimer();
             return { authenticated: true, user: currentUser };
         }
-        
         return { authenticated: false, user: null };
     } catch (error) {
         console.error('Error checking auth status:', error);
@@ -100,7 +96,7 @@ async function protectPage(requiredRole = null) {
         window.location.href = 'login.html';
         return null;
     }
-    
+
     // Check role if required
     if (requiredRole && user.profile.role !== requiredRole) {
         if (requiredRole === 'admin' && user.profile.role !== 'admin') {
@@ -109,14 +105,14 @@ async function protectPage(requiredRole = null) {
             return null;
         }
     }
-    
+
     return user;
 }
 
 // Login function
 async function handleLogin(email, password) {
     try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({
             email: email,
             password: password,
         });
@@ -126,7 +122,7 @@ async function handleLogin(email, password) {
         currentUser = data.user;
         isAuthenticated = true;
         resetInactivityTimer();
-
+        
         return { success: true, user: data.user };
     } catch (error) {
         return { success: false, error: error.message };
@@ -136,7 +132,7 @@ async function handleLogin(email, password) {
 // Signup function
 async function handleSignup(userData) {
     try {
-        const { data, error } = await supabaseClient.auth.signUp({
+        const { data, error } = await window.supabaseClient.auth.signUp({
             email: userData.email,
             password: userData.password,
             options: {
@@ -162,14 +158,14 @@ async function handleSignup(userData) {
 // OTP Verification
 async function verifyOTP(email, token) {
     try {
-        const { data, error } = await supabaseClient.auth.verifyOtp({
+        const { data, error } = await window.supabaseClient.auth.verifyOtp({
             email: email,
             token: token,
             type: 'signup'
         });
 
         if (error) throw error;
-
+        
         return { success: true, user: data.user };
     } catch (error) {
         return { success: false, error: error.message };
@@ -179,13 +175,13 @@ async function verifyOTP(email, token) {
 // Resend OTP
 async function resendOTP(email) {
     try {
-        const { error } = await supabaseClient.auth.resend({
+        const { error } = await window.supabaseClient.auth.resend({
             type: 'signup',
             email: email
         });
 
         if (error) throw error;
-
+        
         return { success: true };
     } catch (error) {
         return { success: false, error: error.message };
@@ -195,7 +191,7 @@ async function resendOTP(email) {
 // Check username availability
 async function checkUsernameAvailability(username) {
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await window.supabaseClient
             .from('user_profiles')
             .select('username')
             .eq('username', username.toLowerCase())
@@ -216,19 +212,15 @@ async function checkUsernameAvailability(username) {
 // Validate username format
 function validateUsername(username) {
     const regex = /^[a-z0-9_-]+$/;
-    
     if (!regex.test(username)) {
         return { valid: false, message: 'Username can only contain lowercase letters, numbers, underscore (_), and hyphen (-)' };
     }
-    
     if (username.length < 3) {
         return { valid: false, message: 'Username must be at least 3 characters long' };
     }
-    
     if (username.length > 20) {
         return { valid: false, message: 'Username must be 20 characters or less' };
     }
-    
     return { valid: true, message: 'Username looks good!' };
 }
 
@@ -263,7 +255,7 @@ function generateUsernameSuggestions(firstName, lastName, dob) {
 // Logout
 async function logout() {
     try {
-        await supabaseClient.auth.signOut();
+        await window.supabaseClient.auth.signOut();
         currentUser = null;
         isAuthenticated = false;
         
