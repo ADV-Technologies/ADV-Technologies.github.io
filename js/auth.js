@@ -27,7 +27,7 @@ function resetInactivityTimer() {
         inactivityTimer = setTimeout(() => {
             handleInactivityLogout();
         }, INACTIVITY_TIMEOUT);
-         // console.log("Inactivity timer reset."); // For debugging
+        // console.log("Inactivity timer reset."); // For debugging
     }
 }
 
@@ -38,7 +38,7 @@ async function handleInactivityLogout() {
         // State will be updated by onAuthStateChange listener
         alert('You have been logged out due to inactivity. Please log in again to continue.');
         // Optionally redirect to login page or index
-        // window.location.href = 'index.html';
+        window.location.href = 'index.html'; // Redirect home after inactivity logout
     }
 }
 
@@ -67,16 +67,16 @@ function initializeActivityTracking() {
 
     // Check on initial load
      const lastActiveTime = localStorage.getItem('lastActiveTime');
-     if (lastActiveTime && isAuthenticated) {
+     if (lastActiveTime && isAuthenticated) { // Check if authenticated state might already be known
         const timeAway = Date.now() - parseInt(lastActiveTime);
         if (timeAway > INACTIVITY_TIMEOUT) {
             console.log("Logging out on load due to inactivity while away.");
-            handleInactivityLogout();
-            return;
+            handleInactivityLogout(); // Perform logout if timeout occurred while away
+            return; // Stop further initialization if logged out
         }
      }
 
-    // Start timer immediately if already authenticated on load
+    // Start timer immediately if already authenticated on load (after initial check)
     if (isAuthenticated) {
         resetInactivityTimer();
     }
@@ -87,8 +87,7 @@ function initializeActivityTracking() {
              localStorage.setItem('lastActiveTime', Date.now().toString());
          }
      });
-
-     console.log("Activity tracking initialized.");
+    console.log("Activity tracking initialized.");
 }
 
 
@@ -96,14 +95,14 @@ function initializeActivityTracking() {
 
 async function handleLogin(email, password) {
     // Uses bubble validation from common.js
-    clearAllValidationBubbles('login-form'); // Clear previous bubbles
+    window.commonFunctions.clearAllValidationBubbles('login-form'); // Clear previous bubbles
 
     if (!email) {
-        showInputValidation('login-email', 'Please enter your email address');
+        window.commonFunctions.showInputValidation('login-email', 'Please enter your email address');
         return { success: false, error: 'Email required' };
     }
     if (!password) {
-        showInputValidation('login-password', 'Please enter your password');
+        window.commonFunctions.showInputValidation('login-password', 'Please enter your password');
         return { success: false, error: 'Password required' };
     }
 
@@ -115,22 +114,18 @@ async function handleLogin(email, password) {
 
         if (error) {
             if (error.message.includes('Invalid login credentials')) {
-                showInputValidation('login-password', 'Invalid email or password.');
+                window.commonFunctions.showInputValidation('login-password', 'Invalid email or password.');
             } else if (error.message.includes('Email not confirmed')) {
-                showInputValidation('login-email', 'Please verify your email before logging in.');
+                window.commonFunctions.showInputValidation('login-email', 'Please verify your email before logging in.');
                 // Optionally trigger OTP resend or redirect?
             } else {
-                 showInputValidation('login-email', `Login failed: ${error.message}`);
+                 window.commonFunctions.showInputValidation('login-email', `Login failed: ${error.message}`); // Show generic error on email field
             }
             throw error; // Let the caller know it failed
         }
 
         // Login successful - state updated via onAuthStateChange
-        closeModal('login');
-        // showMessage at top can be used for general success
-        // showMessage('login', 'success', 'Login successful! Redirecting...');
-        // Redirect handled by onAuthStateChange usually, or you can do it here:
-        window.location.href = 'index.html'; // Redirect to index after login
+        // Redirect handled by onAuthStateChange or caller
         return { success: true, user: data.user };
 
     } catch (error) {
@@ -143,55 +138,65 @@ async function handleLogin(email, password) {
 // Signup function - collects all data
 async function handleSignup(userData) {
     // userData = { firstName, lastName, username, email, dateOfBirth, profession, password, confirmPassword }
-    clearAllValidationBubbles('signup-form'); // Clear previous bubbles
+    window.commonFunctions.clearAllValidationBubbles('signup-form'); // Clear previous bubbles
 
     // --- Form Validation (with bubble messages) ---
     let isValid = true;
+
     if (!userData.firstName || userData.firstName.length < 2) {
-        showInputValidation('signup-first-name', 'First name must be at least 2 characters'); isValid = false;
+        window.commonFunctions.showInputValidation('signup-first-name', 'First name must be at least 2 characters');
+        isValid = false;
     }
     // lastName is optional
-    if (!userData.email || !/\S+@\S+\.\S+/.test(userData.email)) {
-        showInputValidation('signup-email', 'Please enter a valid email'); isValid = false;
+
+    if (!userData.email || !/\S+@\S+\.\S+/.test(userData.email)) { // Basic email format check
+        window.commonFunctions.showInputValidation('signup-email', 'Please enter a valid email');
+        isValid = false;
     }
+
      if (!userData.dateOfBirth) {
-         showInputValidation('signup-dob', 'Please select your date of birth'); isValid = false;
+         window.commonFunctions.showInputValidation('signup-dob', 'Please select your date of birth');
+         isValid = false;
      }
 
     // Username format/length validation
-    const usernameValidationResult = validateUsername(userData.username);
-    if (!usernameValidationResult.valid) {
-        showInputValidation('signup-username', usernameValidationResult.message); isValid = false;
+    const usernameFormatValidationResult = validateUsername(userData.username);
+    if (!usernameFormatValidationResult.valid) {
+        window.commonFunctions.showInputValidation('signup-username', usernameFormatValidationResult.message);
+        isValid = false;
     }
 
      if (!userData.profession || userData.profession.trim() === '') {
-         // This validation might be better handled directly via the dropdown logic
-         showMessage('signup', 'error', 'Please select or specify your profession.'); isValid = false;
-         // Optionally add bubble to dropdown itself if possible
+         // This validation might be better handled directly via the dropdown logic in HTML
+         window.commonFunctions.showMessage('signup', 'error', 'Please select or specify your profession.'); // Use general message area for dropdown
+         isValid = false;
      }
 
     // Password validation
     if (!userData.password || userData.password.length < 8) {
-        showInputValidation('signup-password', 'Password must be at least 8 characters'); isValid = false;
+        window.commonFunctions.showInputValidation('signup-password', 'Password must be at least 8 characters');
+        isValid = false;
     } else {
         const hasUpper = /[A-Z]/.test(userData.password);
         const hasLower = /[a-z]/.test(userData.password);
         const hasNumber = /\d/.test(userData.password);
         const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(userData.password);
         if (!(hasUpper && hasLower && hasNumber && hasSpecial)) {
-            showInputValidation('signup-password', 'Include uppercase, lowercase, number, and special character'); isValid = false;
+            window.commonFunctions.showInputValidation('signup-password', 'Include uppercase, lowercase, number, and special character');
+            isValid = false;
         }
     }
     if (userData.password !== userData.confirmPassword) {
-        showInputValidation('signup-confirm-password', 'Passwords do not match'); isValid = false;
+        window.commonFunctions.showInputValidation('signup-confirm-password', 'Passwords do not match');
+        isValid = false;
     }
 
     if (!isValid) return { success: false, error: 'Validation failed' };
 
-    // --- Username Uniqueness Check ---
+    // --- Username Uniqueness Check (using RPC) ---
     const isUsernameAvailable = await checkUsernameAvailability(userData.username);
     if (!isUsernameAvailable) {
-        showInputValidation('signup-username', 'This username is already taken');
+        window.commonFunctions.showInputValidation('signup-username', 'This username is already taken');
         // Update the suggestion status dynamically if needed
         const validationEl = document.getElementById('username-validation');
         if (validationEl) {
@@ -211,7 +216,7 @@ async function handleSignup(userData) {
                 data: { // This data goes into auth.users.raw_user_meta_data
                     first_name: userData.firstName,
                     last_name: userData.lastName || null, // Handle optional field
-                    username: userData.username,
+                    username: userData.username, // Username is crucial here
                     date_of_birth: userData.dateOfBirth,
                     profession: userData.profession
                 }
@@ -220,11 +225,12 @@ async function handleSignup(userData) {
 
         if (error) {
             if (error.message.includes('already registered')) {
-                showInputValidation('signup-email', 'Email already registered. Try logging in.');
+                window.commonFunctions.showInputValidation('signup-email', 'Email already registered. Try logging in.');
             } else if (error.message.includes('duplicate key value violates unique constraint') && error.message.includes('username')) {
-                 showInputValidation('signup-username', 'This username is already taken.'); // Fallback check
+                 // This error comes from the DB trigger if username check failed somehow
+                 window.commonFunctions.showInputValidation('signup-username', 'This username is already taken.');
             } else {
-                showMessage('signup', 'error', `Signup failed: ${error.message}`);
+                window.commonFunctions.showMessage('signup', 'error', `Signup failed: ${error.message}`); // Show general error
             }
             throw error;
         }
@@ -234,11 +240,11 @@ async function handleSignup(userData) {
         currentUser = data.user; // Store the user object from signup response
         pendingVerification = true; // Set OTP pending flag
 
-        closeModal('signup');
-        openModal('otp');
-        showMessage('otp', 'success', `Verification email sent to ${userData.email}. Check your inbox/spam for the 6-digit code.`);
+        // No need to close signup modal here, handled by caller in signup.html
+        // No need to open OTP modal here, handled by caller in signup.html
+        // No need to show OTP message here, handled by caller in signup.html
 
-        return { success: true, user: data.user, needsVerification: !data.user.email_confirmed_at };
+        return { success: true, user: data.user, needsVerification: data.session === null }; // Check if session is null (email verification needed)
 
     } catch (error) {
         console.error('Signup error:', error);
@@ -247,60 +253,56 @@ async function handleSignup(userData) {
 }
 
 
-async function handleOTPVerification(otpCode) {
-    clearMessages('otp'); // Clear previous OTP messages
+async function handleOTPVerification(email, otpCode) { // Pass email explicitly
+    window.commonFunctions.clearMessages('otp'); // Clear previous OTP messages
 
-    if (!currentUser || !currentUser.email) {
-         showMessage('otp', 'error', 'User context lost. Please try signing up again.');
-         closeModal('otp');
-         openModal('signup');
-         return { success: false, error: 'User context lost' };
+    if (!email) {
+         window.commonFunctions.showMessage('otp', 'error', 'Email context lost. Please try signing up again.');
+         // Maybe guide user back?
+         return { success: false, error: 'Email context lost' };
     }
      if (!otpCode || otpCode.length !== 6 || !/^\d{6}$/.test(otpCode)) {
-        showMessage('otp', 'error', 'Please enter a valid 6-digit code.');
+        window.commonFunctions.showMessage('otp', 'error', 'Please enter a valid 6-digit code.');
         return { success: false, error: 'Invalid OTP format' };
     }
 
 
     try {
         const { data, error } = await supabaseClient.auth.verifyOtp({
-            email: currentUser.email, // Use stored email
+            email: email, // Use the passed email
             token: otpCode,
             type: 'signup' // Must match the type used in signUp
         });
 
         if (error) {
             if (error.message.includes('Token has expired')) {
-                showMessage('otp', 'error', 'Verification code has expired. Please resend.');
+                window.commonFunctions.showMessage('otp', 'error', 'Verification code has expired. Please resend.');
             } else if (error.message.includes('already verified')) {
                 // This can happen if user clicks link AND enters code
-                showMessage('otp', 'info', 'Your email is already verified. You can now log in.');
-                 closeModal('otp');
-                 openModal('login'); // Guide to login
-                 // Update state as if successful
-                 isAuthenticated = true; // Assume verification implies logged in state initially
+                window.commonFunctions.showMessage('otp', 'info', 'Your email is already verified. Redirecting to login...');
+                // Update state as if successful
+                 isAuthenticated = true; // Assume verification implies logged in state initially? Check Supabase behavior.
                  pendingVerification = false;
-                 // Fetch session to confirm state and get full user data
-                 await checkAuthStatus();
-                 return { success: true, user: currentUser };
+                 // Fetch session to confirm state and get full user data might be needed
+                 // await checkAuthStatus(); // Might trigger redirection
+                // Redirect to login is safer
+                setTimeout(() => { window.location.href = 'login.html?verified=true'; }, 1500);
+                return { success: true, user: null }; // Indicate success but let login handle auth state
             }
             else {
-                showMessage('otp', 'error', `Verification failed: ${error.message}`);
+                window.commonFunctions.showMessage('otp', 'error', `Verification failed: ${error.message}`);
             }
             throw error;
         }
 
         // OTP Verification successful
         // The onAuthStateChange listener should handle the SIGNED_IN event
-        // but we can update state here too for immediate feedback
         isAuthenticated = true;
         currentUser = data.user || currentUser; // Update user object if returned
         pendingVerification = false;
 
-        closeModal('otp');
-        showMessage('signup', 'success', 'Email verified successfully! You are now logged in.'); // Show success on main page potentially
-        // Redirect to index, which will update UI based on auth state
-         window.location.href = 'index.html';
+        // No need to close OTP modal, handled by caller
+        // No need to show success message, handled by caller
 
         // Fetch profile data including role after verification
         await fetchUserProfile();
@@ -312,37 +314,37 @@ async function handleOTPVerification(otpCode) {
 
     } catch (error) {
         console.error('OTP verification error:', error);
-         // Don't return false here, let the message show in OTP modal
+        // Error message is shown above
         return { success: false, error: error.message };
     }
 }
 
 
-async function resendOTP() {
-     clearMessages('otp');
-    if (!currentUser || !currentUser.email) {
-        showMessage('otp', 'error', 'Cannot resend code. User context lost. Please sign up again.');
-        return { success: false, error: 'User context lost' };
+async function resendOTP(email) { // Pass email explicitly
+     window.commonFunctions.clearMessages('otp'); // Clear previous messages
+    if (!email) {
+        window.commonFunctions.showMessage('otp', 'error', 'Cannot resend code. Email context lost.');
+        return { success: false, error: 'Email context lost' };
     }
 
     try {
         // Use the appropriate resend method
         const { error } = await supabaseClient.auth.resend({
             type: 'signup', // Must match the type used for signup
-            email: currentUser.email
+            email: email
         });
 
         if (error) {
             // Handle rate limiting errors specifically
              if (error.message.includes('rate limit')) {
-                 showMessage('otp', 'error', 'Too many attempts. Please wait a minute before trying again.');
+                 window.commonFunctions.showMessage('otp', 'error', 'Too many attempts. Please wait a minute before trying again.');
              } else {
-                showMessage('otp', 'error', `Failed to resend code: ${error.message}`);
+                window.commonFunctions.showMessage('otp', 'error', `Failed to resend code: ${error.message}`);
              }
             throw error;
         }
 
-        showMessage('otp', 'success', 'Verification code resent! Please check your email.');
+        window.commonFunctions.showMessage('otp', 'success', 'Verification code resent! Please check your email.');
         return { success: true };
 
     } catch (error) {
@@ -353,7 +355,7 @@ async function resendOTP() {
 
 async function handleLogout() {
      console.log("Handling manual logout.");
-    try {
+     try {
         await supabaseClient.auth.signOut();
         // State updates (isAuthenticated=false, currentUser=null) handled by onAuthStateChange
         // Clear inactivity timer
@@ -365,58 +367,66 @@ async function handleLogout() {
         userProfileData = null; // Clear profile data
         console.log("Logout successful.");
         // Redirect to home page after logout
-        window.location.href = 'index.html';
-    } catch (error) {
+        if (!window.location.pathname.includes('index.html') && window.location.pathname !== '/') {
+            window.location.href = 'index.html';
+        } else {
+            // If already on index, just update UI (handled by auth state change)
+        }
+     } catch (error) {
         console.error('Logout error:', error);
         alert(`Logout failed: ${error.message}`);
-    }
+     }
 }
 
 
 // --- User Profile & Role ---
 async function fetchUserProfile() {
-    if (!currentUser || !isAuthenticated) {
+    // This function now relies on currentUser being set correctly by getSession or onAuthStateChange
+    if (!currentUser) { // Check currentUser instead of isAuthenticated
         userProfileData = null;
+        console.log("fetchUserProfile: No current user, skipping fetch.");
         return null;
     }
 
     try {
+        console.log("fetchUserProfile: Fetching profile for user:", currentUser.id);
         const { data, error, status } = await supabaseClient
             .from('user_profiles')
             .select('*') // Select all columns, including 'role'
             .eq('id', currentUser.id)
             .single(); // Expect only one row
 
-        if (error && status !== 406) { // 406 means no rows found, which is okay if profile creation is pending
+        if (error && status !== 406) { // 406 means no rows found
+            console.error('Supabase error fetching profile:', error);
             throw error;
         }
 
         if (data) {
             userProfileData = data;
-             // console.log("User profile fetched:", userProfileData); // Debug
+            console.log("fetchUserProfile: User profile fetched successfully:", userProfileData);
             // Optionally update UI elements that depend on role immediately
-             updateRoleSpecificUI(userProfileData.role);
+             // updateRoleSpecificUI(userProfileData.role); // Call this where needed, e.g., in dashboard.js
             return userProfileData;
         } else {
-             // Profile might not exist yet if trigger hasn't run or failed
-             console.warn("User profile not found in database yet for ID:", currentUser.id);
-             userProfileData = { id: currentUser.id, role: 'user' }; // Assume 'user' role if profile missing
-             updateRoleSpecificUI('user'); // Update UI with default role
-             return userProfileData;
+             // Profile might not exist yet if trigger hasn't run or failed after signup/verification
+             console.warn("fetchUserProfile: User profile not found in database for ID:", currentUser.id);
+             // Trigger might be slightly delayed. Consider a retry mechanism or handle this state in UI.
+             userProfileData = null; // Set to null if not found
+             // Don't assume 'user' role, let UI handle missing profile state
+             return null;
         }
     } catch (error) {
-        console.error('Error fetching user profile:', error);
-        userProfileData = { id: currentUser.id, role: 'user' }; // Fallback to default role on error
-        updateRoleSpecificUI('user'); // Update UI with default role
+        console.error('Exception during fetchUserProfile:', error);
+        userProfileData = null; // Set to null on error
+        // Don't assume 'user' role on error
         return null;
     }
 }
 
-// Function to update UI elements based on role (example)
+// Function to update UI elements based on role (example placeholder)
 function updateRoleSpecificUI(role) {
-    // This function will be called AFTER the profile is fetched
-    // It should handle showing/hiding elements specific to roles
-    // Example (to be implemented in dashboard.js or relevant page scripts):
+    // This is a placeholder. Actual implementation should be in dashboard.js or admin-panel.js
+    console.log(`UI update requested for role: ${role}. Implementation needed in specific page script.`);
     const adminPanelLink = document.getElementById('admin-panel-link'); // Example ID
     if (adminPanelLink) {
         adminPanelLink.style.display = (role === 'admin') ? 'block' : 'none';
@@ -425,7 +435,6 @@ function updateRoleSpecificUI(role) {
     memberContent.forEach(el => {
         el.style.display = (role === 'admin' || role === 'member') ? 'block' : 'none';
     });
-     // console.log(`UI updated for role: ${role}`);
 }
 
 // --- Username Validation & Suggestions ---
@@ -449,31 +458,31 @@ function validateUsername(username) {
 }
 
 
-// Check availability against the database
+// Check availability against the database using RPC
 async function checkUsernameAvailability(username) {
-    if (!username) return false; // Cannot be available if empty
+    if (!username) return false;
     const formatValidation = validateUsername(username);
-    if (!formatValidation.valid) return false; // Invalid format cannot be available
+    if (!formatValidation.valid) return false;
 
     try {
-        const { data, error } = await supabaseClient
-            .from('user_profiles') // Check the profiles table
-            .select('username')
-            .eq('username', username) // Case-insensitive check handled by DB collation or ensure lowercase
-            .limit(1);
+        console.log(`Checking username availability via RPC for: ${username}`);
+        // Call the PostgreSQL function 'is_username_available'
+        const { data, error } = await supabaseClient.rpc('is_username_available', {
+            check_username: username
+        });
 
         if (error) {
-            console.error('Error checking username availability:', error);
-            // Decide how to handle DB errors - assume taken? Or allow signup?
-            // Returning false (taken) might be safer to prevent duplicates if DB fails
+            console.error('RPC Error checking username availability:', error);
+            // Handle specific errors? For now, assume taken on error for safety.
             return false;
         }
 
-        // Return true (available) if data array is empty, false (taken) otherwise
-        return data.length === 0;
+        console.log(`RPC result for ${username}: ${data}`);
+        // The function returns true if available, false if taken.
+        return data;
 
     } catch (error) {
-        console.error('Exception checking username availability:', error);
+        console.error('Exception calling RPC checkUsernameAvailability:', error);
         return false; // Assume taken on exception
     }
 }
@@ -482,7 +491,7 @@ async function checkUsernameAvailability(username) {
 // Generate suggestions (ensure lowercase)
 function generateUsernameSuggestions(firstName, lastName, dob) {
     const suggestions = new Set(); // Use a Set to avoid duplicates
-    const fn = firstName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const fn = firstName.toLowerCase().replace(/[^a-z0-9]/g, ''); // Keep numbers if present
     const ln = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const year = dob ? new Date(dob).getFullYear() : new Date().getFullYear();
     const shortYear = String(year).slice(-2);
@@ -490,133 +499,149 @@ function generateUsernameSuggestions(firstName, lastName, dob) {
     const lnInitial = ln.charAt(0);
 
     if (fn) {
-        suggestions.add(fn); // Just first name
+        if (fn.length >= 3) suggestions.add(fn); // Only add if >= 3 chars
         if (ln) {
-            suggestions.add(`${fn}${ln}`);
-            suggestions.add(`${fn}_${ln}`);
-            suggestions.add(`${fnInitial}${ln}`);
-            suggestions.add(`${fn}${lnInitial}`);
-             suggestions.add(`${fn}${shortYear}`);
-             suggestions.add(`${fn}_${year}`);
-             suggestions.add(`${fnInitial}${ln}${shortYear}`);
+            if (`${fn}${ln}`.length >= 3) suggestions.add(`${fn}${ln}`);
+            if (`${fn}_${ln}`.length >= 3) suggestions.add(`${fn}_${ln}`);
+            if (`${fnInitial}${ln}`.length >= 3) suggestions.add(`${fnInitial}${ln}`);
+            if (`${fn}${lnInitial}`.length >= 3) suggestions.add(`${fn}${lnInitial}`);
+            if (`${fn}${shortYear}`.length >= 3) suggestions.add(`${fn}${shortYear}`);
+            if (`${fnInitial}${ln}${shortYear}`.length >= 3) suggestions.add(`${fnInitial}${ln}${shortYear}`);
         } else {
-             suggestions.add(`${fn}${year}`);
-             suggestions.add(`${fn}_${shortYear}`);
+             if (`${fn}${year}`.length >= 3) suggestions.add(`${fn}${year}`);
+             if (`${fn}_${shortYear}`.length >= 3) suggestions.add(`${fn}_${shortYear}`);
         }
-        // Add some random numbers
-         suggestions.add(`${fn}${Math.floor(Math.random() * 99)}`);
-         suggestions.add(`${fn}_${Math.floor(Math.random() * 999)}`);
+        // Add some random numbers, ensuring length >= 3
+         let randomUser1 = `${fn}${Math.floor(Math.random() * 99)}`;
+         if (randomUser1.length < 3) randomUser1 += '0'; // Pad if needed
+         suggestions.add(randomUser1);
+
+         let randomUser2 = `${fn}_${Math.floor(Math.random() * 999)}`;
+         if (randomUser2.length < 3) randomUser2 += '0';
+         suggestions.add(randomUser2);
+
     } else if (ln) {
-        suggestions.add(ln);
-        suggestions.add(`${ln}${year}`);
-        suggestions.add(`${ln}_${shortYear}`);
-        suggestions.add(`${ln}${Math.floor(Math.random() * 99)}`);
+        if (ln.length >= 3) suggestions.add(ln);
+        if (`${ln}${year}`.length >= 3) suggestions.add(`${ln}${year}`);
+        if (`${ln}_${shortYear}`.length >= 3) suggestions.add(`${ln}_${shortYear}`);
+        let randomUser3 = `${ln}${Math.floor(Math.random() * 99)}`;
+        if (randomUser3.length < 3) randomUser3 += '0';
+        suggestions.add(randomUser3);
     }
 
-    // Filter suggestions based on validation rules (length, format)
-    const validSuggestions = [...suggestions].filter(s => validateUsername(s).valid);
+    // Filter suggestions based on validation rules (format is handled by generation, check length again)
+    const validSuggestions = [...suggestions]
+        .filter(s => s.length >= 3 && s.length <= 20 && /^[a-z0-9_-]+$/.test(s));
 
-    // Return top 3, or fewer if not enough valid ones generated
+    // Return top 3, or fewer
     return validSuggestions.slice(0, 3);
 }
 
-// Function to display suggestions and check their availability
-async function showUsernameSuggestions() {
-    const firstName = document.getElementById('signup-first-name').value.trim();
-    const lastName = document.getElementById('signup-last-name').value.trim();
-    const dob = document.getElementById('signup-dob').value;
-    const suggestionsContainer = document.getElementById('username-suggestions');
-    const suggestionItems = suggestionsContainer.querySelectorAll('.suggestion-item');
+// Function to display suggestions and check their availability (used in signup.html)
+async function displayUsernameSuggestions(suggestions) {
+    const container = document.getElementById('username-suggestions');
+    if (!container) return; // Only run on signup page
 
-    if (firstName || lastName) {
-        const suggestions = generateUsernameSuggestions(firstName, lastName, dob);
+    const suggestionItems = container.querySelectorAll('.suggestion-item');
 
-        // Clear previous states
-        suggestionItems.forEach(item => {
-            item.style.display = 'none';
-            item.onclick = null; // Remove previous click listener
-             const statusEl = item.querySelector('.suggestion-status');
-             if(statusEl) statusEl.textContent = '';
-        });
+    // Clear previous states and hide all
+    suggestionItems.forEach(item => {
+        item.style.display = 'none';
+        item.onclick = null;
+        const statusEl = item.querySelector('.suggestion-status');
+        if(statusEl) statusEl.textContent = '';
+        item.style.cursor = 'pointer'; // Reset cursor
+        item.style.opacity = '1';      // Reset opacity
+    });
 
-        if (suggestions.length > 0) {
-            suggestionsContainer.classList.add('show');
+    if (suggestions.length > 0) {
+        container.classList.add('show');
+        // Check availability for each suggestion concurrently
+        const availabilityChecks = suggestions.map(suggestion => checkUsernameAvailability(suggestion));
+        const availabilityResults = await Promise.all(availabilityChecks);
 
-            // Check availability for each suggestion
-            suggestions.forEach(async (suggestion, index) => {
-                if (suggestionItems[index]) {
-                    const item = suggestionItems[index];
-                    const textEl = item.querySelector('.suggestion-text');
-                    const statusEl = item.querySelector('.suggestion-status');
+        suggestions.forEach((suggestion, index) => {
+            if (suggestionItems[index]) {
+                const item = suggestionItems[index];
+                const textEl = item.querySelector('.suggestion-text');
+                const statusEl = item.querySelector('.suggestion-status');
 
-                    textEl.textContent = suggestion;
-                    item.dataset.suggestion = suggestion;
-                    statusEl.textContent = 'Checking...';
-                    statusEl.className = 'suggestion-status checking';
-                    item.style.display = 'flex'; // Show the item
+                textEl.textContent = suggestion;
+                item.dataset.suggestion = suggestion; // Store suggestion
+                item.style.display = 'flex'; // Show item
 
-                    const isAvailable = await checkUsernameAvailability(suggestion);
+                const isAvailable = availabilityResults[index];
+                statusEl.textContent = isAvailable ? 'Available' : 'Taken';
+                statusEl.className = `suggestion-status ${isAvailable ? 'available' : 'taken'}`;
 
-                    // Update status based on availability check
-                     // Check if suggestion is still the same (user might have changed name/dob)
-                     if(item.dataset.suggestion === suggestion) {
-                        statusEl.textContent = isAvailable ? 'Available' : 'Taken';
-                        statusEl.className = `suggestion-status ${isAvailable ? 'available' : 'taken'}`;
-                        if (isAvailable) {
-                            // Make available suggestions clickable
-                            item.onclick = () => {
-                                const usernameInput = document.getElementById('signup-username');
-                                usernameInput.value = suggestion;
-                                usernameInput.dispatchEvent(new Event('input')); // Trigger input event for validation
-                                suggestionsContainer.classList.remove('show');
-                            };
-                        } else {
-                            item.onclick = null; // Not clickable if taken
-                            item.style.cursor = 'not-allowed';
-                             item.style.opacity = '0.7';
-                        }
-                     }
+                if (isAvailable) {
+                    item.onclick = () => {
+                        const usernameInput = document.getElementById('signup-username');
+                        usernameInput.value = suggestion;
+                        usernameInput.dispatchEvent(new Event('input')); // Trigger validation/check
+                        container.classList.remove('show'); // Hide suggestions after selection
+                    };
+                } else {
+                    item.onclick = null; // Not clickable
+                    item.style.cursor = 'not-allowed';
+                    item.style.opacity = '0.7';
                 }
-            });
-        } else {
-            suggestionsContainer.classList.remove('show'); // Hide if no suggestions
-        }
-
+            }
+        });
     } else {
-        suggestionsContainer.classList.remove('show'); // Hide if no name entered
+        container.classList.remove('show');
     }
 }
 
+
 // --- Auth UI Update ---
 // Central function to update UI based on authentication state
-function updateAuthUI() {
+async function updateAuthUI() { // Made async to await profile fetch
     const authButtons = document.getElementById('auth-buttons');
     const userProfile = document.getElementById('user-profile');
     const userAvatar = document.getElementById('user-avatar');
+    const profileUsernameNav = document.getElementById('profile-username'); // In dashboard/admin nav
+
+    // Ensure elements exist before manipulating
+    if (!authButtons || !userProfile || !userAvatar) {
+        // console.warn("Auth UI elements not found on this page.");
+        // If elements aren't present (e.g., on login/signup page), just return
+        return;
+    }
+
 
     if (isAuthenticated && currentUser) {
-        if (authButtons) authButtons.style.display = 'none';
-        if (userProfile) userProfile.style.display = 'flex'; // Show profile avatar
+        authButtons.style.display = 'none';
+        userProfile.style.display = 'flex'; // Show profile avatar/link
 
-        if (userAvatar) {
-            const firstName = userProfileData?.first_name || currentUser.user_metadata?.first_name || '';
-            const lastName = userProfileData?.last_name || currentUser.user_metadata?.last_name || '';
-
-            let avatarText = 'U'; // Default
-            if (firstName && lastName) {
-                avatarText = firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
-            } else if (firstName) {
-                avatarText = firstName.charAt(0).toUpperCase();
-            } else if (currentUser.email) {
-                avatarText = currentUser.email.charAt(0).toUpperCase();
-            }
-            userAvatar.textContent = avatarText;
+        // Attempt to fetch profile if not already loaded
+        if (!userProfileData || userProfileData.id !== currentUser.id) {
+            await fetchUserProfile(); // Fetch profile if needed
         }
+
+        // Use profile data if available, otherwise fallback to metadata/email
+        const firstName = userProfileData?.first_name || currentUser.user_metadata?.first_name || '';
+        const lastName = userProfileData?.last_name || currentUser.user_metadata?.last_name || '';
+        const username = userProfileData?.username || currentUser.user_metadata?.username || 'User';
+
+        if (profileUsernameNav) { // Update username in dashboard/admin navbars
+            profileUsernameNav.textContent = username;
+        }
+
+        let avatarText = 'U'; // Default
+        if (firstName && lastName) {
+            avatarText = firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
+        } else if (firstName) {
+            avatarText = firstName.charAt(0).toUpperCase();
+        } else if (currentUser.email) {
+            avatarText = currentUser.email.charAt(0).toUpperCase();
+        }
+        userAvatar.textContent = avatarText;
 
     } else {
         // Not authenticated
-        if (authButtons) authButtons.style.display = 'flex'; // Show Login/Signup
-        if (userProfile) userProfile.style.display = 'none';
+        authButtons.style.display = 'flex'; // Show Login/Signup
+        userProfile.style.display = 'none'; // Hide profile avatar/link
 
         // Clear inactivity timer when logged out
         if (inactivityTimer) {
@@ -627,20 +652,18 @@ function updateAuthUI() {
     }
 }
 
-// Redirect placeholder for profile/dashboard click
+// Redirect placeholder for profile/dashboard click (now redirects correctly)
 function redirectToProfile() {
-    // In a multi-page setup, this should redirect
      window.location.href = 'dashboard.html';
-    // alert(`Dashboard/Profile page coming soon!`);
 }
 
 // --- Initialization and Event Listeners ---
 
-// Check initial auth status on page load
-async function checkAuthStatus() {
+// Check initial auth status on page load (now calls the async version)
+async function initializeAuth() {
+    console.log("Initializing Auth...");
     try {
         const { data: { session }, error } = await supabaseClient.auth.getSession();
-
         if (error) {
             console.error("Error getting session:", error);
             isAuthenticated = false;
@@ -652,8 +675,8 @@ async function checkAuthStatus() {
             await fetchUserProfile(); // Fetch profile immediately if session exists
         } else {
              console.log("No active session found on load.");
-            isAuthenticated = false;
-            currentUser = null;
+             isAuthenticated = false;
+             currentUser = null;
         }
     } catch (err) {
         console.error("Exception during initial auth check:", err);
@@ -662,13 +685,17 @@ async function checkAuthStatus() {
     } finally {
         updateAuthUI(); // Update UI based on initial status
         initializeActivityTracking(); // Start inactivity timer system AFTER checking auth
+        console.log("Auth initialized. isAuthenticated:", isAuthenticated);
     }
 }
 
 
 // Listen for Supabase auth state changes
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    console.log("Auth event:", event, session); // Log events
+    console.log("Auth State Change Event:", event, session); // Log events
+
+    let needsRedirect = false;
+    let redirectUrl = 'index.html'; // Default redirect
 
     if (event === 'SIGNED_IN' && session) {
         isAuthenticated = true;
@@ -676,15 +703,16 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         await fetchUserProfile(); // Fetch profile on sign in
         resetInactivityTimer(); // Start inactivity timer
         updateAuthUI();
-
-         // Handle redirection if needed, e.g., after OTP verify direct to dashboard
-         // if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
-             // Optional: Redirect to dashboard immediately after SIGNED_IN on index page
-             // window.location.href = 'dashboard.html';
-         // }
+        // Determine redirect after sign in
+        // If user signed in on login/signup page, redirect to index
+        if (window.location.pathname.includes('login.html') || window.location.pathname.includes('signup.html')) {
+            needsRedirect = true;
+            redirectUrl = 'index.html'; // Go to index after login/signup success
+        }
 
 
     } else if (event === 'SIGNED_OUT') {
+        const wasLoggedIn = isAuthenticated; // Check if they were previously logged in
         isAuthenticated = false;
         currentUser = null;
         userProfileData = null;
@@ -694,16 +722,16 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         }
         localStorage.removeItem('lastActiveTime');
         updateAuthUI();
-
-         // Redirect to index if logged out from a protected page like dashboard
-         // if (window.location.pathname.includes('dashboard.html') || window.location.pathname.includes('admin-panel.html')) {
-         //     window.location.href = 'index.html';
-         // }
+        // Redirect to index if logged out from a protected page
+         if (wasLoggedIn && (window.location.pathname.includes('dashboard.html') || window.location.pathname.includes('admin-panel.html'))) {
+             needsRedirect = true;
+             redirectUrl = 'index.html';
+         }
 
     } else if (event === 'USER_UPDATED') {
         // Handle user updates if necessary (e.g., email change)
         currentUser = session?.user || null;
-        await fetchUserProfile(); // Re-fetch profile on update
+        if(currentUser) await fetchUserProfile(); // Re-fetch profile on update
         updateAuthUI();
     } else if (event === 'PASSWORD_RECOVERY') {
          // Handle password recovery state if needed
@@ -711,7 +739,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     } else if (event === 'TOKEN_REFRESHED') {
         // Session token refreshed, update state if necessary
         console.log("Token refreshed");
-         if (session) {
+        if (session) {
              currentUser = session.user;
              isAuthenticated = true; // Ensure state is correct
              resetInactivityTimer(); // Reset timer on token refresh as activity indicator
@@ -721,35 +749,53 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
              currentUser = null;
          }
          updateAuthUI();
+    } else if (event === 'INITIAL_SESSION') {
+         // Handled by the initial checkAuthStatus call, but good to log
+         console.log("Initial session event processed.");
+         // Update state based on session
+         isAuthenticated = !!session;
+         currentUser = session?.user || null;
+         if (isAuthenticated) {
+             await fetchUserProfile();
+             resetInactivityTimer();
+         }
+         updateAuthUI();
     }
+
+     // Perform redirection outside the event handling logic if needed
+     if (needsRedirect && window.location.pathname !== redirectUrl.split('/').pop()) {
+         console.log(`Redirecting to ${redirectUrl}...`);
+         window.location.href = redirectUrl;
+     }
 });
 
-
 // Global logout function accessible from buttons/links
-async function logout() {
-    await handleLogout();
-}
+// Defined earlier: async function logout() { ... }
 
 
 // --- Export functions for use in HTML pages ---
+// Use window.authFunctions.functionName() to call these
 window.authFunctions = {
     handleLogin,
     handleSignup,
     handleOTPVerification,
     resendOTP,
     logout, // Make logout globally accessible
-    checkAuthStatus, // For initial load check
-    updateAuthUI,
-    redirectToProfile,
-    validateUsername,
-    checkUsernameAvailability, // Make available for real-time checks
-    showUsernameSuggestions,
+    checkAuthStatus, // For initial load check (async version)
+    updateAuthUI, // To manually trigger UI update if needed
+    redirectToProfile, // Function to navigate to dashboard
+    validateUsername, // For format validation
+    checkUsernameAvailability, // For uniqueness check (async)
+    displayUsernameSuggestions, // To show suggestions on signup page (async)
     resetInactivityTimer, // Allow manual reset if needed
-    fetchUserProfile, // To get profile data on dashboard etc.
-    getUserRole: () => userProfileData?.role || 'user' // Function to get current user's role
+    fetchUserProfile, // To get profile data on dashboard etc. (async)
+    getUserRole: () => userProfileData?.role || 'user', // Function to get current user's role safely
+    getCurrentUser: () => currentUser, // Get the Supabase auth user object
+    getUserProfileData: () => userProfileData, // Get the fetched profile data
+    isAuthenticated: () => isAuthenticated // Check current auth state
 };
 
 // Perform initial check when script loads
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuthStatus(); // Check auth status after DOM is ready
+    initializeAuth(); // Use the async initializer
 });
