@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ADV Technologies</title>
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Add specific styles for login page container */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative; /* Ensure it's above canvas */
+            z-index: 10;
+        }
+        .auth-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px var(--shadow-gold);
+            animation: slideIn 0.6s ease;
+             position: relative; /* For close button if needed */
+        }
+         @keyframes slideIn {
+             from { transform: translateY(-30px); opacity: 0; }
+             to { transform: translateY(0); opacity: 1; }
+         }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            font-weight: 800;
+             margin-bottom: 0.5rem;
+        }
+         .auth-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+         .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+            color: var(--light-gold);
+        }
+        /* Use modal styles for form elements */
+        /* Styles for form-group, input, password-container, input-validation, form-btn, auth-switch */
+        /* are already defined in styles.css under .modal section */
 
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas> <div class="auth-container">
+        <div class="auth-card">
+             <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Login to continue your journey</p>
+            </div>
+
+            <div id="login-error" class="error-message" style="display: none;"></div>
+            <div id="login-success" class="success-message" style="display: none;"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required placeholder="your.email@example.com">
+                    <div class="input-validation" id="login-email-validation"></div>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="login-password" required placeholder="Enter your password">
+                        <button type="button" class="password-toggle" onclick="window.commonFunctions.togglePassword('login-password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="input-validation" id="login-password-validation"></div>
+                </div>
+                <button type="submit" class="form-btn" id="login-btn">
+                    <span id="login-btn-text">Login</span>
+                    <i id="login-btn-icon" class="fas fa-sign-in-alt"></i>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                Don't have an account? <a href="signup.html">Sign up here</a>
+            </div>
+            </div>
+    </div>
+
+    <script>
+        // Embed Supabase config directly for GitHub Pages
+        window.SUPABASE_CONFIG = {
+            url: 'https://izoraalaceastrtcncel.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+        };
+    </script>
+
+    <script src="js/config.js"></script> <script src="js/common.js"></script> <script src="js/particles.js"></script> <script src="js/auth.js"></script> <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Particles
+            window.initParticles();
+
+            // Check if already logged in, redirect to index (which redirects to dashboard if needed)
+            // Auth check now runs automatically in auth.js
+            // If user is authenticated, redirect them from login page
+             if (window.authFunctions) {
+                window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    if (session) {
+                         console.log("Already logged in, redirecting from login page...");
+                         window.location.href = 'index.html'; // Redirect to index, auth.js handles dashboard redirect
+                    }
+                });
+             } else {
+                 console.error("Auth functions not loaded!");
+             }
+
+
+            const loginForm = document.getElementById('login-form');
+            const loginBtn = document.getElementById('login-btn');
+            const loginBtnText = document.getElementById('login-btn-text');
+            const loginBtnIcon = document.getElementById('login-btn-icon');
+
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                // Disable button and show loading state
+                loginBtn.disabled = true;
+                loginBtnText.textContent = 'Logging in...';
+                loginBtnIcon.className = 'fas fa-spinner fa-spin';
+
+                // Call the handleLogin function from auth.js
+                const result = await window.authFunctions.handleLogin(email, password);
+
+                 // Re-enable button and restore state ONLY if login failed here
+                 // If successful, redirection happens, so no need to restore
+                 if (!result.success) {
+                    loginBtn.disabled = false;
+                    loginBtnText.textContent = 'Login';
+                    loginBtnIcon.className = 'fas fa-sign-in-alt';
+                    // Error messages are shown via showInputValidation within handleLogin
+                 }
+                 // Success is handled by redirection or state change listener in auth.js
+            });
+        });
+    </script>
+</body>
+</html>
