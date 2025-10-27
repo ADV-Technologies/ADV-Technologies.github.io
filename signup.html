@@ -1,1 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - ADV Technologies</title>
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+     <style>
+        /* Add specific styles for signup page container */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+             position: relative; /* Ensure it's above canvas */
+            z-index: 10;
+        }
+        .auth-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 3rem;
+            max-width: 600px; /* Wider for signup */
+            width: 100%;
+            max-height: 90vh; /* Limit height */
+            overflow-y: auto; /* Scroll if needed */
+            box-shadow: 0 20px 60px var(--shadow-gold);
+            animation: slideIn 0.6s ease;
+             position: relative;
+        }
+         @keyframes slideIn {
+             from { transform: translateY(-30px); opacity: 0; }
+             to { transform: translateY(0); opacity: 1; }
+         }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .auth-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+         .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+            color: var(--light-gold);
+        }
+        /* Use modal styles for form elements */
+        /* Styles for form-group, input, password-container, input-validation, form-btn, auth-switch */
+        /* custom calendar, custom dropdown etc. are already in styles.css */
 
+        /* Minor adjustments if needed */
+        .auth-card .modal-content { /* Adapt modal content styles if needed, maybe not necessary */
+           background: none;
+           border: none;
+           padding: 0;
+           box-shadow: none;
+           max-height: none;
+           overflow: visible;
+        }
+
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas> <div class="auth-container">
+        <div class="auth-card">
+             <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join ADV Technologies</p>
+            </div>
+
+             <div id="signup-error" class="error-message" style="display: none;"></div>
+            <div id="signup-success" class="success-message" style="display: none;"></div>
+
+            <form id="signup-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signup-first-name">First Name</label>
+                        <input type="text" id="signup-first-name" required minlength="2" placeholder="Your first name">
+                        <div class="input-validation" id="signup-first-name-validation"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-last-name">Last Name</label>
+                        <input type="text" id="signup-last-name" placeholder="Your last name (optional)">
+                        <div class="input-validation" id="signup-last-name-validation"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required placeholder="your.email@example.com">
+                    <div class="input-validation" id="signup-email-validation"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-dob">Date of Birth</label>
+                    <div class="date-container">
+                        <input type="date" id="signup-dob" required>
+                        <i class="fas fa-calendar-alt calendar-icon" onclick="window.commonFunctions.toggleCalendar('signup-dob')"></i>
+                        <div class="input-validation" id="signup-dob-validation"></div>
+                        <div class="calendar-modal" id="signup-dob-calendar">
+                             <div class="year-month-selectors">
+                                <select class="year-selector" id="signup-dob-year"></select>
+                                <select class="month-selector" id="signup-dob-month">
+                                    <option value="0">January</option> <option value="1">February</option> <option value="2">March</option>
+                                    <option value="3">April</option> <option value="4">May</option> <option value="5">June</option>
+                                    <option value="6">July</option> <option value="7">August</option> <option value="8">September</option>
+                                    <option value="9">October</option> <option value="10">November</option> <option value="11">December</option>
+                                </select>
+                             </div>
+                             <div class="calendar-header">
+                                <button type="button" class="calendar-nav" onclick="window.commonFunctions.previousMonth('signup-dob')">‹</button>
+                                <div class="calendar-title" id="signup-dob-title">Month Year</div>
+                                <button type="button" class="calendar-nav" onclick="window.commonFunctions.nextMonth('signup-dob')">›</button>
+                             </div>
+                             <div class="calendar-grid" id="signup-dob-grid">
+                                 <div class="calendar-day-header">Sun</div> <div class="calendar-day-header">Mon</div> <div class="calendar-day-header">Tue</div>
+                                 <div class="calendar-day-header">Wed</div> <div class="calendar-day-header">Thu</div> <div class="calendar-day-header">Fri</div>
+                                 <div class="calendar-day-header">Sat</div>
+                                 </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" required minlength="3" maxlength="20" placeholder="Create a unique username (click for suggestions)">
+                    <div class="input-validation" id="signup-username-validation"></div> <div class="username-validation" id="username-validation"></div> <div class="username-suggestions" id="username-suggestions">
+                        <div class="suggestion-item">
+                             <span class="suggestion-text">suggestion_1</span>
+                             <span class="suggestion-status"></span>
+                        </div>
+                         <div class="suggestion-item">
+                             <span class="suggestion-text">suggestion_2</span>
+                              <span class="suggestion-status"></span>
+                        </div>
+                         <div class="suggestion-item">
+                             <span class="suggestion-text">suggestion_3</span>
+                              <span class="suggestion-status"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-profession">Profession</label>
+                    <div class="profession-container">
+                        <div class="profession-dropdown" id="signup-profession" onclick="window.commonFunctions.toggleProfessionDropdown()">
+                            <span id="profession-display">Select your profession</span>
+                            <i class="fas fa-chevron-down profession-arrow"></i>
+                        </div>
+                        <div class="profession-modal" id="profession-modal">
+                            <div class="profession-option" data-value="Student">Student</div>
+                            <div class="profession-option" data-value="Software Developer">Software Developer</div>
+                            <div class="profession-option" data-value="Data Scientist">Data Scientist</div>
+                            <div class="profession-option" data-value="Web Developer">Web Developer</div>
+                            <div class="profession-option" data-value="Mobile App Developer">Mobile App Developer</div>
+                            <div class="profession-option" data-value="AI/ML Engineer">AI/ML Engineer</div>
+                            <div class="profession-option" data-value="DevOps Engineer">DevOps Engineer</div>
+                            <div class="profession-option" data-value="UI/UX Designer">UI/UX Designer</div>
+                            <div class="profession-option" data-value="Product Manager">Product Manager</div>
+                            <div class="profession-option" data-value="Business Analyst">Business Analyst</div>
+                            <div class="profession-option" data-value="Cybersecurity Specialist">Cybersecurity Specialist</div>
+                            <div class="profession-option" data-value="Database Administrator">Database Administrator</div>
+                            <div class="profession-option" data-value="System Administrator">System Administrator</div>
+                            <div class="profession-option" data-value="Teacher/Educator">Teacher/Educator</div>
+                            <div class="profession-option" data-value="Researcher">Researcher</div>
+                            <div class="profession-option" data-value="Entrepreneur">Entrepreneur</div>
+                            <div class="profession-option" data-value="Freelancer">Freelancer</div>
+                            <div class="profession-option" data-value="Consultant">Consultant</div>
+                            <div class="profession-option" data-value="Marketing Professional">Marketing Professional</div>
+                            <div class="profession-option" data-value="Sales Professional">Sales Professional</div>
+                            <div class="profession-option" data-value="Healthcare Professional">Healthcare Professional</div>
+                            <div class="profession-option" data-value="Engineer (Other)">Engineer (Other)</div>
+                            <div class="profession-option" data-value="Finance Professional">Finance Professional</div>
+                            <div class="profession-option" data-value="Legal Professional">Legal Professional</div>
+                            <div class="profession-option" data-value="Creative Professional">Creative Professional</div>
+                            <div class="profession-option" data-value="Other">Other (specify below)</div>
+                         </div>
+                    </div>
+                    <div class="profession-custom" id="profession-custom"> <input type="text" id="signup-profession-custom" placeholder="Please specify your profession">
+                         <div class="input-validation" id="signup-profession-custom-validation"></div>
+                    </div>
+                     <div class="input-validation" id="signup-profession-validation"></div> </div>
+
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="signup-password" required minlength="8" placeholder="Create a strong password">
+                            <button type="button" class="password-toggle" onclick="window.commonFunctions.togglePassword('signup-password', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="input-validation" id="signup-password-validation"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <div class="password-container">
+                            <input type="password" id="signup-confirm-password" required minlength="8" placeholder="Repeat your password">
+                            <button type="button" class="password-toggle" onclick="window.commonFunctions.togglePassword('signup-confirm-password', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="input-validation" id="signup-confirm-password-validation"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="form-btn" id="signup-btn">
+                     <span id="signup-btn-text">Create Account</span>
+                     <i id="signup-btn-icon" class="fas fa-user-plus"></i>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                Already have an account? <a href="login.html">Login here</a>
+            </div>
+        </div>
+    </div>
+
+     <div id="otp-modal" class="modal">
+        <div class="modal-content">
+             <span class="modal-close" onclick="window.commonFunctions.closeModal('otp')">&times;</span>
+             <h3>Email Verification</h3>
+             <p style="text-align: center; margin-bottom: 2rem; color: rgba(255,255,255,0.8);">
+                 We've sent a verification code to your email. Please enter it below.
+             </p>
+             <div id="otp-error" class="error-message" style="display: none;"></div>
+             <div id="otp-success" class="success-message" style="display: none;"></div>
+             <form id="otp-form">
+                 <div class="form-group">
+                     <label for="otp-code">Verification Code</label>
+                     <input type="text" id="otp-code" required maxlength="6" pattern="\d{6}" inputmode="numeric" placeholder="Enter 6-digit code">
+                      <div class="input-validation" id="otp-code-validation"></div>
+                 </div>
+                 <button type="submit" class="form-btn" id="otp-btn">
+                     <span id="otp-btn-text">Verify Email</span>
+                     <i id="otp-btn-icon" class="fas fa-check"></i>
+                 </button>
+             </form>
+             <div class="auth-switch">
+                 <a onclick="window.authFunctions.resendOTP()" id="resend-otp">Resend Code</a>
+             </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Embed Supabase config directly for GitHub Pages
+        window.SUPABASE_CONFIG = {
+            url: 'https://izoraalaceastrtcncel.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+        };
+    </script>
+
+    <script src="js/config.js"></script> <script src="js/common.js"></script> <script src="js/particles.js"></script> <script src="js/auth.js"></script> <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Particles
+            window.initParticles();
+
+             // Check if already logged in, redirect to index
+             if (window.authFunctions) {
+                window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    if (session) {
+                         console.log("Already logged in, redirecting from signup page...");
+                         window.location.href = 'index.html'; // Redirect to index, auth.js handles dashboard redirect
+                    }
+                });
+             } else {
+                 console.error("Auth functions not loaded!");
+             }
+
+            const signupForm = document.getElementById('signup-form');
+            const signupBtn = document.getElementById('signup-btn');
+            const signupBtnText = document.getElementById('signup-btn-text');
+            const signupBtnIcon = document.getElementById('signup-btn-icon');
+            const otpForm = document.getElementById('otp-form');
+            const otpBtn = document.getElementById('otp-btn');
+            const otpBtnText = document.getElementById('otp-btn-text');
+            const otpBtnIcon = document.getElementById('otp-btn-icon');
+
+            // --- Signup Form Submission ---
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Collect all form data
+                const userData = {
+                    firstName: document.getElementById('signup-first-name').value.trim(),
+                    lastName: document.getElementById('signup-last-name').value.trim(),
+                    email: document.getElementById('signup-email').value.trim(),
+                    dateOfBirth: document.getElementById('signup-dob').value,
+                    username: document.getElementById('signup-username').value.trim(), // Already lowercase via input handler
+                    profession: window.commonFunctions.getProfessionValue(), // Use helper to get value
+                    password: document.getElementById('signup-password').value,
+                    confirmPassword: document.getElementById('signup-confirm-password').value
+                };
+
+                // Disable button and show loading state
+                signupBtn.disabled = true;
+                signupBtnText.textContent = 'Creating Account...';
+                signupBtnIcon.className = 'fas fa-spinner fa-spin';
+
+                // Call the handleSignup function from auth.js
+                const result = await window.authFunctions.handleSignup(userData);
+
+                // Re-enable button ONLY if signup failed before OTP step
+                if (!result.success) {
+                    signupBtn.disabled = false;
+                    signupBtnText.textContent = 'Create Account';
+                    signupBtnIcon.className = 'fas fa-user-plus';
+                    // Error messages are shown via bubbles within handleSignup
+                }
+                // If successful, the OTP modal is opened by handleSignup
+            });
+
+             // --- OTP Form Submission ---
+             otpForm.addEventListener('submit', async (e) => {
+                 e.preventDefault();
+                 const otpCode = document.getElementById('otp-code').value.trim();
+
+                 otpBtn.disabled = true;
+                 otpBtnText.textContent = 'Verifying...';
+                 otpBtnIcon.className = 'fas fa-spinner fa-spin';
+
+                 const result = await window.authFunctions.handleOTPVerification(otpCode);
+
+                 if (!result.success) {
+                     otpBtn.disabled = false;
+                     otpBtnText.textContent = 'Verify Email';
+                     otpBtnIcon.className = 'fas fa-check';
+                      // Error messages shown by handleOTPVerification
+                 }
+                 // Success is handled by redirection or state change listener in auth.js
+             });
+
+
+            // --- Username Suggestions & Auto Lowercase ---
+             const usernameInput = document.getElementById('signup-username');
+             const usernameValidationEl = document.getElementById('username-validation');
+             let usernameCheckTimeout = null;
+
+             usernameInput.addEventListener('focus', window.authFunctions.showUsernameSuggestions);
+
+             usernameInput.addEventListener('input', function() {
+                 // Force lowercase
+                 const cursorPosition = this.selectionStart; // Store cursor position
+                 this.value = this.value.toLowerCase();
+                 this.setSelectionRange(cursorPosition, cursorPosition); // Restore cursor position
+
+                 const username = this.value;
+                 clearTimeout(usernameCheckTimeout); // Clear previous timer
+
+                 const formatValidation = window.authFunctions.validateUsername(username);
+                 usernameValidationEl.textContent = formatValidation.message;
+                 usernameValidationEl.className = `username-validation ${formatValidation.valid ? 'success' : 'error'}`;
+
+                 if (formatValidation.valid) {
+                     usernameValidationEl.textContent = 'Checking availability...';
+                     usernameValidationEl.className = 'username-validation checking';
+
+                     usernameCheckTimeout = setTimeout(async () => {
+                         const isAvailable = await window.authFunctions.checkUsernameAvailability(username);
+                         // Check if input value hasn't changed while waiting
+                         if (document.getElementById('signup-username').value === username) {
+                              usernameValidationEl.textContent = isAvailable ? 'Username is available!' : 'Username is already taken';
+                              usernameValidationEl.className = `username-validation ${isAvailable ? 'success' : 'error'}`;
+                         }
+                     }, 800); // 800ms debounce
+                 }
+             });
+
+             // Update suggestions if name/dob change
+              ['signup-first-name', 'signup-last-name', 'signup-dob'].forEach(id => {
+                 document.getElementById(id).addEventListener('input', window.commonFunctions.debounce(window.authFunctions.showUsernameSuggestions, 500));
+              });
+
+             // Apply suggestion click handler (now handled in auth.js)
+             // document.querySelectorAll('.suggestion-item').forEach(item => {
+             //     item.addEventListener('click', function() { ... });
+             // });
+
+
+             // --- Initialize Custom Dropdown ---
+             window.commonFunctions.initializeProfessionDropdown();
+
+        });
+    </script>
+</body>
+</html>
