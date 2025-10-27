@@ -1,1 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ADV Technologies</title>
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Add specific styles for dashboard page */
+        body {
+            /* Ensure particles don't interfere with dashboard content if needed */
+            /* background: var(--dark-gray); */ /* Or keep particle bg */
+        }
+         /* Keep navbar fixed */
+         .navbar { position: fixed; }
 
+        /* Dashboard specific styles using classes from styles.css */
+        .dashboard-container {
+            padding-top: 100px; /* Space below fixed navbar */
+            min-height: calc(100vh - 100px);
+            position: relative;
+            z-index: 5; /* Below navbar but above particles */
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center; justify-content: center;
+            z-index: 3000;
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+
+        /* Role-specific content visibility */
+        .member-only, .admin-only {
+            display: none; /* Hidden by default */
+        }
+
+    </style>
+</head>
+<body>
+     <div id="loading-overlay" class="loading-overlay">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp; Loading Dashboard...
+    </div>
+
+    <canvas id="particles-canvas"></canvas> <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="logo" onclick="window.location.href='index.html'"> <img src="assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            </div>
+            <div class="auth-buttons" id="auth-buttons">
+                 <button class="btn-small" onclick="window.location.href='login.html'">Login</button>
+            </div>
+            <div class="user-profile" id="user-profile" style="display: none;"> <div class="user-avatar" id="user-avatar">AD</div>
+                <span id="profile-username">User</span> <button class="btn-small" onclick="window.authFunctions.logout()" style="margin-left: 1rem;">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container container section visible" id="dashboard-content" style="display: none;"> <div class="dashboard-header">
+            <h1 id="welcome-message">Welcome!</h1>
+            <p>Your personal space within ADV Technologies.</p>
+             <p>Your Role: <strong id="user-role-display" style="color: var(--gold);">User</strong></p>
+        </div>
+
+        <section class="dashboard-section glass-panel" id="profile-section">
+            <h2><i class="fas fa-user-circle"></i> Your Profile</h2>
+            <div class="profile-details">
+                <dl>
+                    <dt>Full Name:</dt><dd id="profile-fullname">Loading...</dd>
+                    <dt>Username:</dt><dd id="profile-username-detail">Loading...</dd>
+                    <dt>Email:</dt><dd id="profile-email">Loading...</dd>
+                    <dt>Date of Birth:</dt><dd id="profile-dob">Loading...</dd>
+                    <dt>Profession:</dt><dd id="profile-profession">Loading...</dd>
+                    <dt>Joined:</dt><dd id="profile-joined">Loading...</dd>
+                    <dt>Level:</dt><dd id="profile-level">Loading...</dd>
+                    <dt>XP:</dt><dd id="profile-xp">Loading...</dd>
+                </dl>
+            </div>
+             </section>
+
+        <section class="dashboard-section glass-panel" id="projects-dashboard">
+             <h2><i class="fas fa-project-diagram"></i> Projects Overview</h2>
+             <p style="margin-bottom: 1rem;">Access available projects:</p>
+             <div id="dashboard-projects-grid" class="projects-grid">
+                 <div class="project-card">
+                     <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
+                     <p>Your progress and access to the coding platform.</p>
+                     <button class="project-btn" onclick="alert('Accessing ADV Code Learner...')">
+                         Go to Learner <i class="fas fa-arrow-right"></i>
+                     </button>
+                 </div>
+                  <div class="project-card">
+                     <h3><i class="fas fa-rocket"></i> More Projects</h3>
+                     <p>Explore other projects as they become available.</p>
+                     <button class="project-btn coming-soon" disabled>
+                         Coming Soon <i class="fas fa-hourglass-half"></i>
+                     </button>
+                 </div>
+             </div>
+         </section>
+
+
+        <section class="dashboard-section glass-panel member-only" id="member-access-section">
+             <h2><i class="fas fa-star"></i> Member Access</h2>
+             <p>As a Member or Admin, you have access to exclusive content and previews.</p>
+             <ul>
+                <li>Access to all lessons (even locked ones).</li>
+                <li>Beta previews of upcoming projects.</li>
+                <li>Ability to view system logs and user progress (monitoring).</li>
+             </ul>
+             </section>
+
+        <section class="dashboard-section glass-panel admin-only" id="admin-controls-link-section">
+             <h2><i class="fas fa-user-shield"></i> Admin Controls</h2>
+             <p>Manage users, site settings, and projects.</p>
+             <button class="form-btn" onclick="window.location.href='admin-panel.html'">
+                Go to Admin Panel <i class="fas fa-cogs"></i>
+             </button>
+        </section>
+
+    </div> <script>
+        // Embed Supabase config directly
+        window.SUPABASE_CONFIG = {
+            url: 'https://izoraalaceastrtcncel.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+        };
+    </script>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize Particles
+            window.initParticles();
+
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const dashboardContent = document.getElementById('dashboard-content');
+
+            // --- Authentication Check ---
+            // Use Supabase client directly as auth.js might still be initializing auth state
+             try {
+                const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+
+                if (error) throw error;
+
+                if (!session) {
+                    // Not logged in, redirect to login page
+                    console.log("No session found, redirecting to login.");
+                    window.location.href = 'login.html?redirect=dashboard'; // Optional redirect param
+                    return; // Stop further execution
+                }
+
+                // User is logged in, proceed to fetch profile and display dashboard
+                console.log("Session valid, loading dashboard...");
+                 window.currentUser = session.user; // Ensure currentUser is set for auth.js functions
+                 window.isAuthenticated = true; // Ensure state is correct
+
+
+                // Fetch user profile data (including role) using the function from auth.js
+                const profile = await window.authFunctions.fetchUserProfile();
+
+                if (!profile) {
+                    // Handle case where profile fetch failed (rare after successful login)
+                    console.error("Failed to fetch user profile for logged-in user.");
+                    loadingOverlay.textContent = 'Error loading profile. Please try again.';
+                     // Maybe logout or show error message
+                    await window.authFunctions.logout(); // Force logout on profile error
+                    return;
+                }
+
+                // --- Populate Dashboard Content ---
+                populateDashboard(profile);
+
+                // --- Show/Hide Role-Specific Content ---
+                 const userRole = profile.role || 'user'; // Default to 'user' if role is missing
+                 document.getElementById('user-role-display').textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1); // Capitalize role
+
+                 if (userRole === 'admin') {
+                    document.querySelectorAll('.admin-only, .member-only').forEach(el => el.style.display = 'block');
+                 } else if (userRole === 'member') {
+                     document.querySelectorAll('.member-only').forEach(el => el.style.display = 'block');
+                     document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                 } else { // 'user' role
+                     document.querySelectorAll('.member-only, .admin-only').forEach(el => el.style.display = 'none');
+                 }
+
+
+                // Hide loading overlay and show content
+                loadingOverlay.style.display = 'none';
+                dashboardContent.style.display = 'block';
+
+                 // Initialize inactivity timer now that user is confirmed authenticated
+                 window.authFunctions.resetInactivityTimer();
+
+
+            } catch (err) {
+                 console.error("Dashboard Auth Check Error:", err);
+                 loadingOverlay.textContent = 'Authentication error. Redirecting to login...';
+                 // Redirect to login on any auth error
+                 setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+            }
+        });
+
+        function populateDashboard(profile) {
+            // Populate welcome message and profile details
+            document.getElementById('welcome-message').textContent = `Welcome back, ${profile.first_name || profile.username}!`;
+            document.getElementById('profile-fullname').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+            document.getElementById('profile-username').textContent = profile.username || 'N/A'; // Update navbar username too
+             document.getElementById('profile-username-detail').textContent = profile.username || 'N/A';
+            document.getElementById('profile-email').textContent = profile.email || 'N/A';
+            document.getElementById('profile-dob').textContent = profile.date_of_birth ? new Date(profile.date_of_birth).toLocaleDateString() : 'N/A';
+            document.getElementById('profile-profession').textContent = profile.profession || 'N/A';
+            document.getElementById('profile-joined').textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A';
+            document.getElementById('profile-level').textContent = profile.user_level || 1;
+            document.getElementById('profile-xp').textContent = profile.experience_points || 0;
+
+            // Update navbar avatar
+             const userAvatar = document.getElementById('user-avatar');
+             if (userAvatar) {
+                 let avatarText = 'U';
+                 if (profile.first_name && profile.last_name) {
+                     avatarText = profile.first_name.charAt(0).toUpperCase() + profile.last_name.charAt(0).toUpperCase();
+                 } else if (profile.first_name) {
+                     avatarText = profile.first_name.charAt(0).toUpperCase();
+                 } else if (profile.email) {
+                    avatarText = profile.email.charAt(0).toUpperCase();
+                 }
+                userAvatar.textContent = avatarText;
+             }
+              // Ensure user profile section in navbar is visible
+              const userProfileNav = document.getElementById('user-profile');
+              if (userProfileNav) userProfileNav.style.display = 'flex';
+              const authButtonsNav = document.getElementById('auth-buttons');
+               if (authButtonsNav) authButtonsNav.style.display = 'none';
+
+             // TODO: Load projects dynamically from Supabase `projects` table
+             loadProjects();
+        }
+
+         async function loadProjects() {
+             const grid = document.getElementById('dashboard-projects-grid');
+             if (!grid) return;
+
+             try {
+                // Fetch projects based on user role (e.g., admins/members see more)
+                 // For now, fetch all 'active' or 'coming_soon' projects
+                 const { data, error } = await window.supabaseClient
+                    .from('projects')
+                    .select('name, description, url, status, slug, image_url') // Select needed fields
+                    .in('status', ['active', 'coming_soon']) // Filter by status
+                    .order('display_order', { ascending: true }); // Order them
+
+                if (error) throw error;
+
+                // Clear default cards
+                grid.innerHTML = '';
+
+                if (data && data.length > 0) {
+                     data.forEach(project => {
+                         const card = document.createElement('div');
+                         card.className = 'project-card'; // Use existing style
+
+                         const iconClass = project.slug === 'adv-code-learner' ? 'fa-graduation-cap' : 'fa-rocket'; // Example icons
+
+                         card.innerHTML = `
+                             <h3><i class="fas ${iconClass}"></i> ${project.name}</h3>
+                             <p>${project.description}</p>
+                             ${project.status === 'active' ?
+                                `<button class="project-btn" onclick="window.location.href='${project.url || '#'}'">
+                                    Access Project <i class="fas fa-arrow-right"></i>
+                                </button>` :
+                                `<button class="project-btn coming-soon" disabled>
+                                    Coming Soon <i class="fas fa-hourglass-half"></i>
+                                </button>`
+                             }
+                         `;
+                         grid.appendChild(card);
+                     });
+                } else {
+                     grid.innerHTML = '<p>No projects available at the moment.</p>';
+                }
+
+             } catch (error) {
+                 console.error("Error loading projects:", error);
+                 grid.innerHTML = '<p style="color: var(--error-red);">Could not load projects.</p>';
+             }
+         }
+
+
+    </script>
+</body>
+</html>
