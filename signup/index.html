@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
+    <title>ADV Technologies</title> <meta name="description" content="ADV Technologies - Innovation with a One-Man Army and AI. Pioneering the future through cutting-edge technology and artificial intelligence.">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="logo" onclick="location.reload()">
+                <img src="assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+                </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about-me">About Me</a></li>
+                <li><a href="#about-adv">About ADV</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="auth-buttons" id="auth-buttons">
+                <button class="btn-small" onclick="window.location.href='login.html'">Login</button>
+                <button class="btn-small" onclick="window.location.href='signup.html'">Sign Up</button>
+            </div>
+            <div class="user-profile" id="user-profile" style="display: none;" onclick="window.authFunctions.redirectToProfile()">
+                <div class="user-avatar" id="user-avatar">AD</div>
+                <span>Dashboard</span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero section visible" id="home"> <div class="container">
+            <div class="hero-content">
+                <div class="typing-container">
+                    <div class="typing-text" id="typing-text-1"></div>
+                    <div class="typing-text" id="typing-text-2"></div>
+                </div>
+                <div class="hero-subtitle" id="hero-subtitle">Innovation with a One-Man Army and AI</div>
+                <button class="explore-btn" id="explore-btn" onclick="window.commonFunctions.smoothScrollTo('#about-me')">
+                    <i class="fas fa-arrow-down"></i> Explore
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-me section" id="about-me">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="about-content">
+                    <h2>About Me</h2>
+                    <p class="about-text">
+                        I'm Aadhidev S, building ADV Technologies as a one-man army working with AI to create innovative, meaningful projects.
+                        Combining human creativity with artificial intelligence to push the boundaries of what's possible in technology.
+                    </p>
+                    <a href="https://aadhidev-s.github.io/Portfolio" target="_blank" class="learn-more-btn">
+                        Learn More About Me <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-adv section" id="about-adv">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="adv-content">
+                    <h2>About ADV Technologies</h2>
+                    <p class="adv-description">
+                        ADV Technologies represents the future of innovation, where human ingenuity meets artificial intelligence.
+                        We're not just building software – we're crafting experiences, solving complex problems, and pushing the envelope of what technology can achieve.
+                        Through collaborative AI development and cutting-edge experimentation, we're creating tools and platforms that make a real difference.
+                        Every project is a step toward a more connected, intelligent, and innovative tomorrow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects section" id="projects">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="projects-content">
+                    <h2>Our Projects</h2>
+                    <div class="projects-grid">
+                        <div class="project-card">
+                            <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
+                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance. Master programming languages through engaging, hands-on experiences designed for the modern developer.</p>
+                            <a href="#" class="project-btn" onclick="alert('ADV Code Learner - Coming Soon! This project is currently under development.')">
+                                Visit Project <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-card">
+                            <h3><i class="fas fa-rocket"></i> More Projects Coming Soon</h3>
+                            <p>We're constantly innovating and developing new solutions. Stay tuned for exciting upcoming projects that will showcase the power of AI-human collaboration in solving real-world challenges.</p>
+                            <button class="project-btn coming-soon" disabled>
+                                Coming Soon <i class="fas fa-hourglass-half"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact section" id="contact">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="contact-content">
+                    <h2>Contact Us</h2>
+                    <div class="contact-panels">
+                        <div class="contact-panel">
+                            <h3><i class="fas fa-building"></i> ADV Technologies (Professional)</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item" onclick="window.open('mailto:advtechlabsglobal@gmail.com')">
+                                    <div class="contact-icon"> <i class="fas fa-envelope"></i> </div>
+                                    <h4>Email</h4> <p>advtechlabsglobal@gmail.com</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://github.com/ADV-Technologies', '_blank')">
+                                    <div class="contact-icon"> <i class="fab fa-github"></i> </div>
+                                    <h4>GitHub</h4> <p>ADV-Technologies</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-panel">
+                            <h3><i class="fas fa-user"></i> Personal</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item" onclick="window.open('mailto:aadhidevshiju@gmail.com')">
+                                    <div class="contact-icon"> <i class="fas fa-envelope"></i> </div>
+                                    <h4>Email</h4> <p>aadhidevshiju@gmail.com</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://github.com/Aadhidev-S', '_blank')">
+                                    <div class="contact-icon"> <i class="fab fa-github"></i> </div>
+                                    <h4>GitHub</h4> <p>Aadhidev-S</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://www.facebook.com/profile.php?id=61580155858865&sk=grid', '_blank')">
+                                     <div class="contact-icon"> <i class="fab fa-facebook"></i> </div>
+                                     <h4>Facebook</h4> <p>Aadhidev S</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://www.instagram.com/aadhidev_s_2010/', '_blank')">
+                                     <div class="contact-icon"> <i class="fab fa-instagram"></i> </div>
+                                     <h4>Instagram</h4> <p>@aadhidev_s_2010</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://x.com/_Aadhidev_S_', '_blank')">
+                                     <div class="contact-icon">
+                                         <svg width="35" height="35" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                          </svg>
+                                     </div>
+                                     <h4>X</h4> <p>@_Aadhidev_S_</p>
+                                </div>
+                                <div class="contact-item" onclick="alert('LinkedIn profile coming soon!')">
+                                     <div class="contact-icon"> <i class="fab fa-linkedin"></i> </div>
+                                     <h4>LinkedIn</h4> <p>Coming Soon</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="back-to-top" id="back-to-top" onclick="window.commonFunctions.smoothScrollTo('#home')">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        // Embed Supabase config directly for GitHub Pages
+        window.SUPABASE_CONFIG = {
+            url: 'https://izoraalaceastrtcncel.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+        };
+    </script>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Initialize Particles when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.initParticles(); // From particles.js
+
+             // Initialize Hero Typing Animation
+            setTimeout(() => {
+                const el1 = document.getElementById('typing-text-1');
+                const el2 = document.getElementById('typing-text-2');
+                const subtitle = document.getElementById('hero-subtitle');
+                const exploreBtn = document.getElementById('explore-btn');
+
+                function typeWriter(element, text, speed = 50, callback) {
+                    if (!element) return;
+                    let i = 0;
+                    element.innerHTML = ''; // Clear existing content
+                    element.classList.add('glow');
+                    function type() {
+                        if (i < text.length) {
+                            element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
+                            i++;
+                            setTimeout(type, speed);
+                        } else {
+                             // Keep cursor for a bit, then remove
+                            setTimeout(() => {
+                                element.innerHTML = text; // Remove cursor
+                                element.classList.remove('glow'); // Optional: remove glow after typing
+                                if (callback) callback();
+                            }, 800); // Cursor visible duration after typing
+                        }
+                    }
+                    type();
+                }
+
+                typeWriter(el1, 'Welcome to ADV Technologies', 50, () => {
+                    setTimeout(() => {
+                         typeWriter(el2, 'Innovation with AI', 50, () => {
+                             setTimeout(() => {
+                                if(subtitle) subtitle.classList.add('show');
+                                setTimeout(() => {
+                                    if(exploreBtn) exploreBtn.classList.add('show');
+                                }, 300); // Explore button delay
+                             }, 200); // Subtitle delay
+                         });
+                    }, 200); // Delay between lines
+                });
+            }, 300); // Initial delay
+        });
+
+        // Add event listeners for nav links smooth scroll (handled in common.js now)
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     document.querySelectorAll('.nav-links a').forEach(link => {
+        //         link.addEventListener('click', (e) => {
+        //             e.preventDefault();
+        //             const targetId = link.getAttribute('href');
+        //             window.commonFunctions.smoothScrollTo(targetId);
+        //         });
+        //     });
+        // });
+
+        // Note: Auth state check and UI update are handled globally by auth.js
+        // The checkAuthStatus function runs on DOMContentLoaded via auth.js
+
+    </script>
+</body>
+</html>
