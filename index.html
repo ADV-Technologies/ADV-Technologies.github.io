@@ -18,7 +18,7 @@
         <div class="container">
             <div class="logo" onclick="location.reload()">
                 <img src="assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
-                </div>
+            </div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about-me">About Me</a></li>
@@ -27,10 +27,10 @@
                 <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="auth-buttons" id="auth-buttons">
-                <button class="btn-small" onclick="window.location.href='login.html'">Login</button>
-                <button class="btn-small" onclick="window.location.href='signup.html'">Sign Up</button>
+                <button class="btn-small" onclick="window.location.href='/login/'">Login</button>
+                <button class="btn-small" onclick="window.location.href='/signup/'">Sign Up</button>
             </div>
-            <div class="user-profile" id="user-profile" style="display: none;" onclick="window.authFunctions.redirectToProfile()">
+            <div class="user-profile" id="user-profile" style="display: none;" onclick="redirectToDashboard()">
                 <div class="user-avatar" id="user-avatar">AD</div>
                 <span>Dashboard</span>
             </div>
@@ -57,8 +57,8 @@
                 <div class="about-content">
                     <h2>About Me</h2>
                     <p class="about-text">
-                        I'm Aadhidev S, building ADV Technologies as a one-man army working with AI to create innovative, meaningful projects.
-                        Combining human creativity with artificial intelligence to push the boundaries of what's possible in technology.
+                        I'm Aadhidev S, building ADV Technologies as a one-man army working with AI to create innovative, meaningful projects[cite: 2297].
+                        Combining human creativity with artificial intelligence to push the boundaries of what's possible in technology[cite: 2297].
                     </p>
                     <a href="https://aadhidev-s.github.io/Portfolio" target="_blank" class="learn-more-btn">
                         Learn More About Me <i class="fas fa-external-link-alt"></i>
@@ -74,10 +74,10 @@
                 <div class="adv-content">
                     <h2>About ADV Technologies</h2>
                     <p class="adv-description">
-                        ADV Technologies represents the future of innovation, where human ingenuity meets artificial intelligence.
-                        We're not just building software – we're crafting experiences, solving complex problems, and pushing the envelope of what technology can achieve.
-                        Through collaborative AI development and cutting-edge experimentation, we're creating tools and platforms that make a real difference.
-                        Every project is a step toward a more connected, intelligent, and innovative tomorrow.
+                        ADV Technologies represents the future of innovation, where human ingenuity meets artificial intelligence[cite: 2297].
+                        We're not just building software – we're crafting experiences, solving complex problems, and pushing the envelope of what technology can achieve[cite: 2297].
+                        Through collaborative AI development and cutting-edge experimentation, we're creating tools and platforms that make a real difference[cite: 2297].
+                        Every project is a step toward a more connected, intelligent, and innovative tomorrow[cite: 2297].
                     </p>
                 </div>
             </div>
@@ -92,14 +92,15 @@
                     <div class="projects-grid">
                         <div class="project-card">
                             <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
-                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance. Master programming languages through engaging, hands-on experiences designed for the modern developer.</p>
+                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance[cite: 2297].
+                            Master programming languages through engaging, hands-on experiences designed for the modern developer[cite: 2297].</p>
                             <a href="#" class="project-btn" onclick="alert('ADV Code Learner - Coming Soon! This project is currently under development.')">
                                 Visit Project <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                         <div class="project-card">
                             <h3><i class="fas fa-rocket"></i> More Projects Coming Soon</h3>
-                            <p>We're constantly innovating and developing new solutions. Stay tuned for exciting upcoming projects that will showcase the power of AI-human collaboration in solving real-world challenges.</p>
+                            <p>We're constantly innovating and developing new solutions[cite: 2297]. Stay tuned for exciting upcoming projects that will showcase the power of AI-human collaboration in solving real-world challenges[cite: 2297].</p>
                             <button class="project-btn coming-soon" disabled>
                                 Coming Soon <i class="fas fa-hourglass-half"></i>
                             </button>
@@ -152,7 +153,7 @@
                                      <div class="contact-icon">
                                          <svg width="35" height="35" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
                                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                                          </svg>
+                                         </svg>
                                      </div>
                                      <h4>X</h4> <p>@_Aadhidev_S_</p>
                                 </div>
@@ -188,65 +189,84 @@
     <script>
         // Initialize Particles when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            window.initParticles(); // From particles.js
+            if (typeof window.initParticles === 'function') {
+                window.initParticles(); // From particles.js
+            } else {
+                console.error("Particle system initialization function not found.");
+            }
 
-             // Initialize Hero Typing Animation
-            setTimeout(() => {
-                const el1 = document.getElementById('typing-text-1');
-                const el2 = document.getElementById('typing-text-2');
-                const subtitle = document.getElementById('hero-subtitle');
-                const exploreBtn = document.getElementById('explore-btn');
+            // Initialize Hero Typing Animation (ensure elements exist)
+            const el1 = document.getElementById('typing-text-1');
+            const el2 = document.getElementById('typing-text-2');
+            const subtitle = document.getElementById('hero-subtitle');
+            const exploreBtn = document.getElementById('explore-btn');
 
-                function typeWriter(element, text, speed = 50, callback) {
-                    if (!element) return;
-                    let i = 0;
-                    element.innerHTML = ''; // Clear existing content
-                    element.classList.add('glow');
-                    function type() {
-                        if (i < text.length) {
-                            element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
-                            i++;
-                            setTimeout(type, speed);
-                        } else {
-                             // Keep cursor for a bit, then remove
-                            setTimeout(() => {
-                                element.innerHTML = text; // Remove cursor
-                                element.classList.remove('glow'); // Optional: remove glow after typing
-                                if (callback) callback();
-                            }, 800); // Cursor visible duration after typing
-                        }
-                    }
-                    type();
-                }
+            if (el1 && el2 && subtitle && exploreBtn) {
+                setTimeout(() => {
+                    function typeWriter(element, text, speed = 50, callback) {
+                        let i = 0;
+                        element.innerHTML = ''; // Clear existing content
+                        element.classList.add('glow');
 
-                typeWriter(el1, 'Welcome to ADV Technologies', 50, () => {
-                    setTimeout(() => {
-                         typeWriter(el2, 'Innovation with AI', 50, () => {
-                             setTimeout(() => {
-                                if(subtitle) subtitle.classList.add('show');
+                        function type() {
+                            if (i < text.length) {
+                                element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
+                                i++;
+                                setTimeout(type, speed);
+                            } else {
+                                // Keep cursor for a bit, then remove
                                 setTimeout(() => {
-                                    if(exploreBtn) exploreBtn.classList.add('show');
-                                }, 300); // Explore button delay
-                             }, 200); // Subtitle delay
-                         });
-                    }, 200); // Delay between lines
+                                    element.innerHTML = text; // Remove cursor
+                                    element.classList.remove('glow'); // Optional: remove glow after typing
+                                    if (callback) callback();
+                                }, 800); // Cursor visible duration after typing
+                            }
+                        }
+                        type();
+                    }
+
+                    typeWriter(el1, 'Welcome to ADV Technologies', 50, () => {
+                        setTimeout(() => {
+                            typeWriter(el2, 'Innovation with AI', 50, () => {
+                                setTimeout(() => {
+                                    subtitle.classList.add('show');
+                                    setTimeout(() => {
+                                        exploreBtn.classList.add('show');
+                                    }, 300); // Explore button delay
+                                }, 200); // Subtitle delay
+                            });
+                        }, 200); // Delay between lines
+                    });
+                }, 300); // Initial delay
+            } else {
+                 console.warn("Hero animation elements not found.");
+            }
+
+            // Add event listeners for nav links smooth scroll (now in common.js)
+            // Initialize common features like scroll animations, navbar effect
+            if (window.commonFunctions) {
+                window.commonFunctions.initializeScrollAnimations();
+                window.commonFunctions.initializeNavbarEffect();
+                // Add click handlers for nav links AFTER common.js is loaded
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = link.getAttribute('href');
+                        window.commonFunctions.smoothScrollTo(targetId);
+                    });
                 });
-            }, 300); // Initial delay
+            } else {
+                console.error("Common functions not loaded.");
+            }
+
+            // Note: Auth state check and UI update are handled globally by auth.js
+            // which runs its check on DOMContentLoaded
         });
 
-        // Add event listeners for nav links smooth scroll (handled in common.js now)
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     document.querySelectorAll('.nav-links a').forEach(link => {
-        //         link.addEventListener('click', (e) => {
-        //             e.preventDefault();
-        //             const targetId = link.getAttribute('href');
-        //             window.commonFunctions.smoothScrollTo(targetId);
-        //         });
-        //     });
-        // });
-
-        // Note: Auth state check and UI update are handled globally by auth.js
-        // The checkAuthStatus function runs on DOMContentLoaded via auth.js
+        // Updated function to redirect to the correct folder path
+        function redirectToDashboard() {
+            window.location.href = '/dashboard/'; // Use folder path
+        }
 
     </script>
 </body>
