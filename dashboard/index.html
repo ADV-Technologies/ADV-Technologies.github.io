@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - ADV Technologies</title>
-    <link rel="icon" type="image/png" href="assets/logo.png">
-    <link rel="apple-touch-icon" href="assets/logo.png">
+
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="apple-touch-icon" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/styles.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    <link rel="stylesheet" href="css/styles.css">
+    
     <style>
-        /* Add specific styles for dashboard page */
+        /* Specific styles for the dashboard page */
         body {
-            /* Ensure particles don't interfere with dashboard content if needed */
-            /* background: var(--dark-gray); */ /* Or keep particle bg */
+            /* Keep particle background */
         }
-         /* Keep navbar fixed */
-         .navbar { position: fixed; }
-
-        /* Dashboard specific styles using classes from styles.css */
+        .navbar {
+            position: fixed; /* Keep navbar fixed */
+        }
         .dashboard-container {
             padding-top: 100px; /* Space below fixed navbar */
             min-height: calc(100vh - 100px);
@@ -30,43 +32,119 @@
         .loading-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9); /* Darker overlay */
             display: flex;
             align-items: center; justify-content: center;
+            flex-direction: column; /* Stack icon and text */
+            gap: 1rem;
             z-index: 3000;
             color: var(--gold);
             font-size: 1.5rem;
+            text-align: center;
         }
 
         /* Role-specific content visibility */
         .member-only, .admin-only {
             display: none; /* Hidden by default */
         }
+        
+        /* Ensure profile-details in styles.css is applied */
+        .profile-details dl {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1rem 1.5rem; /* row-gap column-gap */
+            align-items: center;
+        }
+        .profile-details dt {
+            font-weight: 600;
+            color: var(--gold);
+            text-align: right; /* Align labels */
+        }
+        .profile-details dd {
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-all; /* Prevent long emails/usernames from breaking layout */
+        }
+        
+        .dashboard-header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+        }
+        
+        #user-role-display {
+            color: var(--gold);
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        
+        /* Make sure form-btn style (used for admin link) is loaded */
+        .form-btn {
+             /* styles.css should handle this, but adding fallback */
+             display: inline-flex;
+             padding: 1rem 1.5rem;
+             background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+             border: none;
+             border-radius: 12px;
+             color: var(--black);
+             font-size: 1.1rem;
+             font-weight: 700;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             margin-top: 1.5rem;
+             font-family: 'Montserrat', sans-serif;
+             align-items: center;
+             justify-content: center;
+             gap: 0.5rem;
+             text-decoration: none; /* For link styled as button */
+        }
+        .form-btn:hover {
+             transform: translateY(-3px);
+             box-shadow: 0 15px 35px var(--shadow-gold);
+             background: linear-gradient(45deg, var(--light-gold), var(--gold));
+        }
 
     </style>
 </head>
 <body>
-     <div id="loading-overlay" class="loading-overlay">
-        <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp; Loading Dashboard...
+    
+    <div id="loading-overlay" class="loading-overlay">
+        <div>
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 1rem;">Loading Dashboard...</p>
+        </div>
     </div>
 
-    <canvas id="particles-canvas"></canvas> <nav class="navbar" id="navbar">
+    <canvas id="particles-canvas"></canvas>
+
+    <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo" onclick="window.location.href='index.html'"> <img src="assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
             </div>
-            <div class="auth-buttons" id="auth-buttons">
-                 <button class="btn-small" onclick="window.location.href='login.html'">Login</button>
+            
+            <div class="auth-buttons" id="auth-buttons" style="display: none;">
+                 <button class="btn-small" onclick="window.location.href='/login/'">Login</button>
             </div>
-            <div class="user-profile" id="user-profile" style="display: none;"> <div class="user-avatar" id="user-avatar">AD</div>
-                <span id="profile-username">User</span> <button class="btn-small" onclick="window.authFunctions.logout()" style="margin-left: 1rem;">Logout</button>
+            <div class="user-profile" id="user-profile" style="display: none;">
+                <div class="user-avatar" id="user-avatar">AD</div>
+                <span id="profile-username">User</span>
+                <a href="/" class="btn-small" style="margin-left: 1rem; text-decoration: none;">Home</a>
+                <button class="btn-small" onclick="window.authFunctions.logout()" style="margin-left: 0.5rem;">Logout</button>
             </div>
         </div>
     </nav>
 
-    <div class="dashboard-container container section visible" id="dashboard-content" style="display: none;"> <div class="dashboard-header">
+    <div class="dashboard-container container section" id="dashboard-content" style="display: none;">
+        
+        <div class="dashboard-header">
             <h1 id="welcome-message">Welcome!</h1>
             <p>Your personal space within ADV Technologies.</p>
-             <p>Your Role: <strong id="user-role-display" style="color: var(--gold);">User</strong></p>
+            <p>Your Role: <strong id="user-role-display">Loading...</strong></p>
         </div>
 
         <section class="dashboard-section glass-panel" id="profile-section">
@@ -83,206 +161,238 @@
                     <dt>XP:</dt><dd id="profile-xp">Loading...</dd>
                 </dl>
             </div>
-             </section>
+        </section>
 
         <section class="dashboard-section glass-panel" id="projects-dashboard">
              <h2><i class="fas fa-project-diagram"></i> Projects Overview</h2>
              <p style="margin-bottom: 1rem;">Access available projects:</p>
              <div id="dashboard-projects-grid" class="projects-grid">
                  <div class="project-card">
-                     <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
-                     <p>Your progress and access to the coding platform.</p>
-                     <button class="project-btn" onclick="alert('Accessing ADV Code Learner...')">
-                         Go to Learner <i class="fas fa-arrow-right"></i>
-                     </button>
-                 </div>
-                  <div class="project-card">
-                     <h3><i class="fas fa-rocket"></i> More Projects</h3>
-                     <p>Explore other projects as they become available.</p>
-                     <button class="project-btn coming-soon" disabled>
-                         Coming Soon <i class="fas fa-hourglass-half"></i>
-                     </button>
+                     <h3><i class="fas fa-spinner fa-spin"></i> Loading Projects...</h3>
+                     <p>Fetching project data from the database...</p>
                  </div>
              </div>
          </section>
-
 
         <section class="dashboard-section glass-panel member-only" id="member-access-section">
              <h2><i class="fas fa-star"></i> Member Access</h2>
              <p>As a Member or Admin, you have access to exclusive content and previews.</p>
              <ul>
-                <li>Access to all lessons (even locked ones).</li>
-                <li>Beta previews of upcoming projects.</li>
-                <li>Ability to view system logs and user progress (monitoring).</li>
+                 <li>Access to all lessons (even locked ones).</li>
+                 <li>Beta previews of upcoming projects.</li>
+                 <li>Ability to view system logs and user progress (monitoring).</li>
              </ul>
-             </section>
+        </section>
 
         <section class="dashboard-section glass-panel admin-only" id="admin-controls-link-section">
              <h2><i class="fas fa-user-shield"></i> Admin Controls</h2>
              <p>Manage users, site settings, and projects.</p>
-             <button class="form-btn" onclick="window.location.href='admin-panel.html'">
+             <a href="/admin-panel/" class="form-btn">
                 Go to Admin Panel <i class="fas fa-cogs"></i>
-             </button>
+             </a>
         </section>
 
     </div> <script>
         // Embed Supabase config directly
         window.SUPABASE_CONFIG = {
             url: 'https://izoraalaceastrtcncel.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+            anonKey: 'eyJhbGciOiJIUzIVNiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
         };
     </script>
 
-    <script src="js/config.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/particles.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/particles.js"></script>
+    <script src="/js/auth.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // Initialize Particles
-            window.initParticles();
+            if (typeof window.initParticles === 'function') {
+                window.initParticles();
+            } else {
+                console.error("Particle system initialization function not found.");
+            }
 
             const loadingOverlay = document.getElementById('loading-overlay');
             const dashboardContent = document.getElementById('dashboard-content');
 
             // --- Authentication Check ---
-            // Use Supabase client directly as auth.js might still be initializing auth state
-             try {
+            // auth.js (loaded earlier) should have run its initial check
+            // We can check the state from authFunctions
+            
+            if (typeof window.authFunctions === 'undefined') {
+                console.error("CRITICAL: auth.js failed to load.");
+                 loadingOverlay.innerHTML = `<p style="color:var(--error-red);">Error: Auth script failed. Redirecting...</p>`;
+                 setTimeout(() => { window.location.href = '/login/'; }, 2000);
+                return;
+            }
+
+            // Wait for auth to be initialized
+            // We use getSession() directly for an immediate check
+            try {
                 const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-
-                if (error) throw error;
-
+                
+                if (error) throw error; // Handle Supabase error
+                
                 if (!session) {
-                    // Not logged in, redirect to login page
-                    console.log("No session found, redirecting to login.");
-                    window.location.href = 'login.html?redirect=dashboard'; // Optional redirect param
-                    return; // Stop further execution
+                    // Not logged in
+                    throw new Error("No active session. Redirecting to login.");
                 }
 
-                // User is logged in, proceed to fetch profile and display dashboard
-                console.log("Session valid, loading dashboard...");
-                 window.currentUser = session.user; // Ensure currentUser is set for auth.js functions
-                 window.isAuthenticated = true; // Ensure state is correct
+                // --- User is Logged In ---
+                console.log("Dashboard: Session valid, loading profile...");
+                
+                // Set globals for other scripts if not already set by onAuthStateChange
+                window.isAuthenticated = true;
+                window.currentUser = session.user;
 
-
-                // Fetch user profile data (including role) using the function from auth.js
+                // Fetch user profile data (including role)
                 const profile = await window.authFunctions.fetchUserProfile();
-
+                
                 if (!profile) {
-                    // Handle case where profile fetch failed (rare after successful login)
-                    console.error("Failed to fetch user profile for logged-in user.");
-                    loadingOverlay.textContent = 'Error loading profile. Please try again.';
-                     // Maybe logout or show error message
-                    await window.authFunctions.logout(); // Force logout on profile error
-                    return;
+                    // This happens if the user is authenticated (in auth.users)
+                    // but their profile hasn't been created in public.user_profiles yet
+                    // (e.g., email not verified, or trigger failed/delayed).
+                    console.warn("User is logged in but profile data is not found. Awaiting verification or trigger.");
+                    // For a dashboard, we MUST have a profile.
+                    // If they are logged in but email is not verified, log them out and send to login.
+                    if (session.user && !session.user.email_confirmed_at) {
+                         loadingOverlay.innerHTML = `
+                            <div>
+                                <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
+                                <p style="margin-top: 1rem; color: var(--error-red);">Your email is not verified.</p>
+                                <p style="font-size: 1rem; margin-top: 1rem;">Please check your inbox or log in to resend verification.</p>
+                            </div>`;
+                        await window.authFunctions.logout(); // Log them out
+                        setTimeout(() => { window.location.href = '/login/'; }, 3000);
+                        return;
+                    }
+                    
+                    // If email IS verified but profile is missing (DB issue)
+                    throw new Error("Critical Error: Logged in but profile data is missing.");
                 }
 
-                // --- Populate Dashboard Content ---
+                // --- Profile Fetched Successfully ---
+                
+                // Populate common UI (Navbar)
+                window.authFunctions.updateAuthUI(); // Updates navbar avatar, username, etc.
+                
+                // Populate Dashboard Content
                 populateDashboard(profile);
 
-                // --- Show/Hide Role-Specific Content ---
-                 const userRole = profile.role || 'user'; // Default to 'user' if role is missing
-                 document.getElementById('user-role-display').textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1); // Capitalize role
+                // Show/Hide Role-Specific Content
+                const userRole = profile.role || 'user';
+                document.getElementById('user-role-display').textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1);
 
-                 if (userRole === 'admin') {
+                if (userRole === 'admin') {
                     document.querySelectorAll('.admin-only, .member-only').forEach(el => el.style.display = 'block');
-                 } else if (userRole === 'member') {
-                     document.querySelectorAll('.member-only').forEach(el => el.style.display = 'block');
-                     document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-                 } else { // 'user' role
-                     document.querySelectorAll('.member-only, .admin-only').forEach(el => el.style.display = 'none');
-                 }
-
+                } else if (userRole === 'member') {
+                    document.querySelectorAll('.member-only').forEach(el => el.style.display = 'block');
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                } else { // 'user' role
+                    document.querySelectorAll('.member-only, .admin-only').forEach(el => el.style.display = 'none');
+                }
 
                 // Hide loading overlay and show content
                 loadingOverlay.style.display = 'none';
                 dashboardContent.style.display = 'block';
+                dashboardContent.classList.add('visible'); // Trigger fade-in
 
-                 // Initialize inactivity timer now that user is confirmed authenticated
-                 window.authFunctions.resetInactivityTimer();
-
+                // Initialize inactivity timer now that user is confirmed authenticated
+                window.authFunctions.resetInactivityTimer();
 
             } catch (err) {
-                 console.error("Dashboard Auth Check Error:", err);
-                 loadingOverlay.textContent = 'Authentication error. Redirecting to login...';
-                 // Redirect to login on any auth error
-                 setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                 console.error("Dashboard Auth Check Error:", err.message);
+                 loadingOverlay.innerHTML = `
+                    <div>
+                        <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
+                        <p style="margin-top: 1rem; color: var(--error-red);">${err.message}</p>
+                        <p style="font-size: 1rem; margin-top: 1rem;">Redirecting to login...</p>
+                    </div>`;
+                 setTimeout(() => { window.location.href = '/login/'; }, 3000);
             }
         });
 
         function populateDashboard(profile) {
             // Populate welcome message and profile details
             document.getElementById('welcome-message').textContent = `Welcome back, ${profile.first_name || profile.username}!`;
-            document.getElementById('profile-fullname').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
-            document.getElementById('profile-username').textContent = profile.username || 'N/A'; // Update navbar username too
-             document.getElementById('profile-username-detail').textContent = profile.username || 'N/A';
+            document.getElementById('profile-fullname').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'N/A';
+            document.getElementById('profile-username-detail').textContent = profile.username || 'N/A';
             document.getElementById('profile-email').textContent = profile.email || 'N/A';
-            document.getElementById('profile-dob').textContent = profile.date_of_birth ? new Date(profile.date_of_birth).toLocaleDateString() : 'N/A';
+            document.getElementById('profile-dob').textContent = profile.date_of_birth ? new Date(profile.date_of_birth + 'T00:00:00').toLocaleDateString() : 'N/A'; // Add time to avoid timezone shift
             document.getElementById('profile-profession').textContent = profile.profession || 'N/A';
             document.getElementById('profile-joined').textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A';
             document.getElementById('profile-level').textContent = profile.user_level || 1;
             document.getElementById('profile-xp').textContent = profile.experience_points || 0;
-
-            // Update navbar avatar
-             const userAvatar = document.getElementById('user-avatar');
-             if (userAvatar) {
-                 let avatarText = 'U';
-                 if (profile.first_name && profile.last_name) {
-                     avatarText = profile.first_name.charAt(0).toUpperCase() + profile.last_name.charAt(0).toUpperCase();
-                 } else if (profile.first_name) {
-                     avatarText = profile.first_name.charAt(0).toUpperCase();
-                 } else if (profile.email) {
-                    avatarText = profile.email.charAt(0).toUpperCase();
-                 }
-                userAvatar.textContent = avatarText;
-             }
-              // Ensure user profile section in navbar is visible
-              const userProfileNav = document.getElementById('user-profile');
-              if (userProfileNav) userProfileNav.style.display = 'flex';
-              const authButtonsNav = document.getElementById('auth-buttons');
-               if (authButtonsNav) authButtonsNav.style.display = 'none';
-
-             // TODO: Load projects dynamically from Supabase `projects` table
-             loadProjects();
+            
+            // Note: Navbar update is handled by updateAuthUI(), which was called in the init logic
+            
+            // Load projects dynamically
+            loadDashboardProjects();
         }
 
-         async function loadProjects() {
+        async function loadDashboardProjects() {
              const grid = document.getElementById('dashboard-projects-grid');
              if (!grid) return;
+             
+             // Get user role (already fetched)
+             const userRole = window.authFunctions.getUserRole ? window.authFunctions.getUserRole() : 'user';
 
              try {
-                // Fetch projects based on user role (e.g., admins/members see more)
-                 // For now, fetch all 'active' or 'coming_soon' projects
-                 const { data, error } = await window.supabaseClient
+                 let query = window.supabaseClient
                     .from('projects')
                     .select('name, description, url, status, slug, image_url') // Select needed fields
-                    .in('status', ['active', 'coming_soon']) // Filter by status
-                    .order('display_order', { ascending: true }); // Order them
+                    .order('display_order', { ascending: true });
+
+                // Non-admins only see 'active' or 'coming_soon' projects
+                if (userRole !== 'admin') {
+                     query = query.in('status', ['active', 'coming_soon']);
+                }
+                // Admins/Members see all statuses (handled by RLS select policy)
+
+                const { data, error } = await query;
 
                 if (error) throw error;
-
-                // Clear default cards
-                grid.innerHTML = '';
-
+                
+                grid.innerHTML = ''; // Clear loading
+                
                 if (data && data.length > 0) {
                      data.forEach(project => {
                          const card = document.createElement('div');
                          card.className = 'project-card'; // Use existing style
 
-                         const iconClass = project.slug === 'adv-code-learner' ? 'fa-graduation-cap' : 'fa-rocket'; // Example icons
+                         const iconClass = project.slug === 'adv-code-learner' ? 'fa-graduation-cap' : 'fa-rocket';
+                         let buttonHtml = '';
+                         
+                         switch(project.status) {
+                             case 'active':
+                                 buttonHtml = `<a href="${project.url || '#'}" class="project-btn">
+                                     Access Project <i class="fas fa-arrow-right"></i>
+                                 </a>`;
+                                 break;
+                             case 'maintenance':
+                                 buttonHtml = `<button class="project-btn coming-soon" disabled>
+                                     Maintenance <i class="fas fa-tools"></i>
+                                 </button>`;
+                                 break;
+                             case 'deprecated':
+                                  buttonHtml = `<button class="project-btn coming-soon" disabled style="opacity: 0.4;">
+                                     Deprecated <i class="fas fa-ban"></i>
+                                 </button>`;
+                                 break;
+                             case 'coming_soon':
+                             default:
+                                 buttonHtml = `<button class="project-btn coming-soon" disabled>
+                                     Coming Soon <i class="fas fa-hourglass-half"></i>
+                                 </button>`;
+                                 break;
+                         }
 
                          card.innerHTML = `
-                             <h3><i class="fas ${iconClass}"></i> ${project.name}</h3>
+                             <h3><i class="fas ${iconClass}"></i> ${project.name} ${project.status !== 'active' ? `(${project.status.replace('_', ' ')})` : ''}</h3>
                              <p>${project.description}</p>
-                             ${project.status === 'active' ?
-                                `<button class="project-btn" onclick="window.location.href='${project.url || '#'}'">
-                                    Access Project <i class="fas fa-arrow-right"></i>
-                                </button>` :
-                                `<button class="project-btn coming-soon" disabled>
-                                    Coming Soon <i class="fas fa-hourglass-half"></i>
-                                </button>`
-                             }
+                             ${buttonHtml}
                          `;
                          grid.appendChild(card);
                      });
@@ -295,7 +405,6 @@
                  grid.innerHTML = '<p style="color: var(--error-red);">Could not load projects.</p>';
              }
          }
-
 
     </script>
 </body>
