@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - ADV Technologies</title>
-    <link rel="icon" type="image/png" href="assets/logo.png">
-    <link rel="apple-touch-icon" href="assets/logo.png">
+    
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="apple-touch-icon" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/styles.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    <link rel="stylesheet" href="css/styles.css">
+    
     <style>
-        /* Add specific styles for login page container */
+        /* Specific styles for the login page container */
         .auth-container {
             min-height: 100vh;
             display: flex;
@@ -31,7 +35,7 @@
             width: 100%;
             box-shadow: 0 20px 60px var(--shadow-gold);
             animation: slideIn 0.6s ease;
-             position: relative; /* For close button if needed */
+            position: relative; /* For close button if needed */
         }
          @keyframes slideIn {
              from { transform: translateY(-30px); opacity: 0; }
@@ -65,16 +69,16 @@
             transform: translateX(-5px);
             color: var(--light-gold);
         }
-        /* Use modal styles for form elements */
-        /* Styles for form-group, input, password-container, input-validation, form-btn, auth-switch */
-        /* are already defined in styles.css under .modal section */
-
+        /* All other form styles (form-group, input, etc.) are loaded from /css/styles.css */
     </style>
 </head>
 <body>
-    <canvas id="particles-canvas"></canvas> <div class="auth-container">
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="auth-container">
         <div class="auth-card">
-             <a href="index.html" class="back-link">
+            
+            <a href="/" class="back-link">
                 <i class="fas fa-arrow-left"></i>
                 Back to Home
             </a>
@@ -110,9 +114,10 @@
             </form>
 
             <div class="auth-switch">
-                Don't have an account? <a href="signup.html">Sign up here</a>
+                Don't have an account? 
+                <a href="/signup/">Sign up here</a>
             </div>
-            </div>
+        </div>
     </div>
 
     <script>
@@ -123,31 +128,39 @@
         };
     </script>
 
-    <script src="js/config.js"></script> <script src="js/common.js"></script> <script src="js/particles.js"></script> <script src="js/auth.js"></script> <script>
+    <script src="/js/config.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/particles.js"></script>
+    <script src="/js/auth.js"></script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize Particles
-            window.initParticles();
-
-            // Check if already logged in, redirect to index (which redirects to dashboard if needed)
-            // Auth check now runs automatically in auth.js
-            // If user is authenticated, redirect them from login page
-             if (window.authFunctions) {
-                window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (typeof window.initParticles === 'function') {
+                window.initParticles();
+            } else {
+                console.error("Particle system initialization function not found.");
+            }
+            
+            // Initialize auth functions (like inactivity timer)
+            if (typeof window.authFunctions === 'object') {
+                 // Check if already logged in (getSession is fast, onAuthStateChange might take longer)
+                 window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
                     if (session) {
                          console.log("Already logged in, redirecting from login page...");
-                         window.location.href = 'index.html'; // Redirect to index, auth.js handles dashboard redirect
+                         window.location.href = '/dashboard/'; // Send to dashboard if already logged in
                     }
                 });
-             } else {
-                 console.error("Auth functions not loaded!");
-             }
+            } else {
+                console.error("Auth functions not loaded!");
+            }
 
-
+            // --- Form Handler ---
             const loginForm = document.getElementById('login-form');
             const loginBtn = document.getElementById('login-btn');
             const loginBtnText = document.getElementById('login-btn-text');
             const loginBtnIcon = document.getElementById('login-btn-icon');
-
+            const loginErrorEl = document.getElementById('login-error');
 
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -158,19 +171,37 @@
                 loginBtn.disabled = true;
                 loginBtnText.textContent = 'Logging in...';
                 loginBtnIcon.className = 'fas fa-spinner fa-spin';
+                loginErrorEl.style.display = 'none'; // Hide old errors
 
                 // Call the handleLogin function from auth.js
+                // handleLogin now shows bubble validation internally
                 const result = await window.authFunctions.handleLogin(email, password);
 
-                 // Re-enable button and restore state ONLY if login failed here
-                 // If successful, redirection happens, so no need to restore
-                 if (!result.success) {
+                if (result.success) {
+                    // Success! Show success message and redirect to index.html
+                    // auth.js onAuthStateChange will handle the navbar update on index.html
+                    loginErrorEl.className = 'success-message';
+                    loginErrorEl.textContent = 'Login successful! Redirecting...';
+                    loginErrorEl.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/'; // Redirect to root (index.html)
+                    }, 1000);
+
+                } else {
+                    // Re-enable button and restore state
                     loginBtn.disabled = false;
                     loginBtnText.textContent = 'Login';
                     loginBtnIcon.className = 'fas fa-sign-in-alt';
-                    // Error messages are shown via showInputValidation within handleLogin
-                 }
-                 // Success is handled by redirection or state change listener in auth.js
+                    
+                    // Bubble errors are shown inside handleLogin, 
+                    // but we can show a general error if bubbles aren't specific
+                    if (!document.getElementById('login-password-validation').classList.contains('show') && !document.getElementById('login-email-validation').classList.contains('show')) {
+                        loginErrorEl.className = 'error-message';
+                        loginErrorEl.textContent = result.error || 'An unknown error occurred.';
+                        loginErrorEl.style.display = 'block';
+                    }
+                }
             });
         });
     </script>
