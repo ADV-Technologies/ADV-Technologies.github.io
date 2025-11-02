@@ -48,7 +48,7 @@
             display: none; /* Hidden by default */
         }
         
-        /* Ensure profile-details in styles.css is applied */
+        /* Profile Details Grid */
         .profile-details dl {
             display: grid;
             grid-template-columns: auto 1fr;
@@ -62,7 +62,7 @@
         }
         .profile-details dd {
             color: rgba(255, 255, 255, 0.9);
-            word-break: break-all; /* Prevent long emails/usernames from breaking layout */
+            word-break: break-all; 
         }
         
         .dashboard-header p {
@@ -80,9 +80,10 @@
             border-radius: 8px;
             display: inline-block;
             margin-top: 0.5rem;
+            text-transform: capitalize;
         }
         
-        /* Make sure form-btn style (used for admin link) is loaded */
+        /* Button style for Admin Panel link */
         .form-btn {
              /* styles.css should handle this, but adding fallback */
              display: inline-flex;
@@ -196,7 +197,7 @@
         // Embed Supabase config directly
         window.SUPABASE_CONFIG = {
             url: 'https://izoraalaceastrtcncel.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzIVNiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
         };
     </script>
 
@@ -218,9 +219,6 @@
             const dashboardContent = document.getElementById('dashboard-content');
 
             // --- Authentication Check ---
-            // auth.js (loaded earlier) should have run its initial check
-            // We can check the state from authFunctions
-            
             if (typeof window.authFunctions === 'undefined') {
                 console.error("CRITICAL: auth.js failed to load.");
                  loadingOverlay.innerHTML = `<p style="color:var(--error-red);">Error: Auth script failed. Redirecting...</p>`;
@@ -228,8 +226,8 @@
                 return;
             }
 
-            // Wait for auth to be initialized
-            // We use getSession() directly for an immediate check
+            // We must wait for the initial auth check (INITIAL_SESSION) to complete
+            // A simple getSession() is the most reliable way to check
             try {
                 const { data: { session }, error } = await window.supabaseClient.auth.getSession();
                 
@@ -243,34 +241,36 @@
                 // --- User is Logged In ---
                 console.log("Dashboard: Session valid, loading profile...");
                 
-                // Set globals for other scripts if not already set by onAuthStateChange
+                // Set globals (auth.js might have done this, but we ensure it)
                 window.isAuthenticated = true;
                 window.currentUser = session.user;
 
                 // Fetch user profile data (including role)
-                const profile = await window.authFunctions.fetchUserProfile();
+                // This function is defined in auth.js
+                const profile = await window.authFunctions.fetchUserProfile(); 
                 
                 if (!profile) {
-                    // This happens if the user is authenticated (in auth.users)
-                    // but their profile hasn't been created in public.user_profiles yet
-                    // (e.g., email not verified, or trigger failed/delayed).
-                    console.warn("User is logged in but profile data is not found. Awaiting verification or trigger.");
-                    // For a dashboard, we MUST have a profile.
-                    // If they are logged in but email is not verified, log them out and send to login.
+                    // This is the error you were seeing.
+                    // It means auth.users has an entry, but public.user_profiles does not.
+                    // This happens if the email is not verified yet OR the trigger failed.
+                    
+                    console.error("CRITICAL: Logged in but profile data is missing.");
+                    
                     if (session.user && !session.user.email_confirmed_at) {
+                         // Email not verified yet.
                          loadingOverlay.innerHTML = `
                             <div>
                                 <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
                                 <p style="margin-top: 1rem; color: var(--error-red);">Your email is not verified.</p>
-                                <p style="font-size: 1rem; margin-top: 1rem;">Please check your inbox or log in to resend verification.</p>
+                                <p style="font-size: 1rem; margin-top: 1rem;">Please check your inbox to complete signup. Redirecting to login...</p>
                             </div>`;
                         await window.authFunctions.logout(); // Log them out
                         setTimeout(() => { window.location.href = '/login/'; }, 3000);
                         return;
                     }
                     
-                    // If email IS verified but profile is missing (DB issue)
-                    throw new Error("Critical Error: Logged in but profile data is missing.");
+                    // If email IS verified but profile is missing (DB trigger issue)
+                    throw new Error("Critical Error: User profile not found in database.");
                 }
 
                 // --- Profile Fetched Successfully ---
@@ -283,7 +283,7 @@
 
                 // Show/Hide Role-Specific Content
                 const userRole = profile.role || 'user';
-                document.getElementById('user-role-display').textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+                document.getElementById('user-role-display').textContent = userRole;
 
                 if (userRole === 'admin') {
                     document.querySelectorAll('.admin-only, .member-only').forEach(el => el.style.display = 'block');
@@ -320,13 +320,14 @@
             document.getElementById('profile-fullname').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'N/A';
             document.getElementById('profile-username-detail').textContent = profile.username || 'N/A';
             document.getElementById('profile-email').textContent = profile.email || 'N/A';
-            document.getElementById('profile-dob').textContent = profile.date_of_birth ? new Date(profile.date_of_birth + 'T00:00:00').toLocaleDateString() : 'N/A'; // Add time to avoid timezone shift
+            // Add 'T00:00:00' to prevent timezone from shifting the date back one day
+            document.getElementById('profile-dob').textContent = profile.date_of_birth ? new Date(profile.date_of_birth + 'T00:00:00').toLocaleDateString() : 'N/A'; 
             document.getElementById('profile-profession').textContent = profile.profession || 'N/A';
             document.getElementById('profile-joined').textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A';
             document.getElementById('profile-level').textContent = profile.user_level || 1;
             document.getElementById('profile-xp').textContent = profile.experience_points || 0;
             
-            // Note: Navbar update is handled by updateAuthUI(), which was called in the init logic
+            // Note: Navbar update is handled by updateAuthUI()
             
             // Load projects dynamically
             loadDashboardProjects();
@@ -342,14 +343,16 @@
              try {
                  let query = window.supabaseClient
                     .from('projects')
-                    .select('name, description, url, status, slug, image_url') // Select needed fields
+                    .select('name, description, url, status, slug, image_url') 
                     .order('display_order', { ascending: true });
 
-                // Non-admins only see 'active' or 'coming_soon' projects
-                if (userRole !== 'admin') {
-                     query = query.in('status', ['active', 'coming_soon']);
+                // RLS policies already handle what users can see.
+                // We don't need to filter by status in JS, RLS does it for us.
+                // (Unless we want to show admins/members *all* projects, which RLS permits)
+                if (userRole === 'user') {
+                    query = query.in('status', ['active', 'coming_soon']);
                 }
-                // Admins/Members see all statuses (handled by RLS select policy)
+                // Admins/Members will get all projects based on RLS
 
                 const { data, error } = await query;
 
@@ -360,11 +363,12 @@
                 if (data && data.length > 0) {
                      data.forEach(project => {
                          const card = document.createElement('div');
-                         card.className = 'project-card'; // Use existing style
+                         card.className = 'project-card'; 
 
                          const iconClass = project.slug === 'adv-code-learner' ? 'fa-graduation-cap' : 'fa-rocket';
                          let buttonHtml = '';
-                         
+                         let statusTag = '';
+
                          switch(project.status) {
                              case 'active':
                                  buttonHtml = `<a href="${project.url || '#'}" class="project-btn">
@@ -375,22 +379,25 @@
                                  buttonHtml = `<button class="project-btn coming-soon" disabled>
                                      Maintenance <i class="fas fa-tools"></i>
                                  </button>`;
+                                 statusTag = `(Maintenance)`;
                                  break;
                              case 'deprecated':
                                   buttonHtml = `<button class="project-btn coming-soon" disabled style="opacity: 0.4;">
                                      Deprecated <i class="fas fa-ban"></i>
                                  </button>`;
+                                 statusTag = `(Deprecated)`;
                                  break;
                              case 'coming_soon':
                              default:
                                  buttonHtml = `<button class="project-btn coming-soon" disabled>
                                      Coming Soon <i class="fas fa-hourglass-half"></i>
                                  </button>`;
+                                 statusTag = `(Coming Soon)`;
                                  break;
                          }
 
                          card.innerHTML = `
-                             <h3><i class="fas ${iconClass}"></i> ${project.name} ${project.status !== 'active' ? `(${project.status.replace('_', ' ')})` : ''}</h3>
+                             <h3><i class="fas ${iconClass}"></i> ${project.name} ${userRole !== 'user' ? statusTag : ''}</h3>
                              <p>${project.description}</p>
                              ${buttonHtml}
                          `;
