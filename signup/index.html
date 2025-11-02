@@ -22,7 +22,7 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            position: relative; /* Ensure it's above canvas */
+            position: relative;
             z-index: 10;
         }
         .auth-card {
@@ -51,9 +51,9 @@
             color: var(--gold);
             font-size: 2.5rem;
             font-weight: 800;
-             margin-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
         }
-         .auth-header p {
+        .auth-header p {
             color: rgba(255, 255, 255, 0.7);
             font-size: 1rem;
         }
@@ -72,16 +72,6 @@
             color: var(--light-gold);
         }
         /* All other form styles are in /css/styles.css */
-        
-        /* Ensure OTP modal (which is part of this page's flow) is styled */
-        /* Note: Modal styles are already in styles.css, but we'll include them here
-           just in case, or ensure they are correctly scoped if needed. */
-        /* In this multi-page setup, the OTP modal is now part of this page. */
-        #otp-modal {
-            /* Styles for OTP modal if it's part of this page */
-            /* Assuming modal styles in styles.css cover this */
-        }
-
     </style>
 </head>
 <body>
@@ -254,7 +244,8 @@
         </div>
     </div>
 
-    <div id="otp-modal" class="modal"> <div class="modal-content">
+    <div id="otp-modal" class="modal">
+        <div class="modal-content">
              <span class="modal-close" onclick="window.commonFunctions.closeModal('otp')">&times;</span>
              <h3>Email Verification</h3>
              <p style="text-align: center; margin-bottom: 2rem; color: rgba(255,255,255,0.8);">
@@ -274,7 +265,7 @@
                  </button>
              </form>
              <div class="auth-switch">
-                 <a id="resend-otp">Resend Code</a>
+                 <a id="resend-otp" style="cursor: pointer;">Resend Code</a>
              </div>
         </div>
     </div>
@@ -302,12 +293,12 @@
                 console.error("Particle system initialization function not found.");
             }
 
-            // Check if already logged in, redirect to index
+            // Check if already logged in, redirect
             if (typeof window.authFunctions === 'object') {
                  window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
                     if (session) {
                          console.log("Already logged in, redirecting from signup page...");
-                         window.location.href = '/dashboard/'; // Send to dashboard if already logged in
+                         window.location.href = '/dashboard/'; // Send to dashboard
                     }
                 });
             } else {
@@ -339,8 +330,8 @@
                     lastName: document.getElementById('signup-last-name').value.trim(),
                     email: document.getElementById('signup-email').value.trim(),
                     dateOfBirth: document.getElementById('signup-dob').value,
-                    username: document.getElementById('signup-username').value.trim(), // Already lowercase via input handler
-                    profession: window.commonFunctions.getProfessionValue(), // Use helper to get value
+                    username: document.getElementById('signup-username').value.trim(), // auth.js will ensure lowercase
+                    profession: window.commonFunctions.getProfessionValue(),
                     password: document.getElementById('signup-password').value,
                     confirmPassword: document.getElementById('signup-confirm-password').value
                 };
@@ -353,26 +344,42 @@
                 signupBtnText.textContent = 'Creating Account...';
                 signupBtnIcon.className = 'fas fa-spinner fa-spin';
 
-                // Call the handleSignup function from auth.js
-                // It will show bubble validation for errors
-                const result = await window.authFunctions.handleSignup(userData);
+                // =================================================================
+                // FIX: Wrap await in try/catch/finally to prevent hanging button
+                // =================================================================
+                try {
+                    // Call the handleSignup function from auth.js
+                    const result = await window.authFunctions.handleSignup(userData);
 
-                if (result.success) {
-                    // Success! handleSignup already opened the OTP modal
-                    // We just need to reset our button
-                    signupBtn.disabled = false;
-                    signupBtnText.textContent = 'Create Account';
-                    signupBtnIcon.className = 'fas fa-user-plus';
-                    
-                    // The auth.js function sets pendingVerification = true
-                    // and opens the 'otp-modal'
-                    
-                } else {
+                    if (result.success) {
+                        // Success! handleSignup (in auth.js) will open the OTP modal
+                        // and set pendingVerification = true
+                        console.log("Signup initiated, awaiting OTP.");
+                        // We reset the button here, as the user is now on the OTP step
+                        signupBtn.disabled = false;
+                        signupBtnText.textContent = 'Create Account';
+                        signupBtnIcon.className = 'fas fa-user-plus';
+                        
+                        // Open the OTP modal (auth.js *should* do this, but we can force it)
+                        window.commonFunctions.openModal('otp');
+                        window.commonFunctions.showMessage('otp', 'success', `Verification email sent to ${signupEmail}. Check your inbox/spam.`);
+                        
+                    } else {
+                        // handleSignup failed validation or had an error
+                        console.log("Signup failed:", result.error);
+                        // Error messages are shown via bubbles within handleSignup
+                        // Re-enable button
+                        signupBtn.disabled = false;
+                        signupBtnText.textContent = 'Create Account';
+                        signupBtnIcon.className = 'fas fa-user-plus';
+                    }
+                } catch (error) {
+                    console.error("Critical error during signup submit:", error);
+                    window.commonFunctions.showMessage('signup', 'error', 'A critical error occurred. Please try again.');
                     // Re-enable button
                     signupBtn.disabled = false;
                     signupBtnText.textContent = 'Create Account';
                     signupBtnIcon.className = 'fas fa-user-plus';
-                    // Error messages are shown via bubbles/showMessage within handleSignup
                 }
             });
 
@@ -390,7 +397,6 @@
 
                  if (result.success) {
                     // Success! Redirect to index.html
-                    // auth.js will have set auth state
                     window.commonFunctions.showMessage('otp', 'success', 'Verification successful! Redirecting...');
                     setTimeout(() => {
                         window.location.href = '/'; // Redirect to root (index.html)
@@ -424,10 +430,7 @@
                      resendLink.textContent = 'Resend Code';
                  }, 30000); // 30 second cooldown
 
-                 if (result.success) {
-                     window.commonFunctions.showMessage('otp', 'success', 'Verification code resent!');
-                 }
-                 // Error messages are shown by resendOTP
+                 // Messages are shown inside resendOTP
              });
 
             // --- Username Suggestions & Auto Lowercase ---
@@ -436,8 +439,11 @@
             let usernameCheckTimeout = null;
 
             usernameInput.addEventListener('focus', () => {
-                // Only show suggestions if function exists
+                // =================================================================
+                // FIX 2: Use the correct function name: displayUsernameSuggestions
+                // =================================================================
                 if(typeof window.authFunctions.displayUsernameSuggestions === 'function') {
+                    // Generate suggestions based on current form values
                     const firstName = document.getElementById('signup-first-name').value.trim();
                     const lastName = document.getElementById('signup-last-name').value.trim();
                     const dob = document.getElementById('signup-dob').value;
@@ -448,12 +454,12 @@
             
             usernameInput.addEventListener('input', function() {
                 // Force lowercase
-                const cursorPosition = this.selectionStart; // Store cursor position
+                const cursorPosition = this.selectionStart; 
                 this.value = this.value.toLowerCase();
-                this.setSelectionRange(cursorPosition, cursorPosition); // Restore cursor position
+                this.setSelectionRange(cursorPosition, cursorPosition); 
 
                 const username = this.value;
-                clearTimeout(usernameCheckTimeout); // Clear previous timer
+                clearTimeout(usernameCheckTimeout); 
 
                 const formatValidation = window.authFunctions.validateUsername(username);
                 
@@ -463,12 +469,11 @@
 
                     usernameCheckTimeout = setTimeout(async () => {
                         const isAvailable = await window.authFunctions.checkUsernameAvailability(username);
-                        // Check if input value hasn't changed while waiting
                         if (document.getElementById('signup-username').value === username) {
                              usernameValidationEl.textContent = isAvailable ? 'Username is available!' : 'Username is already taken';
                              usernameValidationEl.className = `username-validation ${isAvailable ? 'success' : 'error'}`;
                         }
-                    }, 800); // 800ms debounce
+                    }, 800); 
                 } else {
                     usernameValidationEl.textContent = formatValidation.message;
                     usernameValidationEl.className = `username-validation ${formatValidation.valid ? 'success' : 'error'}`;
@@ -479,8 +484,12 @@
              ['signup-first-name', 'signup-last-name', 'signup-dob'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
-                    el.addEventListener('input', window.commonFunctions.debounce(() => {
-                        // Only show if suggestions are already visible
+                    // Use 'input' for names, 'change' for DOB
+                    const eventType = (id === 'signup-dob') ? 'change' : 'input';
+                    el.addEventListener(eventType, window.commonFunctions.debounce(() => {
+                        // =================================================================
+                        // FIX 3: Use the correct function name: displayUsernameSuggestions
+                        // =================================================================
                         if (document.getElementById('username-suggestions').classList.contains('show')) {
                             const firstName = document.getElementById('signup-first-name').value.trim();
                             const lastName = document.getElementById('signup-last-name').value.trim();
