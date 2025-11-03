@@ -35,7 +35,7 @@
             width: 100%;
             box-shadow: 0 20px 60px var(--shadow-gold);
             animation: slideIn 0.6s ease;
-            position: relative; /* For close button if needed */
+            position: relative; 
         }
          @keyframes slideIn {
              from { transform: translateY(-30px); opacity: 0; }
@@ -122,9 +122,10 @@
 
     <script>
         // Embed Supabase config directly for GitHub Pages
+        // *** NEW CREDENTIALS ***
         window.SUPABASE_CONFIG = {
-            url: 'https://izoraalaceastrtcncel.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+            url: 'https://xblihylcpepkuriatqtg.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
 
@@ -144,7 +145,7 @@
             
             // Initialize auth functions (like inactivity timer)
             if (typeof window.authFunctions === 'object') {
-                 // Check if already logged in (getSession is fast, onAuthStateChange might take longer)
+                 // Check if already logged in (getSession is fast)
                  window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
                     if (session) {
                          console.log("Already logged in, redirecting from login page...");
@@ -160,7 +161,7 @@
             const loginBtn = document.getElementById('login-btn');
             const loginBtnText = document.getElementById('login-btn-text');
             const loginBtnIcon = document.getElementById('login-btn-icon');
-            const loginErrorEl = document.getElementById('login-error');
+            const loginErrorEl = document.getElementById('login-error'); // General error message
 
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -180,7 +181,7 @@
                 if (result.success) {
                     // Success! Show success message and redirect to index.html
                     // auth.js onAuthStateChange will handle the navbar update on index.html
-                    loginErrorEl.className = 'success-message';
+                    loginErrorEl.className = 'success-message'; // Use general message area for success
                     loginErrorEl.textContent = 'Login successful! Redirecting...';
                     loginErrorEl.style.display = 'block';
                     
@@ -195,14 +196,21 @@
                     loginBtnIcon.className = 'fas fa-sign-in-alt';
                     
                     // Bubble errors are shown inside handleLogin, 
-                    // but we can show a general error if bubbles aren't specific
-                    if (!document.getElementById('login-password-validation').classList.contains('show') && !document.getElementById('login-email-validation').classList.contains('show')) {
+                    // but if they aren't, show a general error.
+                    const emailBubble = document.getElementById('login-email-validation').classList.contains('show');
+                    const passBubble = document.getElementById('login-password-validation').classList.contains('show');
+
+                    if (!emailBubble && !passBubble) {
                         loginErrorEl.className = 'error-message';
                         loginErrorEl.textContent = result.error || 'An unknown error occurred.';
                         loginErrorEl.style.display = 'block';
                     }
                 }
             });
+            
+            // Password toggle utility
+            // Make togglePassword globally accessible for the onclick attribute
+            window.togglePassword = window.commonFunctions.togglePassword;
         });
     </script>
 </body>
