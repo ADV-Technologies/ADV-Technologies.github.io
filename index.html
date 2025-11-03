@@ -21,7 +21,8 @@
 
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo" onclick="location.href='/'"> <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            <div class="logo" onclick="location.href='/'"> 
+                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
             </div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
@@ -180,9 +181,10 @@
 
     <script>
         // Embed Supabase config directly for GitHub Pages
+        // *** NEW CREDENTIALS ***
         window.SUPABASE_CONFIG = {
-            url: 'https://izoraalaceastrtcncel.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+            url: 'https://xblihylcpepkuriatqtg.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
 
@@ -229,9 +231,14 @@
                         type();
                     }
 
-                    typeWriter(el1, 'Welcome to ADV Technologies', 50, () => {
+                    // These text values will be loaded from the database by auth.js/common.js
+                    // But we provide defaults here.
+                    const heroText1 = 'Welcome to ADV Technologies';
+                    const heroText2 = 'Innovation with AI';
+
+                    typeWriter(el1, heroText1, 50, () => {
                         setTimeout(() => {
-                            typeWriter(el2, 'Innovation with AI', 50, () => {
+                            typeWriter(el2, heroText2, 50, () => {
                                 setTimeout(() => {
                                     subtitle.classList.add('show');
                                     setTimeout(() => {
@@ -264,6 +271,15 @@
             
             // Note: Auth state check is handled globally by auth.js
         });
+        
+        // This is the global redirect function called by the profile button
+        // It's defined here because it's specific to index.html's profile button
+        if (typeof window.authFunctions === 'object') {
+            // Override the default redirectToProfile from auth.js
+            window.authFunctions.redirectToProfile = function() {
+                window.location.href = '/dashboard/'; // Use folder path
+            }
+        }
 
     </script>
 </body>
