@@ -173,7 +173,6 @@
         #admin-feedback { margin-top: 1.5rem; }
         
         /* Edit Project Modal needs styles.css .modal styles */
-        /* Make sure modal styles are loaded */
 
     </style>
 </head>
@@ -225,7 +224,8 @@
                         </tr>
                     </thead>
                     <tbody id="user-list-body">
-                        </tbody>
+                        <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -408,11 +408,12 @@
     <script src="/js/auth.js"></script>
 
     <script>
+        // Store elements
         const loadingOverlay = document.getElementById('loading-overlay');
         const adminContent = document.getElementById('admin-content');
         const adminFeedbackEl = document.getElementById('admin-feedback');
 
-        // Helper to show global feedback
+        // --- Helper Functions for Admin Panel ---
         function showAdminFeedback(message, type = 'info') {
             const typeClass = type === 'success' ? 'success-message' : 'error-message';
             adminFeedbackEl.innerHTML = `<div class="${typeClass}" style="display: block;">${message}</div>`;
@@ -421,25 +422,20 @@
              setTimeout(() => { adminFeedbackEl.style.display = 'none'; }, 5000);
         }
         
-        // Helper to show inline feedback
         function showInlineFeedback(elementId, message, type = 'info') {
             const feedbackEl = document.getElementById(elementId);
             if (feedbackEl) {
                 feedbackEl.className = `feedback-inline ${type}`;
                 feedbackEl.textContent = message;
-                setTimeout(() => { feedbackEl.textContent = ''; }, 4000);
+                setTimeout(() => { if (feedbackEl.textContent === message) feedbackEl.textContent = ''; }, 4000);
             }
         }
 
-
+        // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
             // Initialize Particles
-            if (typeof window.initParticles === 'function') {
-                window.initParticles();
-            } else {
-                console.error("Particle system initialization function not found.");
-            }
-
+            if (typeof window.initParticles === 'function') window.initParticles();
+            
             // --- Admin Access Check ---
             try {
                 if (typeof window.authFunctions === 'undefined') {
@@ -459,7 +455,8 @@
                 // Fetch profile and check role
                 const profile = await window.authFunctions.fetchUserProfile();
                 if (!profile) {
-                    throw new Error("Could not fetch user profile.");
+                     // This could happen if the trigger failed or is delayed
+                    throw new Error("Logged in, but user profile could not be found.");
                 }
 
                 const userRole = profile.role;
@@ -657,19 +654,14 @@
                              console.warn(`Input element not found for setting key: ${setting.setting_key}`);
                          }
                     });
-                     feedbackEl.className = 'feedback-inline success';
-                     feedbackEl.textContent = 'Settings loaded.';
+                     showInlineFeedback('settings-feedback', 'Settings loaded.', 'success');
                  } else {
-                    feedbackEl.className = 'feedback-inline error';
-                    feedbackEl.textContent = 'No settings found.';
+                    showInlineFeedback('settings-feedback', 'No settings found.', 'error');
                  }
 
             } catch (error) {
                  console.error("Error loading settings:", error);
-                 feedbackEl.className = 'feedback-inline error';
-                 feedbackEl.textContent = 'Could not load settings.';
-            } finally {
-                 setTimeout(() => { feedbackEl.textContent = ''; }, 4000);
+                 showInlineFeedback('settings-feedback', 'Could not load settings.', 'error');
             }
         }
 
@@ -677,8 +669,7 @@
             e.preventDefault();
             const feedbackEl = document.getElementById('settings-feedback');
             const saveBtn = document.getElementById('save-settings-btn');
-            feedbackEl.className = 'feedback-inline loading';
-            feedbackEl.textContent = 'Saving...';
+            showInlineFeedback('settings-feedback', 'Saving...', 'loading');
             saveBtn.disabled = true;
 
             const settingsToUpdate = [];
@@ -710,21 +701,16 @@
                 }
 
                  if (errors.length > 0) {
-                     feedbackEl.className = 'feedback-inline error';
-                     feedbackEl.textContent = `Failed to update: ${errors.join(', ')}`;
+                     showInlineFeedback('settings-feedback', `Failed to update: ${errors.join(', ')}`, 'error');
                  } else {
-                    feedbackEl.className = 'feedback-inline success';
-                    feedbackEl.textContent = 'Settings saved successfully!';
-                    // Optional: Notify user that a page reload might be needed to see particle/theme changes
+                    showInlineFeedback('settings-feedback', 'Settings saved successfully!', 'success');
                  }
 
             } catch (error) {
                  console.error("Error saving settings:", error);
-                 feedbackEl.className = 'feedback-inline error';
-                 feedbackEl.textContent = `Error: ${error.message}`;
+                 showInlineFeedback('settings-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  saveBtn.disabled = false;
-                 setTimeout(() => { feedbackEl.textContent = ''; }, 4000);
             }
         }
 
@@ -772,8 +758,7 @@
             e.preventDefault();
             const feedbackEl = document.getElementById('project-feedback');
             const addBtn = document.getElementById('add-project-btn');
-            feedbackEl.className = 'feedback-inline loading';
-            feedbackEl.textContent = 'Adding...';
+            showInlineFeedback('project-feedback', 'Adding...', 'loading');
             addBtn.disabled = true;
 
             const newProject = {
@@ -787,7 +772,6 @@
                 created_by: window.currentUser.id // Record who created it
             };
 
-            // Basic validation
             if (!newProject.name || !newProject.slug || !newProject.description) {
                  showInlineFeedback('project-feedback', 'Name, Slug, and Description are required.', 'error');
                  addBtn.disabled = false;
@@ -800,7 +784,6 @@
             }
 
             try {
-                 // RLS Policy "Admins can manage projects" allows INSERT
                 const { data, error } = await window.supabaseClient
                     .from('projects')
                     .insert([newProject])
@@ -817,15 +800,13 @@
                 showInlineFeedback('project-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  addBtn.disabled = false;
-                 setTimeout(() => { feedbackEl.textContent = ''; }, 4000);
             }
         }
 
         async function openEditProjectModal(projectId) {
             const feedbackEl = document.getElementById('edit-project-feedback');
-            feedbackEl.className = 'feedback-inline loading';
-            feedbackEl.textContent = 'Loading project data...';
-            window.commonFunctions.openModal('edit-project');
+            showInlineFeedback('edit-project-feedback', 'Loading project data...', 'loading');
+            window.commonFunctions.openModal('edit-project'); // 'edit-project-modal'
 
             try {
                 const { data: project, error } = await window.supabaseClient
@@ -864,8 +845,7 @@
 
             } catch (error) {
                 console.error("Error loading project for edit:", error);
-                feedbackEl.className = 'feedback-inline error';
-                feedbackEl.textContent = `Could not load project: ${error.message}`;
+                showInlineFeedback('edit-project-feedback', `Could not load project: ${error.message}`, 'error');
             }
         }
 
@@ -873,8 +853,7 @@
              e.preventDefault();
              const feedbackEl = document.getElementById('edit-project-feedback');
              const updateBtn = document.getElementById('update-project-btn');
-             feedbackEl.className = 'feedback-inline loading';
-             feedbackEl.textContent = 'Updating...';
+             showInlineFeedback('edit-project-feedback', 'Updating...', 'loading');
              updateBtn.disabled = true;
 
              const projectId = document.getElementById('edit-project-id').value;
@@ -886,7 +865,6 @@
                  image_url: document.getElementById('edit-project-image-url').value.trim() || null,
                  status: document.getElementById('edit-project-status').value,
                  display_order: parseInt(document.getElementById('edit-project-order').value) || 99
-                 // updated_at is handled by trigger
             };
             
              if (!/^[a-z0-9-]+$/.test(updatedProject.slug)) {
@@ -896,7 +874,6 @@
             }
 
              try {
-                 // RLS Policy "Admins can manage projects" allows UPDATE
                  const { data, error } = await window.supabaseClient
                      .from('projects')
                      .update(updatedProject)
@@ -925,14 +902,12 @@
             }
 
             const feedbackEl = document.getElementById('edit-project-feedback');
-            feedbackEl.className = 'feedback-inline loading';
-            feedbackEl.textContent = 'Deleting...';
+            showInlineFeedback('edit-project-feedback', 'Deleting...', 'loading');
             document.getElementById('update-project-btn').disabled = true;
             document.getElementById('delete-project-btn').disabled = true;
 
              try {
-                 // RLS Policy "Admins can manage projects" allows DELETE
-                 const { error } = await window.supabaseClient
+                 const { error }S } = await window.supabaseClient
                      .from('projects')
                      .delete()
                      .eq('id', projectId);
@@ -945,14 +920,12 @@
 
             } catch (error) {
                 console.error("Error deleting project:", error);
-                // Show error in the modal
                  showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
                  // Re-enable buttons if delete failed
                  document.getElementById('update-project-btn').disabled = false;
                  document.getElementById('delete-project-btn').disabled = false;
             }
         }
-
 
     </script>
 </body>
