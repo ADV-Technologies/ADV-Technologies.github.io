@@ -22,7 +22,7 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            position: relative;
+            position: relative; /* Ensure it's above canvas */
             z-index: 10;
         }
         .auth-card {
@@ -51,9 +51,9 @@
             color: var(--gold);
             font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 0.5rem;
+             margin-bottom: 0.5rem;
         }
-        .auth-header p {
+         .auth-header p {
             color: rgba(255, 255, 255, 0.7);
             font-size: 1rem;
         }
@@ -244,8 +244,7 @@
         </div>
     </div>
 
-    <div id="otp-modal" class="modal">
-        <div class="modal-content">
+    <div id="otp-modal" class="modal"> <div class="modal-content">
              <span class="modal-close" onclick="window.commonFunctions.closeModal('otp')">&times;</span>
              <h3>Email Verification</h3>
              <p style="text-align: center; margin-bottom: 2rem; color: rgba(255,255,255,0.8);">
@@ -273,9 +272,10 @@
 
     <script>
         // Embed Supabase config directly for GitHub Pages
+        // *** NEW CREDENTIALS ***
         window.SUPABASE_CONFIG = {
-            url: 'https://izoraalaceastrtcncel.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+            url: 'https://xblihylcpepkuriatqtg.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
 
@@ -345,7 +345,7 @@
                 signupBtnIcon.className = 'fas fa-spinner fa-spin';
 
                 // =================================================================
-                // FIX: Wrap await in try/catch/finally to prevent hanging button
+                // FIX: Wrap await in try...catch...finally to prevent hanging button
                 // =================================================================
                 try {
                     // Call the handleSignup function from auth.js
@@ -353,14 +353,9 @@
 
                     if (result.success) {
                         // Success! handleSignup (in auth.js) will open the OTP modal
-                        // and set pendingVerification = true
                         console.log("Signup initiated, awaiting OTP.");
-                        // We reset the button here, as the user is now on the OTP step
-                        signupBtn.disabled = false;
-                        signupBtnText.textContent = 'Create Account';
-                        signupBtnIcon.className = 'fas fa-user-plus';
                         
-                        // Open the OTP modal (auth.js *should* do this, but we can force it)
+                        // Open the OTP modal (auth.js should set pendingVerification)
                         window.commonFunctions.openModal('otp');
                         window.commonFunctions.showMessage('otp', 'success', `Verification email sent to ${signupEmail}. Check your inbox/spam.`);
                         
@@ -368,15 +363,13 @@
                         // handleSignup failed validation or had an error
                         console.log("Signup failed:", result.error);
                         // Error messages are shown via bubbles within handleSignup
-                        // Re-enable button
-                        signupBtn.disabled = false;
-                        signupBtnText.textContent = 'Create Account';
-                        signupBtnIcon.className = 'fas fa-user-plus';
                     }
                 } catch (error) {
+                    // This catches critical errors in the signup logic itself
                     console.error("Critical error during signup submit:", error);
                     window.commonFunctions.showMessage('signup', 'error', 'A critical error occurred. Please try again.');
-                    // Re-enable button
+                } finally {
+                    // This *always* runs, re-enabling the button
                     signupBtn.disabled = false;
                     signupBtnText.textContent = 'Create Account';
                     signupBtnIcon.className = 'fas fa-user-plus';
@@ -440,15 +433,10 @@
 
             usernameInput.addEventListener('focus', () => {
                 // =================================================================
-                // FIX 2: Use the correct function name: displayUsernameSuggestions
+                // FIX: Use the correct function name: displayUsernameSuggestions
                 // =================================================================
                 if(typeof window.authFunctions.displayUsernameSuggestions === 'function') {
-                    // Generate suggestions based on current form values
-                    const firstName = document.getElementById('signup-first-name').value.trim();
-                    const lastName = document.getElementById('signup-last-name').value.trim();
-                    const dob = document.getElementById('signup-dob').value;
-                    const suggestions = window.authFunctions.generateUsernameSuggestions(firstName, lastName, dob);
-                    window.authFunctions.displayUsernameSuggestions(suggestions);
+                    window.authFunctions.displayUsernameSuggestions();
                 }
             });
             
@@ -484,18 +472,13 @@
              ['signup-first-name', 'signup-last-name', 'signup-dob'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
-                    // Use 'input' for names, 'change' for DOB
                     const eventType = (id === 'signup-dob') ? 'change' : 'input';
                     el.addEventListener(eventType, window.commonFunctions.debounce(() => {
                         // =================================================================
-                        // FIX 3: Use the correct function name: displayUsernameSuggestions
+                        // FIX: Use the correct function name: displayUsernameSuggestions
                         // =================================================================
-                        if (document.getElementById('username-suggestions').classList.contains('show')) {
-                            const firstName = document.getElementById('signup-first-name').value.trim();
-                            const lastName = document.getElementById('signup-last-name').value.trim();
-                            const dob = document.getElementById('signup-dob').value;
-                            const suggestions = window.authFunctions.generateUsernameSuggestions(firstName, lastName, dob);
-                            window.authFunctions.displayUsernameSuggestions(suggestions);
+                        if (document.getElementById('username-suggestions').classList.contains('show') && typeof window.authFunctions.displayUsernameSuggestions === 'function') {
+                            window.authFunctions.displayUsernameSuggestions();
                         }
                     }, 500));
                 }
@@ -505,6 +488,9 @@
             if (typeof window.commonFunctions.initializeProfessionDropdown === 'function') {
                 window.commonFunctions.initializeProfessionDropdown();
             }
+            
+            // Make password toggle globally accessible
+            window.togglePassword = window.commonFunctions.togglePassword;
         });
     </script>
 </body>
