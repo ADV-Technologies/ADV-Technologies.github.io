@@ -195,9 +195,10 @@
 
     </div> <script>
         // Embed Supabase config directly
+        // *** NEW CREDENTIALS ***
         window.SUPABASE_CONFIG = {
-            url: 'https://izoraalaceastrtcncel.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+            url: 'https://xblihylcpepkuriatqtg.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
 
@@ -226,8 +227,6 @@
                 return;
             }
 
-            // We must wait for the initial auth check (INITIAL_SESSION) to complete
-            // A simple getSession() is the most reliable way to check
             try {
                 const { data: { session }, error } = await window.supabaseClient.auth.getSession();
                 
@@ -241,19 +240,14 @@
                 // --- User is Logged In ---
                 console.log("Dashboard: Session valid, loading profile...");
                 
-                // Set globals (auth.js might have done this, but we ensure it)
                 window.isAuthenticated = true;
                 window.currentUser = session.user;
 
                 // Fetch user profile data (including role)
-                // This function is defined in auth.js
                 const profile = await window.authFunctions.fetchUserProfile(); 
                 
                 if (!profile) {
                     // This is the error you were seeing.
-                    // It means auth.users has an entry, but public.user_profiles does not.
-                    // This happens if the email is not verified yet OR the trigger failed.
-                    
                     console.error("CRITICAL: Logged in but profile data is missing.");
                     
                     if (session.user && !session.user.email_confirmed_at) {
@@ -264,13 +258,14 @@
                                 <p style="margin-top: 1rem; color: var(--error-red);">Your email is not verified.</p>
                                 <p style="font-size: 1rem; margin-top: 1rem;">Please check your inbox to complete signup. Redirecting to login...</p>
                             </div>`;
-                        await window.authFunctions.logout(); // Log them out
+                        // Log them out so they can't access this page again until verified
+                        await window.authFunctions.logout(); 
                         setTimeout(() => { window.location.href = '/login/'; }, 3000);
                         return;
                     }
                     
                     // If email IS verified but profile is missing (DB trigger issue)
-                    throw new Error("Critical Error: User profile not found in database.");
+                    throw new Error("Critical Error: User profile not found in database. Please contact support.");
                 }
 
                 // --- Profile Fetched Successfully ---
@@ -299,7 +294,7 @@
                 dashboardContent.style.display = 'block';
                 dashboardContent.classList.add('visible'); // Trigger fade-in
 
-                // Initialize inactivity timer now that user is confirmed authenticated
+                // Initialize inactivity timer
                 window.authFunctions.resetInactivityTimer();
 
             } catch (err) {
@@ -315,21 +310,16 @@
         });
 
         function populateDashboard(profile) {
-            // Populate welcome message and profile details
             document.getElementById('welcome-message').textContent = `Welcome back, ${profile.first_name || profile.username}!`;
             document.getElementById('profile-fullname').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'N/A';
             document.getElementById('profile-username-detail').textContent = profile.username || 'N/A';
             document.getElementById('profile-email').textContent = profile.email || 'N/A';
-            // Add 'T00:00:00' to prevent timezone from shifting the date back one day
             document.getElementById('profile-dob').textContent = profile.date_of_birth ? new Date(profile.date_of_birth + 'T00:00:00').toLocaleDateString() : 'N/A'; 
             document.getElementById('profile-profession').textContent = profile.profession || 'N/A';
             document.getElementById('profile-joined').textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A';
             document.getElementById('profile-level').textContent = profile.user_level || 1;
             document.getElementById('profile-xp').textContent = profile.experience_points || 0;
             
-            // Note: Navbar update is handled by updateAuthUI()
-            
-            // Load projects dynamically
             loadDashboardProjects();
         }
 
@@ -337,7 +327,6 @@
              const grid = document.getElementById('dashboard-projects-grid');
              if (!grid) return;
              
-             // Get user role (already fetched)
              const userRole = window.authFunctions.getUserRole ? window.authFunctions.getUserRole() : 'user';
 
              try {
@@ -346,13 +335,13 @@
                     .select('name, description, url, status, slug, image_url') 
                     .order('display_order', { ascending: true });
 
-                // RLS policies already handle what users can see.
-                // We don't need to filter by status in JS, RLS does it for us.
-                // (Unless we want to show admins/members *all* projects, which RLS permits)
+                // RLS policies now handle what users see.
+                // We don't need to filter by status in JS unless we want to.
                 if (userRole === 'user') {
-                    query = query.in('status', ['active', 'coming_soon']);
+                    // A user's RLS policy *only* lets them see 'active' and 'coming_soon'
+                    // So this query is already safe
                 }
-                // Admins/Members will get all projects based on RLS
+                // Admins/Members will get all projects based on their RLS policy
 
                 const { data, error } = await query;
 
