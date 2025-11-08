@@ -396,9 +396,10 @@
 
     </div> <script>
         // Embed Supabase config directly
+        // *** NEW CREDENTIALS ***
         window.SUPABASE_CONFIG = {
-            url: 'https://izoraalaceastrtcncel.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
+            url: 'https://xblihylcpepkuriatqtg.supabase.co',
+            anonKey: 'eyJhbGciOiJIJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
 
@@ -427,6 +428,7 @@
             if (feedbackEl) {
                 feedbackEl.className = `feedback-inline ${type}`;
                 feedbackEl.textContent = message;
+                // Auto-hide
                 setTimeout(() => { if (feedbackEl.textContent === message) feedbackEl.textContent = ''; }, 4000);
             }
         }
@@ -455,8 +457,7 @@
                 // Fetch profile and check role
                 const profile = await window.authFunctions.fetchUserProfile();
                 if (!profile) {
-                     // This could happen if the trigger failed or is delayed
-                    throw new Error("Logged in, but user profile could not be found.");
+                    throw new Error("Could not fetch user profile. Ensure user is verified and profile exists.");
                 }
 
                 const userRole = profile.role;
@@ -633,8 +634,7 @@
         // --- Website Settings Functions ---
         async function loadSettings() {
              const feedbackEl = document.getElementById('settings-feedback');
-             feedbackEl.className = 'feedback-inline loading';
-             feedbackEl.textContent = 'Loading settings...';
+             showInlineFeedback('settings-feedback', 'Loading settings...', 'loading');
              
              try {
                 // RLS Policy "Admins can manage settings" allows SELECT
@@ -907,7 +907,7 @@
             document.getElementById('delete-project-btn').disabled = true;
 
              try {
-                 const { error }S } = await window.supabaseClient
+                 const { error } = await window.supabaseClient
                      .from('projects')
                      .delete()
                      .eq('id', projectId);
