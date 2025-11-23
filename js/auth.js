@@ -1,4 +1,4 @@
-// js/auth.js - Complete Version
+// js/auth.js - Updated for Username/Email Login
 
 // Ensure Supabase client is available from config.js or HTML
 if (!window.supabaseClient) {
@@ -9,7 +9,7 @@ const supabaseClient = window.supabaseClient;
 // --- Authentication State ---
 let isAuthenticated = false;
 let currentUser = null;
-let userProfileData = null; // To store profile details including role
+let userProfileData = null;
 
 // --- Inactivity Tracking ---
 let inactivityTimer = null;
@@ -22,7 +22,6 @@ function resetInactivityTimer() {
     if (inactivityTimer) {
         clearTimeout(inactivityTimer);
     }
-    // Only set timer if user is authenticated
     if (isAuthenticated) {
         inactivityTimer = setTimeout(() => {
             handleInactivityLogout();
@@ -35,7 +34,7 @@ async function handleInactivityLogout() {
         console.log("Logging out due to inactivity.");
         await supabaseClient.auth.signOut();
         alert('You have been logged out due to inactivity. Please log in again to continue.');
-        window.location.href = '/'; // Redirect home
+        window.location.href = '/';
     }
 }
 
@@ -60,7 +59,6 @@ function initializeActivityTracking() {
         }
     });
 
-    // Check on initial load
      const lastActiveTime = localStorage.getItem('lastActiveTime');
      if (lastActiveTime && isAuthenticated) {
         const timeAway = Date.now() - parseInt(lastActiveTime);
@@ -86,31 +84,59 @@ function initializeActivityTracking() {
 
 // --- Core Authentication Functions ---
 
-async function handleLogin(email, password) {
+async function handleLogin(identifier, password) {
     window.commonFunctions.clearAllValidationBubbles('login-form');
 
-    if (!email) {
-        window.commonFunctions.showInputValidation('login-email', 'Please enter your email address');
-        return { success: false, error: 'Email required' };
+    if (!identifier) {
+        window.commonFunctions.showInputValidation('login-identifier', 'Please enter your email or username');
+        return { success: false, error: 'Identifier required' };
     }
     if (!password) {
         window.commonFunctions.showInputValidation('login-password', 'Please enter your password');
         return { success: false, error: 'Password required' };
     }
 
+    let loginEmail = identifier;
+
+    // Check if input is NOT an email (assume it's a username)
+    // Simple regex check for email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!emailRegex.test(identifier)) {
+        // It looks like a username, fetch the email via RPC
+        try {
+            const { data: emailFromDb, error } = await supabaseClient.rpc('get_email_by_username', {
+                username_input: identifier
+            });
+
+            if (error) {
+                console.error("Error finding username:", error);
+                // Don't fail yet, try passing it as email just in case
+            } else if (emailFromDb) {
+                loginEmail = emailFromDb; // Found the email!
+            } else {
+                // Username not found in DB
+                window.commonFunctions.showInputValidation('login-identifier', 'Username not found.');
+                return { success: false, error: 'Username not found' };
+            }
+        } catch (err) {
+            console.error("RPC Exception:", err);
+        }
+    }
+
     try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
+            email: loginEmail,
             password: password,
         });
 
         if (error) {
             if (error.message.includes('Invalid login credentials')) {
-                window.commonFunctions.showInputValidation('login-password', 'Invalid email or password.');
+                window.commonFunctions.showInputValidation('login-password', 'Invalid credentials.');
             } else if (error.message.includes('Email not confirmed')) {
-                window.commonFunctions.showInputValidation('login-email', 'Please verify your email before logging in.');
+                window.commonFunctions.showInputValidation('login-identifier', 'Please verify your email before logging in.');
             } else {
-                 window.commonFunctions.showInputValidation('login-email', `Login failed: ${error.message}`);
+                 window.commonFunctions.showInputValidation('login-identifier', `Login failed: ${error.message}`);
             }
             throw error;
         }
@@ -128,8 +154,6 @@ async function handleSignup(userData) {
     window.commonFunctions.clearAllValidationBubbles('signup-form');
 
     let isValid = true;
-    
-    // Enforce lowercase for username
     const finalUsername = userData.username.toLowerCase();
 
     if (!userData.firstName || userData.firstName.length < 2) {
@@ -178,18 +202,11 @@ async function handleSignup(userData) {
 
     if (!isValid) return { success: false, error: 'Validation failed' };
 
-    // Check availability via RPC
     const isUsernameAvailable = await checkUsernameAvailability(finalUsername);
     if (!isUsernameAvailable) {
         window.commonFunctions.showInputValidation('signup-username', 'This username is already taken');
-        const validationEl = document.getElementById('username-validation');
-        if (validationEl) {
-             validationEl.textContent = 'Username is already taken';
-             validationEl.className = 'username-validation error';
-        }
         return { success: false, error: 'Username taken' };
     }
-
 
     try {
         const { data, error } = await supabaseClient.auth.signUp({
@@ -324,8 +341,6 @@ async function handleLogout() {
      }
 }
 
-
-// --- User Profile & Role ---
 async function fetchUserProfile() {
     if (!currentUser) {
         userProfileData = null;
@@ -345,7 +360,6 @@ async function fetchUserProfile() {
         }
 
         if (data) {
-            // === BAN CHECK ===
             if (data.is_banned) {
                 console.warn("User is banned. Logging out.");
                 await supabaseClient.auth.signOut();
@@ -353,7 +367,6 @@ async function fetchUserProfile() {
                 window.location.href = '/';
                 return null;
             }
-            
             userProfileData = data;
             return userProfileData;
         } else {
@@ -367,9 +380,6 @@ async function fetchUserProfile() {
         return null;
     }
 }
-
-
-// --- Username Validation & Suggestions ---
 
 function validateUsername(username) {
     const regex = /^[a-z0-9_-]+$/; 
@@ -389,14 +399,9 @@ async function checkUsernameAvailability(username) {
         const { data, error } = await supabaseClient.rpc('is_username_available', {
             check_username: username
         });
-        if (error) {
-            console.error('RPC Error:', error);
-            return false;
-        }
+        if (error) return false;
         return data; 
-
     } catch (error) {
-        console.error('Exception calling RPC:', error);
         return false;
     }
 }
@@ -424,7 +429,7 @@ function generateUsernameSuggestions(firstName, lastName, dob) {
              if (`${fn}_${shortYear}`.length >= 3) suggestions.add(`${fn}_${shortYear}`);
         }
          let randomUser1 = `${fn}${Math.floor(Math.random() * 99)}`;
-         if (randomUser1.length < 3) randomUser1 = `${randomUser1}0`;
+         if (randomUser1.length < 3) randomUser1 = `${randomUser1}0`; 
          suggestions.add(randomUser1);
 
          let randomUser2 = `${fn}_${Math.floor(Math.random() * 999)}`;
@@ -504,8 +509,6 @@ async function displayUsernameSuggestions() {
     }
 }
 
-
-// --- Auth UI Update ---
 async function updateAuthUI() { 
     const authButtons = document.getElementById('auth-buttons');
     const userProfile = document.getElementById('user-profile');
@@ -553,7 +556,6 @@ function redirectToProfile() {
      window.location.href = '/dashboard/';
 }
 
-// --- Initialization ---
 async function initializeAuth() {
     console.log("Initializing Auth...");
     try {
@@ -563,12 +565,10 @@ async function initializeAuth() {
             isAuthenticated = false;
             currentUser = null;
         } else if (session) {
-            console.log("Session found on load:", session);
             isAuthenticated = true;
             currentUser = session.user;
             await fetchUserProfile(); 
         } else {
-             console.log("No active session found on load.");
              isAuthenticated = false;
              currentUser = null;
         }
@@ -582,7 +582,6 @@ async function initializeAuth() {
         if (window.commonFunctions && window.commonFunctions.applyWebsiteSettings) {
             window.commonFunctions.applyWebsiteSettings();
         }
-        console.log("Auth initialized. isAuthenticated:", isAuthenticated);
     }
 }
 
