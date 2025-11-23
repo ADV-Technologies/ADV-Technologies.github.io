@@ -15,18 +15,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     
     <style>
-        /* Specific styles for the admin panel */
         body {
-            background: var(--dark-gray); /* Admin panel has a slightly different BG */
+            background: var(--dark-gray); 
         }
         .navbar {
-            position: fixed; /* Keep navbar fixed */
+            position: fixed; 
         }
         .admin-panel-container {
-            padding-top: 100px; /* Space below fixed navbar */
+            padding-top: 100px; 
             min-height: calc(100vh - 100px);
             position: relative;
-            z-index: 5; /* Below navbar but above particles */
+            z-index: 5; 
         }
 
         .loading-overlay {
@@ -42,16 +41,15 @@
             font-size: 1.5rem;
             text-align: center;
         }
-
-        /* Use admin-section styles from styles.css */
         
+        /* Admin Tables */
         .user-list, .project-list {
-            overflow-x: auto; /* Make tables scrollable on small screens */
+            overflow-x: auto; 
         }
         
         .user-list table, .project-list table {
             width: 100%;
-            min-width: 600px; /* Ensure table has minimum width */
+            min-width: 600px; 
             border-collapse: collapse;
             color: var(--white);
             margin-top: 1rem;
@@ -69,7 +67,7 @@
             font-weight: 600;
         }
         
-        /* Button styles */
+        /* Buttons */
         .action-btn {
             margin-right: 0.5rem;
             padding: 0.5rem 1rem;
@@ -88,14 +86,13 @@
             color: var(--black);
             box-shadow: 0 5px 15px var(--shadow-gold);
         }
-         .action-btn.delete-btn, .action-btn.ban-btn {
+        .action-btn.delete-btn, .action-btn.ban-btn {
             border-color: var(--error-red);
             color: var(--error-red);
         }
         .action-btn.delete-btn:hover, .action-btn.ban-btn:hover {
             background-color: var(--error-red);
             color: var(--white);
-            border-color: var(--error-red);
             box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
         }
          .action-btn.unban-btn {
@@ -105,16 +102,7 @@
          .action-btn.unban-btn:hover {
              background-color: var(--success-green);
              color: var(--black);
-             border-color: var(--success-green);
          }
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background-color: transparent !important;
-            color: rgba(255,255,255,0.5) !important;
-            border-color: rgba(255,255,255,0.3) !important;
-            box-shadow: none !important;
-        }
         
         .user-list select {
             padding: 0.4rem;
@@ -132,7 +120,7 @@
             gap: 1rem;
         }
         .settings-form .form-group label {
-            width: 200px; /* Align labels */
+            width: 200px; 
             flex-shrink: 0;
             color: var(--gold);
             font-weight: 600;
@@ -142,10 +130,9 @@
             flex-grow: 1;
             min-width: 200px;
             max-width: 400px;
-            padding: 0.8rem; /* Smaller padding */
+            padding: 0.8rem; 
         }
         
-        /* Project Form */
         .project-form {
             display: grid;
             grid-template-columns: 1fr;
@@ -160,7 +147,6 @@
             resize: vertical;
         }
         
-        /* Feedback */
         .feedback-inline {
             font-size: 0.9rem;
             margin-left: 1rem;
@@ -171,9 +157,6 @@
         .feedback-inline.loading { color: rgba(255, 255, 255, 0.7); }
 
         #admin-feedback { margin-top: 1.5rem; }
-        
-        /* Edit Project Modal needs styles.css .modal styles */
-
     </style>
 </head>
 <body>
@@ -210,7 +193,7 @@
 
         <div id="admin-feedback" style="display: none;"></div>
 
-        <section class="admin-section user-management">
+        <section class="glass-panel user-management">
             <h3><i class="fas fa-users-cog"></i> User Management</h3>
             <div class="user-list">
                 <table>
@@ -224,13 +207,13 @@
                         </tr>
                     </thead>
                     <tbody id="user-list-body">
-                        <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
+                         <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <section class="admin-section website-settings">
+        <section class="glass-panel website-settings">
             <h3><i class="fas fa-sliders-h"></i> Website Settings</h3>
             <form id="settings-form" class="settings-form">
                 <h4>Theme & Appearance</h4>
@@ -264,25 +247,15 @@
                     <label for="setting-particle_connection_distance">Connection Dist (px):</label>
                     <input type="number" id="setting-particle_connection_distance" step="1" min="30" max="300" placeholder="e.g., 120">
                 </div>
-
-                <h4>Content</h4>
-                 <div class="form-group">
-                    <label for="setting-hero_text_1">Hero Line 1:</label>
-                    <input type="text" id="setting-hero_text_1" placeholder="Welcome to...">
-                </div>
-                 <div class="form-group">
-                    <label for="setting-hero_text_2">Hero Line 2:</label>
-                    <input type="text" id="setting-hero_text_2" placeholder="Innovation with...">
-                </div>
                 
-                <button type="submit" class="action-btn" id="save-settings-btn">
+                <button type="submit" class="action-btn" id="save-settings-btn" style="margin-top: 1rem;">
                     <i class="fas fa-save"></i> Save Settings
                 </button>
                  <span id="settings-feedback" class="feedback-inline"></span>
             </form>
         </section>
 
-        <section class="admin-section project-management">
+        <section class="glass-panel project-management">
             <h3><i class="fas fa-project-diagram"></i> Project Management</h3>
 
             <h4>Current Projects</h4>
@@ -310,8 +283,7 @@
                 </div>
                 <div class="form-group">
                     <label for="project-slug">Slug:</label>
-                    <input type="text" id="project-slug" required placeholder="e.g., awesome-tool (lowercase, numbers, hyphens)">
-                     <small style="color: rgba(255,255,255,0.7); margin-top: 5px;">Unique identifier used in URLs. Must match: `^[a-z0-9-]+$`</small>
+                    <input type="text" id="project-slug" required placeholder="e.g., awesome-tool">
                 </div>
                 <div class="form-group">
                     <label for="project-description">Description:</label>
@@ -319,11 +291,7 @@
                 </div>
                  <div class="form-group">
                     <label for="project-url">URL:</label>
-                    <input type="url" id="project-url" placeholder="https://example.com/project (optional, use # if none)">
-                </div>
-                 <div class="form-group">
-                    <label for="project-image-url">Image URL:</label>
-                    <input type="url" id="project-image-url" placeholder="/assets/project-image.png (optional)">
+                    <input type="url" id="project-url" placeholder="https://example.com (optional)">
                 </div>
                  <div class="form-group">
                     <label for="project-status">Status:</label>
@@ -336,7 +304,7 @@
                 </div>
                  <div class="form-group">
                     <label for="project-order">Display Order:</label>
-                    <input type="number" id="project-order" required placeholder="e.g., 1 (lower numbers appear first)" value="99">
+                    <input type="number" id="project-order" required placeholder="e.g., 1" value="99">
                 </div>
 
                 <button type="submit" class="action-btn" id="add-project-btn">
@@ -344,7 +312,7 @@
                 </button>
                 <span id="project-feedback" class="feedback-inline"></span>
             </form>
-
+            
             <div id="edit-project-modal" class="modal">
                  <div class="modal-content" style="max-width: 700px;">
                     <span class="modal-close" onclick="window.commonFunctions.closeModal('edit-project')">&times;</span>
@@ -352,13 +320,12 @@
                     <form id="edit-project-form" class="project-form">
                         <input type="hidden" id="edit-project-id">
                         <div class="form-group">
-                            <label for="edit-project-name">Project Name:</label>
+                            <label for="edit-project-name">Name:</label>
                             <input type="text" id="edit-project-name" required>
                         </div>
                         <div class="form-group">
                             <label for="edit-project-slug">Slug:</label>
                             <input type="text" id="edit-project-slug" required>
-                             <small style="color: rgba(255,255,255,0.7); margin-top: 5px;">Must match: `^[a-z0-9-]+$`</small>
                         </div>
                         <div class="form-group">
                             <label for="edit-project-description">Description:</label>
@@ -369,37 +336,34 @@
                             <input type="url" id="edit-project-url">
                         </div>
                          <div class="form-group">
-                            <label for="edit-project-image-url">Image URL:</label>
-                            <input type="url" id="edit-project-image-url">
+                            <label for="edit-project-status">Status:</label>
+                            <select id="edit-project-status" required></select>
                         </div>
                          <div class="form-group">
-                            <label for="edit-project-status">Status:</label>
-                            <select id="edit-project-status" required></select> </div>
-                         <div class="form-group">
-                            <label for="edit-project-order">Display Order:</label>
+                            <label for="edit-project-order">Order:</label>
                             <input type="number" id="edit-project-order" required>
                         </div>
                         
                         <button type="submit" class="action-btn" id="update-project-btn">
-                             <i class="fas fa-save"></i> Update Project
+                             <i class="fas fa-save"></i> Update
                         </button>
                         <button type="button" class="action-btn delete-btn" id="delete-project-btn" style="float: right;">
-                             <i class="fas fa-trash"></i> Delete Project
+                             <i class="fas fa-trash"></i> Delete
                         </button>
                          
                          <span id="edit-project-feedback" class="feedback-inline" style="display: block; margin-top: 1rem;"></span>
                     </form>
                 </div>
             </div>
-
         </section>
 
-    </div> <script>
-        // Embed Supabase config directly
-        // *** NEW CREDENTIALS ***
+    </div> 
+
+    <script>
+        // NEW Credentials
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
-            anonKey: 'eyJhbGciOiJIJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
 
@@ -409,17 +373,15 @@
     <script src="/js/auth.js"></script>
 
     <script>
-        // Store elements
         const loadingOverlay = document.getElementById('loading-overlay');
         const adminContent = document.getElementById('admin-content');
         const adminFeedbackEl = document.getElementById('admin-feedback');
 
-        // --- Helper Functions for Admin Panel ---
         function showAdminFeedback(message, type = 'info') {
             const typeClass = type === 'success' ? 'success-message' : 'error-message';
             adminFeedbackEl.innerHTML = `<div class="${typeClass}" style="display: block;">${message}</div>`;
             adminFeedbackEl.style.display = 'block';
-            window.scrollTo(0, 0); // Scroll to top to see message
+            window.scrollTo(0, 0);
              setTimeout(() => { adminFeedbackEl.style.display = 'none'; }, 5000);
         }
         
@@ -428,17 +390,13 @@
             if (feedbackEl) {
                 feedbackEl.className = `feedback-inline ${type}`;
                 feedbackEl.textContent = message;
-                // Auto-hide
                 setTimeout(() => { if (feedbackEl.textContent === message) feedbackEl.textContent = ''; }, 4000);
             }
         }
 
-        // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize Particles
             if (typeof window.initParticles === 'function') window.initParticles();
             
-            // --- Admin Access Check ---
             try {
                 if (typeof window.authFunctions === 'undefined') {
                     throw new Error("Auth script failed to load.");
@@ -450,34 +408,30 @@
                     throw new Error("No active session. Redirecting to login.");
                 }
 
-                // Session exists, set global state
                 window.isAuthenticated = true;
                 window.currentUser = session.user;
 
-                // Fetch profile and check role
                 const profile = await window.authFunctions.fetchUserProfile();
                 if (!profile) {
-                    throw new Error("Could not fetch user profile. Ensure user is verified and profile exists.");
+                    throw new Error("Logged in, but user profile missing.");
                 }
 
                 const userRole = profile.role;
+                // IMPORTANT: Must be 'admin' to see this page
                 if (userRole !== 'admin') {
                      throw new Error("Access denied. Admin privileges required.");
                 }
 
-                // --- User is Admin, Proceed ---
                 console.log("Admin access verified.");
                 updateAdminNavbar(profile);
-                await loadAdminData(); // Fetch users, settings, projects
+                await loadAdminData(); 
 
                 loadingOverlay.style.display = 'none';
                 adminContent.style.display = 'block';
                 adminContent.classList.add('visible');
 
-                // Initialize inactivity timer for admin
                 window.authFunctions.resetInactivityTimer();
                 
-                // Attach form listeners
                 document.getElementById('settings-form').addEventListener('submit', handleSaveSettings);
                 document.getElementById('add-project-form').addEventListener('submit', handleAddProject);
 
@@ -503,33 +457,27 @@
             if(profileUsername) profileUsername.textContent = profile.username || 'Admin';
 
             if (userAvatar) {
-                 let avatarText = 'AD'; // Default Admin
+                 let avatarText = 'AD'; 
                 if (profile.first_name && profile.last_name) {
                     avatarText = profile.first_name.charAt(0).toUpperCase() + profile.last_name.charAt(0).toUpperCase();
-                } else if (profile.first_name) {
-                    avatarText = profile.first_name.charAt(0).toUpperCase();
                 }
                 userAvatar.textContent = avatarText;
             }
         }
 
         async function loadAdminData() {
-            // Run all loading functions concurrently
             await Promise.all([
                  loadUsers(),
                  loadSettings(),
                  loadProjects()
             ]);
-            console.log("Admin data loaded.");
         }
 
-        // --- User Management Functions ---
         async function loadUsers() {
             const userListBody = document.getElementById('user-list-body');
             userListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading users...</td></tr>';
 
             try {
-                // RLS Policy "Admins can manage all profiles" allows this
                 const { data: users, error } = await window.supabaseClient
                     .from('user_profiles')
                     .select('id, username, email, role, is_active, is_banned')
@@ -538,7 +486,7 @@
                 if (error) throw error;
 
                 if (users && users.length > 0) {
-                    userListBody.innerHTML = ''; // Clear loading
+                    userListBody.innerHTML = '';
                     users.forEach(user => {
                          const row = document.createElement('tr');
                          const isCurrentUser = (user.id === window.currentUser.id);
@@ -553,15 +501,15 @@
                                     <option value="member" ${user.role === 'member' ? 'selected' : ''}>Member</option>
                                     <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
                                 </select>
-                                <button class="action-btn" onclick="changeRole('${user.id}')" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''} title="Save Role Change">
+                                <button class="action-btn" onclick="changeRole('${user.id}')" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''} title="Save Role">
                                     <i class="fas fa-save"></i>
                                 </button>
                             </td>
-                             <td>${user.is_banned ? '<span style="color:var(--error-red);">Banned</span>' : (user.is_active ? '<span style="color:var(--success-green);">Active</span>' : 'Inactive')}</td>
+                             <td>${user.is_banned ? '<span style="color:var(--error-red);">Banned</span>' : '<span style="color:var(--success-green);">Active</span>'}</td>
                              <td>
                                 ${user.is_banned
                                     ? `<button class="action-btn unban-btn" onclick="unbanUser('${user.id}')">Unban</button>`
-                                    : `<button class="action-btn ban-btn" onclick="banUser('${user.id}')" ${isCurrentUser || isOtherAdmin ? 'disabled' : ''} title="${isOtherAdmin ? 'Cannot ban other admins' : (isCurrentUser ? 'Cannot ban self' : 'Ban User')}">Ban</button>`
+                                    : `<button class="action-btn ban-btn" onclick="banUser('${user.id}')" ${isCurrentUser || isOtherAdmin ? 'disabled' : ''}>Ban</button>`
                                 }
                             </td>
                         `;
@@ -579,7 +527,7 @@
         async function changeRole(userId) {
              const selectElement = document.getElementById(`role-${userId}`);
             const newRole = selectElement.value;
-             if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
+             if (!confirm(`Change user role to ${newRole}?`)) return;
 
              try {
                  const { data, error } = await window.supabaseClient.rpc('change_user_role', {
@@ -588,56 +536,50 @@
                  });
                  if (error) throw error;
 
-                 showAdminFeedback(`Successfully changed user role to ${newRole}.`, 'success');
-                 await loadUsers(); // Refresh list
+                 showAdminFeedback(`Role updated to ${newRole}.`, 'success');
+                 await loadUsers(); 
             } catch (error) {
-                 console.error("Error changing role:", error);
-                showAdminFeedback(`Error changing role: ${error.message}`, 'error');
+                showAdminFeedback(`Error: ${error.message}`, 'error');
             }
         }
 
         async function banUser(userId) {
-            const reason = prompt("Enter reason for banning (optional):", "Violation of terms");
-            if (reason === null) return; // User cancelled
+            const reason = prompt("Reason for banning:", "Violation of terms");
+            if (reason === null) return; 
 
              try {
                  const { data, error } = await window.supabaseClient.rpc('ban_user', {
                      target_user_id: userId,
-                    ban_reason_text: reason || 'Violation of terms'
+                    ban_reason_text: reason
                  });
                  if (error) throw error;
-                 showAdminFeedback(`Successfully banned user.`, 'success');
-                 await loadUsers(); // Refresh list
+                 showAdminFeedback(`User banned.`, 'success');
+                 await loadUsers(); 
              } catch (error) {
-                 console.error("Error banning user:", error);
-                showAdminFeedback(`Error banning user: ${error.message}`, 'error');
+                showAdminFeedback(`Error: ${error.message}`, 'error');
             }
         }
 
         async function unbanUser(userId) {
-             if (!confirm(`Are you sure you want to unban this user?`)) return;
+             if (!confirm(`Unban this user?`)) return;
 
              try {
                 const { data, error } = await window.supabaseClient.rpc('unban_user', {
                      target_user_id: userId
                  });
                 if (error) throw error;
-                 showAdminFeedback(`Successfully unbanned user.`, 'success');
-                 await loadUsers(); // Refresh list
+                 showAdminFeedback(`User unbanned.`, 'success');
+                 await loadUsers(); 
              } catch (error) {
-                 console.error("Error unbanning user:", error);
-                 showAdminFeedback(`Error unbanning user: ${error.message}`, 'error');
+                 showAdminFeedback(`Error: ${error.message}`, 'error');
             }
         }
 
-
-        // --- Website Settings Functions ---
         async function loadSettings() {
              const feedbackEl = document.getElementById('settings-feedback');
-             showInlineFeedback('settings-feedback', 'Loading settings...', 'loading');
+             showInlineFeedback('settings-feedback', 'Loading...', 'loading');
              
              try {
-                // RLS Policy "Admins can manage settings" allows SELECT
                 const { data: settings, error } = await window.supabaseClient
                     .from('website_settings')
                     .select('setting_key, setting_value');
@@ -646,22 +588,14 @@
 
                  if (settings) {
                     settings.forEach(setting => {
-                         // ID format is "setting-key_name"
                          const input = document.getElementById(`setting-${setting.setting_key}`);
-                         if (input) {
-                             input.value = setting.setting_value;
-                         } else {
-                             console.warn(`Input element not found for setting key: ${setting.setting_key}`);
-                         }
+                         if (input) input.value = setting.setting_value;
                     });
                      showInlineFeedback('settings-feedback', 'Settings loaded.', 'success');
-                 } else {
-                    showInlineFeedback('settings-feedback', 'No settings found.', 'error');
                  }
 
             } catch (error) {
                  console.error("Error loading settings:", error);
-                 showInlineFeedback('settings-feedback', 'Could not load settings.', 'error');
             }
         }
 
@@ -675,17 +609,16 @@
             const settingsToUpdate = [];
             document.querySelectorAll('#settings-form input, #settings-form select').forEach(input => {
                 if (input.id.startsWith('setting-')) {
-                    const key = input.id.replace('setting-', ''); // Keep underscores
+                    const key = input.id.replace('setting-', '');
                     settingsToUpdate.push({
                         setting_key: key,
                         setting_value: input.value,
-                        updated_by: window.currentUser.id // Log who updated
+                        updated_by: window.currentUser.id 
                     });
                 }
             });
 
             try {
-                 // RLS Policy "Admins can manage settings" allows UPDATE
                  let errors = [];
                  for (const setting of settingsToUpdate) {
                      const { error } = await window.supabaseClient
@@ -693,7 +626,6 @@
                          .update({
                              setting_value: setting.setting_value,
                              updated_by: setting.updated_by
-                             // updated_at is handled by trigger
                          })
                          .eq('setting_key', setting.setting_key);
 
@@ -701,43 +633,39 @@
                 }
 
                  if (errors.length > 0) {
-                     showInlineFeedback('settings-feedback', `Failed to update: ${errors.join(', ')}`, 'error');
+                     showInlineFeedback('settings-feedback', `Errors saving: ${errors.join(', ')}`, 'error');
                  } else {
-                    showInlineFeedback('settings-feedback', 'Settings saved successfully!', 'success');
+                    showInlineFeedback('settings-feedback', 'Settings saved!', 'success');
                  }
 
             } catch (error) {
-                 console.error("Error saving settings:", error);
                  showInlineFeedback('settings-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  saveBtn.disabled = false;
             }
         }
 
-
-        // --- Project Management Functions ---
         async function loadProjects() {
             const projectListBody = document.getElementById('project-list-body');
-            projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading projects...</td></tr>';
+            projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
             
             try {
-                // RLS Policy "Admins can manage projects" allows SELECT
                 const { data: projects, error } = await window.supabaseClient
                     .from('projects')
-                    .select('id, name, slug, status, display_order')
+                    .select('*')
                     .order('display_order', { ascending: true });
 
                 if (error) throw error;
 
                 if (projects && projects.length > 0) {
-                    projectListBody.innerHTML = ''; // Clear loading
+                    projectListBody.innerHTML = ''; 
                     projects.forEach(project => {
                          const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${project.display_order}</td>
                             <td>${project.name}</td>
                              <td>${project.slug}</td>
-                             <td><span style="text-transform: capitalize;">${project.status.replace('_', ' ')}</span></td>
+                             <td>${project.status}</td>
                             <td>
                                 <button class="action-btn" onclick="openEditProjectModal('${project.id}')">Edit</button>
                                 <button class="action-btn delete-btn" onclick="handleDeleteProject('${project.id}', '${project.name}')">Delete</button>
@@ -746,11 +674,11 @@
                          projectListBody.appendChild(row);
                     });
                 } else {
-                     projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No projects found. Add one below.</td></tr>';
+                     projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No projects found.</td></tr>';
                 }
             } catch (error) {
-                console.error("Error loading projects:", error);
-                projectListBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error-red);">Could not load projects: ${error.message}</td></tr>`;
+                console.error("Error:", error);
+                projectListBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Error loading projects</td></tr>`;
             }
         }
 
@@ -769,16 +697,11 @@
                 image_url: document.getElementById('project-image-url').value.trim() || null,
                 status: document.getElementById('project-status').value,
                 display_order: parseInt(document.getElementById('project-order').value) || 99,
-                created_by: window.currentUser.id // Record who created it
+                created_by: window.currentUser.id
             };
 
-            if (!newProject.name || !newProject.slug || !newProject.description) {
-                 showInlineFeedback('project-feedback', 'Name, Slug, and Description are required.', 'error');
-                 addBtn.disabled = false;
-                return;
-            }
-             if (!/^[a-z0-9-]+$/.test(newProject.slug)) {
-                 showInlineFeedback('project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
+            if (!/^[a-z0-9-]+$/.test(newProject.slug)) {
+                 showInlineFeedback('project-feedback', 'Slug must be lowercase/numbers/hyphens.', 'error');
                  addBtn.disabled = false;
                  return;
             }
@@ -791,12 +714,11 @@
 
                 if (error) throw error;
 
-                showInlineFeedback('project-feedback', 'Project added successfully!', 'success');
+                showInlineFeedback('project-feedback', 'Project added!', 'success');
                 document.getElementById('add-project-form').reset();
-                await loadProjects(); // Refresh list
+                await loadProjects(); 
 
             } catch (error) {
-                console.error("Error adding project:", error);
                 showInlineFeedback('project-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  addBtn.disabled = false;
@@ -804,9 +726,8 @@
         }
 
         async function openEditProjectModal(projectId) {
-            const feedbackEl = document.getElementById('edit-project-feedback');
-            showInlineFeedback('edit-project-feedback', 'Loading project data...', 'loading');
-            window.commonFunctions.openModal('edit-project'); // 'edit-project-modal'
+            window.commonFunctions.openModal('edit-project');
+            showInlineFeedback('edit-project-feedback', 'Loading...', 'loading');
 
             try {
                 const { data: project, error } = await window.supabaseClient
@@ -817,7 +738,6 @@
 
                 if (error) throw error;
 
-                // Populate the edit form
                 document.getElementById('edit-project-id').value = project.id;
                 document.getElementById('edit-project-name').value = project.name;
                 document.getElementById('edit-project-slug').value = project.slug;
@@ -825,10 +745,9 @@
                 document.getElementById('edit-project-url').value = project.url || '';
                 document.getElementById('edit-project-image-url').value = project.image_url || '';
                 document.getElementById('edit-project-order').value = project.display_order;
-
-                // Populate status dropdown
-                 const statusSelect = document.getElementById('edit-project-status');
-                 statusSelect.innerHTML = ''; // Clear existing
+                
+                const statusSelect = document.getElementById('edit-project-status');
+                statusSelect.innerHTML = '';
                  ['active', 'coming_soon', 'maintenance', 'deprecated'].forEach(status => {
                      const option = document.createElement('option');
                     option.value = status;
@@ -837,21 +756,18 @@
                     statusSelect.appendChild(option);
                  });
 
-                 feedbackEl.textContent = ''; // Clear loading message
-
-                 // Attach/re-attach event listeners
+                 document.getElementById('edit-project-feedback').textContent = '';
+                 
                 document.getElementById('edit-project-form').onsubmit = handleUpdateProject;
                 document.getElementById('delete-project-btn').onclick = () => handleDeleteProject(project.id, project.name);
 
             } catch (error) {
-                console.error("Error loading project for edit:", error);
-                showInlineFeedback('edit-project-feedback', `Could not load project: ${error.message}`, 'error');
+                showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
             }
         }
 
         async function handleUpdateProject(e) {
              e.preventDefault();
-             const feedbackEl = document.getElementById('edit-project-feedback');
              const updateBtn = document.getElementById('update-project-btn');
              showInlineFeedback('edit-project-feedback', 'Updating...', 'loading');
              updateBtn.disabled = true;
@@ -866,12 +782,6 @@
                  status: document.getElementById('edit-project-status').value,
                  display_order: parseInt(document.getElementById('edit-project-order').value) || 99
             };
-            
-             if (!/^[a-z0-9-]+$/.test(updatedProject.slug)) {
-                 showInlineFeedback('edit-project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
-                 updateBtn.disabled = false;
-                 return;
-            }
 
              try {
                  const { data, error } = await window.supabaseClient
@@ -882,14 +792,11 @@
 
                  if (error) throw error;
                  
-                 showInlineFeedback('edit-project-feedback', 'Project updated successfully!', 'success');
-                 await loadProjects(); // Refresh list
-                 setTimeout(() => {
-                     window.commonFunctions.closeModal('edit-project');
-                 }, 1500);
+                 showInlineFeedback('edit-project-feedback', 'Updated!', 'success');
+                 await loadProjects(); 
+                 setTimeout(() => { window.commonFunctions.closeModal('edit-project'); }, 1000);
 
              } catch (error) {
-                console.error("Error updating project:", error);
                 showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  updateBtn.disabled = false;
@@ -897,13 +804,9 @@
         }
 
         async function handleDeleteProject(projectId, projectName) {
-            if (!confirm(`Are you sure you want to delete the project "${projectName}"? This action cannot be undone.`)) {
-                 return;
-            }
+            if (!confirm(`Delete project "${projectName}"?`)) return;
 
-            const feedbackEl = document.getElementById('edit-project-feedback');
             showInlineFeedback('edit-project-feedback', 'Deleting...', 'loading');
-            document.getElementById('update-project-btn').disabled = true;
             document.getElementById('delete-project-btn').disabled = true;
 
              try {
@@ -914,15 +817,12 @@
 
                  if (error) throw error;
                  
-                 showAdminFeedback(`Project "${projectName}" deleted successfully!`, 'success');
-                 await loadProjects(); // Refresh list
+                 showAdminFeedback(`Project "${projectName}" deleted!`, 'success');
+                 await loadProjects(); 
                  window.commonFunctions.closeModal('edit-project');
 
             } catch (error) {
-                console.error("Error deleting project:", error);
                  showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
-                 // Re-enable buttons if delete failed
-                 document.getElementById('update-project-btn').disabled = false;
                  document.getElementById('delete-project-btn').disabled = false;
             }
         }
