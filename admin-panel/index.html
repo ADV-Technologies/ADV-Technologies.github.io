@@ -9,190 +9,105 @@
     <link rel="apple-touch-icon" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="/css/styles.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     
     <style>
-        /* Specific styles for the admin panel */
-        body {
-            background: var(--dark-gray); /* Admin panel has a slightly different BG */
-        }
-        .navbar {
-            position: fixed; /* Keep navbar fixed */
-        }
+        body { background: var(--dark-gray); }
+        .navbar { position: fixed; }
         .admin-panel-container {
-            padding-top: 100px; /* Space below fixed navbar */
+            padding-top: 100px;
             min-height: calc(100vh - 100px);
             position: relative;
-            z-index: 5; /* Below navbar but above particles */
+            z-index: 5;
             padding-bottom: 3rem;
         }
 
-        .loading-overlay {
+        /* Modal Centering Fix */
+        .modal {
+            display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            align-items: center; justify-content: center;
-            flex-direction: column;
-            gap: 1rem;
             z-index: 3000;
-            color: var(--gold);
-            font-size: 1.5rem;
-            text-align: center;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal.active { display: flex !important; }
+        .modal-content {
+            background: #0a0a0a;
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.1);
+            margin: auto;
         }
 
-        /* Admin Tables */
-        .user-list, .project-list {
-            overflow-x: auto; /* Make tables scrollable on small screens */
-            margin-top: 1rem;
-        }
-        
-        .user-list table, .project-list table {
-            width: 100%;
-            min-width: 700px; /* Ensure table has minimum width */
-            border-collapse: collapse;
-            color: var(--white);
-            font-size: 0.9rem;
-        }
-        .user-list th, .user-list td,
-        .project-list th, .project-list td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--glass-border);
-            vertical-align: middle;
-        }
-        .user-list th, .project-list th {
-            color: var(--gold);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-        
-        /* Button styles */
-        .action-btn {
-            margin-right: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid var(--gold);
-            background-color: transparent;
-            color: var(--gold);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .action-btn:hover {
-            background-color: var(--gold);
-            color: var(--black);
-            box-shadow: 0 5px 15px var(--shadow-gold);
-        }
-         .action-btn.delete-btn, .action-btn.ban-btn {
-            border-color: var(--error-red);
-            color: var(--error-red);
-        }
-        .action-btn.delete-btn:hover, .action-btn.ban-btn:hover {
-            background-color: var(--error-red);
-            color: var(--white);
-            border-color: var(--error-red);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
-        }
-         .action-btn.unban-btn {
-            border-color: var(--success-green);
-            color: var(--success-green);
-         }
-         .action-btn.unban-btn:hover {
-             background-color: var(--success-green);
-             color: var(--black);
-         }
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            filter: grayscale(1);
-        }
-        
-        .user-list select {
-            padding: 0.4rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--white);
-            border: 1px solid var(--glass-border);
-            border-radius: 5px;
-            font-family: 'Montserrat', sans-serif;
-            margin-right: 0.5rem;
-        }
-        
-        .settings-form .form-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 1rem;
-        }
-        .settings-form .form-group label {
-            width: 200px; /* Align labels */
-            flex-shrink: 0;
-            color: var(--gold);
-            font-weight: 600;
-        }
-        .settings-form .form-group input,
-        .settings-form .form-group select {
-            flex-grow: 1;
-            min-width: 200px;
-            max-width: 400px;
-            padding: 0.8rem; /* Smaller padding */
-        }
-        
-        /* Project Form */
-        .project-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .project-form label {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.2rem;
-        }
+        /* Form Styles */
+        .project-form { display: flex; flex-direction: column; gap: 1rem; }
+        .project-form label { color: var(--gold); font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.2rem; }
         .project-form input, .project-form select, .project-form textarea {
-             width: 100%;
-             padding: 0.8rem;
+             width: 100%; padding: 12px; background: rgba(255,255,255,0.08);
+             border: 1px solid var(--glass-border); color: white; border-radius: 8px;
+             font-family: 'Montserrat', sans-serif;
         }
-        .project-form textarea {
-            min-height: 100px;
-            resize: vertical;
+        .project-form input:focus, .project-form select:focus, .project-form textarea:focus {
+            outline: none; border-color: var(--gold);
         }
+        .project-form textarea { min-height: 100px; resize: vertical; }
+        .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.5rem; }
+
+        /* Tables */
+        .user-list, .project-list { overflow-x: auto; margin-top: 1rem; }
+        .user-list table, .project-list table { width: 100%; min-width: 700px; border-collapse: collapse; color: var(--white); font-size: 0.9rem; }
+        .user-list th, .user-list td, .project-list th, .project-list td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--glass-border); vertical-align: middle; }
+        .user-list th, .project-list th { color: var(--gold); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
         
-        /* Feedback */
-        .feedback-inline {
-            font-size: 0.9rem;
-            margin-left: 1rem;
-            font-weight: 500;
+        /* Buttons */
+        .action-btn {
+            margin-right: 0.5rem; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 8px;
+            cursor: pointer; transition: all 0.3s ease; border: 1px solid var(--gold);
+            background-color: transparent; color: var(--gold); font-weight: 600; white-space: nowrap;
         }
+        .action-btn:hover { background-color: var(--gold); color: var(--black); }
+        .action-btn.delete-btn { border-color: var(--error-red); color: var(--error-red); }
+        .action-btn.delete-btn:hover { background-color: var(--error-red); color: white; }
+        .action-btn.ban-btn { border-color: var(--error-red); color: var(--error-red); }
+        .action-btn.ban-btn:hover { background-color: var(--error-red); color: white; }
+        .action-btn.unban-btn { border-color: var(--success-green); color: var(--success-green); }
+        .action-btn.unban-btn:hover { background-color: var(--success-green); color: var(--black); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        /* Feedback */
+        .feedback-inline { font-size: 0.9rem; margin-left: 1rem; font-weight: 500; }
         .feedback-inline.success { color: var(--success-green); }
         .feedback-inline.error { color: var(--error-red); }
         .feedback-inline.loading { color: rgba(255, 255, 255, 0.7); }
-
         #admin-feedback { margin-top: 1.5rem; }
-        
-        /* Fix Modal Scrolling */
-        .modal-content {
-            max-height: 85vh;
-            overflow-y: auto;
-            padding-bottom: 2rem;
-        }
-        
-        .admin-section {
-            margin-bottom: 4rem;
-        }
 
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; align-items: center; 
+            justify-content: center; flex-direction: column; gap: 1rem; 
+            z-index: 3000; color: var(--gold); font-size: 1.5rem; text-align: center;
+        }
+        
+        .form-row { display: flex; gap: 1rem; }
+        .form-row .form-group { flex: 1; }
+        .user-list select { padding: 5px; border-radius: 5px; background: #111; color: white; border: 1px solid #444; margin-right: 5px; }
+        
+        .settings-form .form-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #222; padding-bottom: 1rem; }
+        .settings-form label { width: 200px; flex-shrink: 0; color: var(--gold); font-weight: 600; }
+        .settings-form input { flex-grow: 1; padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -208,10 +123,9 @@
 
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo" onclick="window.location.href='/'">
-                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            <div class="logo" onclick="location.href='/'">
+                <img src="/assets/logo.png" alt="Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
             </div>
-            
             <div class="user-profile" id="user-profile" style="display: none;">
                 <div class="user-avatar" id="user-avatar">AD</div>
                 <span id="profile-username">Admin</span>
@@ -243,7 +157,7 @@
                         </tr>
                     </thead>
                     <tbody id="user-list-body">
-                        <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
+                         <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -263,7 +177,7 @@
                 </div>
                  <div class="form-group">
                     <label for="setting-primary_color">Primary Color:</label>
-                    <input type="color" id="setting-primary_color" value="#FFD700">
+                    <input type="color" id="setting-primary_color" value="#FFD700" style="height: 40px;">
                 </div>
 
                 <h4>Particle System</h4>
@@ -311,108 +225,137 @@
                         <tr>
                             <th>Order</th>
                             <th>Name</th>
-                            <th>Slug</th>
+                            <th>Access</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="project-list-body">
-                         </tbody>
+                    <tbody id="project-list-body"></tbody>
                 </table>
             </div>
 
             <h4 style="margin-top: 3rem; margin-bottom: 1rem; color: var(--gold); border-top: 1px solid var(--glass-border); padding-top: 2rem;">Add New Project</h4>
+            
             <form id="add-project-form" class="project-form">
-                <div class="form-group">
-                    <label for="project-name">Project Name:</label>
-                    <input type="text" id="project-name" required placeholder="e.g., Awesome Tool">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="project-name">Project Name</label>
+                        <input type="text" id="project-name" required placeholder="e.g., Awesome Tool">
+                    </div>
+                    <div class="form-group">
+                        <label for="project-slug">Slug (ID)</label>
+                        <input type="text" id="project-slug" required placeholder="e.g., awesome-tool">
+                    </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="project-slug">Slug:</label>
-                    <input type="text" id="project-slug" required placeholder="e.g., awesome-tool (lowercase, numbers, hyphens)">
-                     <small style="color: rgba(255,255,255,0.7); margin-top: 5px;">Unique identifier used in URLs. Must match: `^[a-z0-9-]+$`</small>
-                </div>
-                <div class="form-group">
-                    <label for="project-description">Description:</label>
+                    <label for="project-description">Description</label>
                     <textarea id="project-description" required placeholder="A brief description..."></textarea>
                 </div>
-                 <div class="form-group">
-                    <label for="project-url">URL:</label>
-                    <input type="url" id="project-url" placeholder="https://example.com/project (optional, use # if none)">
+
+                <div class="form-group">
+                    <label for="project-url">URL</label>
+                    <input type="url" id="project-url" placeholder="https://example.com (optional)">
                 </div>
-                 <div class="form-group">
-                    <label for="project-image-url">Image URL:</label>
+                
+                <div class="form-group">
+                    <label for="project-image-url">Image URL</label>
                     <input type="url" id="project-image-url" placeholder="/assets/project-image.png (optional)">
                 </div>
-                 <div class="form-group">
-                    <label for="project-status">Status:</label>
-                    <select id="project-status" required>
-                        <option value="active">Active</option>
-                        <option value="coming_soon" selected>Coming Soon</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="deprecated">Deprecated</option>
-                    </select>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="project-status">Status</label>
+                        <select id="project-status" required>
+                            <option value="active">Active</option>
+                            <option value="coming_soon" selected>Coming Soon</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="deprecated">Deprecated</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-access">Access Level</label>
+                        <select id="project-access" required style="border-color: var(--gold);">
+                            <option value="public" selected>Public (Users)</option>
+                            <option value="member">Members Only</option>
+                            <option value="admin">Admins Only</option>
+                        </select>
+                    </div>
                 </div>
-                 <button type="submit" class="action-btn" id="add-project-btn" style="margin-top: 1rem;">
+
+                <button type="submit" class="action-btn" id="add-project-btn" style="margin-top: 1rem;">
                     <i class="fas fa-plus"></i> Add Project
                 </button>
                 <span id="project-feedback" class="feedback-inline"></span>
             </form>
-
-            <div id="edit-project-modal" class="modal">
-                 <div class="modal-content" style="max-width: 700px;">
-                    <span class="modal-close" onclick="window.commonFunctions.closeModal('edit-project')">&times;</span>
-                    <h3>Edit Project</h3>
-                    <form id="edit-project-form" class="project-form">
-                        <input type="hidden" id="edit-project-id">
-                        <div class="form-group">
-                            <label for="edit-project-name">Project Name:</label>
-                            <input type="text" id="edit-project-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-project-slug">Slug:</label>
-                            <input type="text" id="edit-project-slug" required>
-                             <small style="color: rgba(255,255,255,0.7); margin-top: 5px;">Must match: `^[a-z0-9-]+$`</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-project-description">Description:</label>
-                            <textarea id="edit-project-description" required></textarea>
-                        </div>
-                         <div class="form-group">
-                            <label for="edit-project-url">URL:</label>
-                            <input type="url" id="edit-project-url">
-                        </div>
-                         <div class="form-group">
-                            <label for="edit-project-image-url">Image URL:</label>
-                            <input type="url" id="edit-project-image-url">
-                        </div>
-                         <div class="form-group">
-                            <label for="edit-project-status">Status:</label>
-                            <select id="edit-project-status" required></select> </div>
-                         <div class="form-group">
-                            <label for="edit-project-order">Display Order:</label>
-                            <input type="number" id="edit-project-order" required>
-                        </div>
-                        
-                        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
-                            <button type="submit" class="action-btn" id="update-project-btn">
-                                 <i class="fas fa-save"></i> Update Project
-                            </button>
-                            <button type="button" class="action-btn delete-btn" id="delete-project-btn">
-                                 <i class="fas fa-trash"></i> Delete Project
-                            </button>
-                        </div>
-                         
-                         <span id="edit-project-feedback" class="feedback-inline" style="display: block; margin-top: 1rem;"></span>
-                    </form>
-                </div>
-            </div>
-
         </section>
 
-    </div> <script>
-        // Embed Supabase config directly
-        // *** NEW CREDENTIALS ***
+    </div> 
+
+    <div id="edit-project-modal" class="modal">
+         <div class="modal-content">
+            <span class="modal-close" onclick="window.commonFunctions.closeModal('edit-project')">&times;</span>
+            <h3>Edit Project</h3>
+            
+            <form id="edit-project-form" class="project-form">
+                <input type="hidden" id="edit-project-id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="edit-project-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Slug</label>
+                        <input type="text" id="edit-project-slug" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit-project-description" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>URL</label>
+                    <input type="url" id="edit-project-url">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Order</label>
+                        <input type="number" id="edit-project-order" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="edit-project-status">
+                            <option value="active">Active</option>
+                            <option value="coming_soon">Coming Soon</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="deprecated">Deprecated</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label style="color: var(--gold);">Access Level</label>
+                    <select id="edit-project-access" style="border-color: var(--gold);">
+                        <option value="public">Public (Users)</option>
+                        <option value="member">Members Only</option>
+                        <option value="admin">Admins Only</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="action-btn" id="update-project-btn" style="flex: 1;">Update</button>
+                    <button type="button" class="action-btn delete-btn" id="delete-project-btn">Delete</button>
+                </div>
+                <span id="edit-project-feedback" class="feedback-inline" style="display: block; margin-top: 1rem;"></span>
+            </form>
+        </div>
+    </div>
+
+    <script>
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
@@ -425,17 +368,16 @@
     <script src="/js/auth.js"></script>
 
     <script>
-        // Store elements
+        // Initialize
         const loadingOverlay = document.getElementById('loading-overlay');
         const adminContent = document.getElementById('admin-content');
         const adminFeedbackEl = document.getElementById('admin-feedback');
 
-        // --- Helper Functions for Admin Panel ---
         function showAdminFeedback(message, type = 'info') {
             const typeClass = type === 'success' ? 'success-message' : 'error-message';
             adminFeedbackEl.innerHTML = `<div class="${typeClass}" style="display: block;">${message}</div>`;
             adminFeedbackEl.style.display = 'block';
-            window.scrollTo(0, 0); // Scroll to top to see message
+            window.scrollTo(0, 0);
              setTimeout(() => { adminFeedbackEl.style.display = 'none'; }, 5000);
         }
         
@@ -444,68 +386,44 @@
             if (feedbackEl) {
                 feedbackEl.className = `feedback-inline ${type}`;
                 feedbackEl.textContent = message;
-                // Auto-hide
                 setTimeout(() => { if (feedbackEl.textContent === message) feedbackEl.textContent = ''; }, 4000);
             }
         }
 
-        // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize Particles
             if (typeof window.initParticles === 'function') window.initParticles();
             
-            // --- Admin Access Check ---
             try {
-                if (typeof window.authFunctions === 'undefined') {
-                    throw new Error("Auth script failed to load.");
-                }
+                if (typeof window.authFunctions === 'undefined') throw new Error("Auth script failed.");
                 
                 const { data: { session }, error } = await window.supabaseClient.auth.getSession();
                 if (error) throw error;
-                if (!session) {
-                    throw new Error("No active session. Redirecting to login.");
-                }
+                if (!session) throw new Error("No active session. Redirecting to login.");
 
-                // Session exists, set global state
                 window.isAuthenticated = true;
                 window.currentUser = session.user;
 
-                // Fetch profile and check role
                 const profile = await window.authFunctions.fetchUserProfile();
-                if (!profile) {
-                    throw new Error("Could not fetch user profile. Ensure user is verified and profile exists.");
-                }
+                if (!profile) throw new Error("Profile missing.");
 
-                const userRole = profile.role;
-                if (userRole !== 'admin') {
-                     throw new Error("Access denied. Admin privileges required.");
-                }
+                if (profile.role !== 'admin') throw new Error("Access denied.");
 
-                // --- User is Admin, Proceed ---
                 console.log("Admin access verified.");
                 updateAdminNavbar(profile);
-                await loadAdminData(); // Fetch users, settings, projects
+                await loadAdminData(); 
 
                 loadingOverlay.style.display = 'none';
                 adminContent.style.display = 'block';
                 adminContent.classList.add('visible');
 
-                // Initialize inactivity timer for admin
                 window.authFunctions.resetInactivityTimer();
                 
-                // Attach form listeners
                 document.getElementById('settings-form').addEventListener('submit', handleSaveSettings);
                 document.getElementById('add-project-form').addEventListener('submit', handleAddProject);
 
-
             } catch (err) {
-                 console.error("Admin Panel Access Error:", err.message);
-                 loadingOverlay.innerHTML = `
-                    <div>
-                        <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
-                        <p style="margin-top: 1rem; color: var(--error-red);">${err.message}</p>
-                        <p style="font-size: 1rem; margin-top: 1rem;">Redirecting to login...</p>
-                    </div>`;
+                 console.error("Access Error:", err.message);
+                 loadingOverlay.innerHTML = `<p style="color:red; margin-top:20px;">${err.message}</p>`;
                  setTimeout(() => { window.location.href = '/login/'; }, 3000);
             }
         });
@@ -514,38 +432,20 @@
             const userAvatar = document.getElementById('user-avatar');
             const profileUsername = document.getElementById('profile-username');
             const userProfileNav = document.getElementById('user-profile');
-
             if (userProfileNav) userProfileNav.style.display = 'flex';
             if(profileUsername) profileUsername.textContent = profile.username || 'Admin';
-
-            if (userAvatar) {
-                 let avatarText = 'AD'; // Default Admin
-                if (profile.first_name && profile.last_name) {
-                    avatarText = profile.first_name.charAt(0).toUpperCase() + profile.last_name.charAt(0).toUpperCase();
-                } else if (profile.first_name) {
-                    avatarText = profile.first_name.charAt(0).toUpperCase();
-                }
-                userAvatar.textContent = avatarText;
+            if (userAvatar && profile.first_name) {
+                userAvatar.textContent = profile.first_name.charAt(0).toUpperCase();
             }
         }
 
         async function loadAdminData() {
-            // Run all loading functions concurrently
-            await Promise.all([
-                 loadUsers(),
-                 loadSettings(),
-                 loadProjects()
-            ]);
-            console.log("Admin data loaded.");
+            await Promise.all([loadUsers(), loadSettings(), loadProjects()]);
         }
 
-        // --- User Management Functions ---
         async function loadUsers() {
             const userListBody = document.getElementById('user-list-body');
-            userListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading users...</td></tr>';
-
             try {
-                // RLS Policy "Admins can manage all profiles" allows this
                 const { data: users, error } = await window.supabaseClient
                     .from('user_profiles')
                     .select('id, username, email, role, is_active, is_banned')
@@ -553,107 +453,67 @@
 
                 if (error) throw error;
 
-                if (users && users.length > 0) {
-                    userListBody.innerHTML = ''; // Clear loading
-                    users.forEach(user => {
-                         const row = document.createElement('tr');
-                         const isCurrentUser = (user.id === window.currentUser.id);
-                         const isOtherAdmin = (user.role === 'admin' && !isCurrentUser);
-
-                         row.innerHTML = `
-                            <td>${user.username} ${isCurrentUser ? '(You)' : ''}</td>
-                            <td>${user.email}</td>
-                            <td>
-                                <select id="role-${user.id}" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''}>
-                                     <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-                                    <option value="member" ${user.role === 'member' ? 'selected' : ''}>Member</option>
-                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                                </select>
-                                <button class="action-btn" onclick="changeRole('${user.id}')" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''} title="Save Role Change">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                            </td>
-                             <td>${user.is_banned ? '<span style="color:var(--error-red);">Banned</span>' : (user.is_active ? '<span style="color:var(--success-green);">Active</span>' : 'Inactive')}</td>
-                             <td>
-                                ${user.is_banned
-                                    ? `<button class="action-btn unban-btn" onclick="unbanUser('${user.id}')">Unban</button>`
-                                    : `<button class="action-btn ban-btn" onclick="banUser('${user.id}')" ${isCurrentUser || isOtherAdmin ? 'disabled' : ''} title="${isOtherAdmin ? 'Cannot ban other admins' : (isCurrentUser ? 'Cannot ban self' : 'Ban User')}">Ban</button>`
-                                }
-                            </td>
-                        `;
-                        userListBody.appendChild(row);
-                    });
-                } else {
-                    userListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>';
-                }
+                userListBody.innerHTML = '';
+                users.forEach(user => {
+                     const isCurrentUser = (user.id === window.currentUser.id);
+                     const row = document.createElement('tr');
+                     row.innerHTML = `
+                        <td>${user.username} ${isCurrentUser ? '(You)' : ''}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <select id="role-${user.id}" ${isCurrentUser ? 'disabled' : ''}>
+                                 <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="member" ${user.role === 'member' ? 'selected' : ''}>Member</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
+                            <button class="action-btn" onclick="changeRole('${user.id}')" ${isCurrentUser ? 'disabled' : ''}>Save</button>
+                        </td>
+                         <td>${user.is_banned ? '<span style="color:var(--error-red);">Banned</span>' : '<span style="color:var(--success-green);">Active</span>'}</td>
+                         <td>
+                            ${user.is_banned
+                                ? `<button class="action-btn unban-btn" onclick="unbanUser('${user.id}')">Unban</button>`
+                                : `<button class="action-btn ban-btn" onclick="banUser('${user.id}')" ${isCurrentUser ? 'disabled' : ''}>Ban</button>`
+                            }
+                        </td>
+                    `;
+                    userListBody.appendChild(row);
+                });
             } catch (error) {
-                 console.error("Error loading users:", error);
-                userListBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error-red);">Could not load users: ${error.message}</td></tr>`;
+                console.error("Error users:", error);
             }
         }
 
         async function changeRole(userId) {
-             const selectElement = document.getElementById(`role-${userId}`);
-            const newRole = selectElement.value;
-             if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
-
+             const newRole = document.getElementById(`role-${userId}`).value;
+             if (!confirm(`Change user role to ${newRole}?`)) return;
              try {
-                 const { data, error } = await window.supabaseClient.rpc('change_user_role', {
-                    target_user_id: userId,
-                    new_role: newRole
-                 });
+                 const { error } = await window.supabaseClient.rpc('change_user_role', { target_user_id: userId, new_role: newRole });
                  if (error) throw error;
-
-                 showAdminFeedback(`Successfully changed user role to ${newRole}.`, 'success');
-                 await loadUsers(); // Refresh list
-            } catch (error) {
-                 console.error("Error changing role:", error);
-                showAdminFeedback(`Error changing role: ${error.message}`, 'error');
-            }
+                 showAdminFeedback(`Role updated.`, 'success');
+                 await loadUsers(); 
+            } catch (error) { showAdminFeedback(error.message, 'error'); }
         }
 
         async function banUser(userId) {
-            const reason = prompt("Enter reason for banning (optional):", "Violation of terms");
-            if (reason === null) return; // User cancelled
-
              try {
-                 const { data, error } = await window.supabaseClient.rpc('ban_user', {
-                     target_user_id: userId,
-                    ban_reason_text: reason || 'Violation of terms'
-                 });
+                 const { error } = await window.supabaseClient.rpc('ban_user', { target_user_id: userId, ban_reason_text: "Admin Action" });
                  if (error) throw error;
-                 showAdminFeedback(`Successfully banned user.`, 'success');
-                 await loadUsers(); // Refresh list
-             } catch (error) {
-                 console.error("Error banning user:", error);
-                showAdminFeedback(`Error banning user: ${error.message}`, 'error');
-            }
+                 showAdminFeedback(`User banned.`, 'success');
+                 await loadUsers(); 
+             } catch (error) { showAdminFeedback(error.message, 'error'); }
         }
 
         async function unbanUser(userId) {
-             if (!confirm(`Are you sure you want to unban this user?`)) return;
-
              try {
-                const { data, error } = await window.supabaseClient.rpc('unban_user', {
-                     target_user_id: userId
-                 });
-                if (error) throw error;
-                 showAdminFeedback(`Successfully unbanned user.`, 'success');
-                 await loadUsers(); // Refresh list
-             } catch (error) {
-                 console.error("Error unbanning user:", error);
-                 showAdminFeedback(`Error unbanning user: ${error.message}`, 'error');
-            }
+                 const { error } = await window.supabaseClient.rpc('unban_user', { target_user_id: userId });
+                 if (error) throw error;
+                 showAdminFeedback(`User unbanned.`, 'success');
+                 await loadUsers(); 
+             } catch (error) { showAdminFeedback(error.message, 'error'); }
         }
 
-
-        // --- Website Settings Functions ---
         async function loadSettings() {
-             const feedbackEl = document.getElementById('settings-feedback');
-             showInlineFeedback('settings-feedback', 'Loading settings...', 'loading');
-             
              try {
-                // RLS Policy "Admins can manage settings" allows SELECT
                 const { data: settings, error } = await window.supabaseClient
                     .from('website_settings')
                     .select('setting_key, setting_value');
@@ -662,22 +522,12 @@
 
                  if (settings) {
                     settings.forEach(setting => {
-                         // ID format is "setting-key_name"
                          const input = document.getElementById(`setting-${setting.setting_key}`);
-                         if (input) {
-                             input.value = setting.setting_value;
-                         } else {
-                             console.warn(`Input element not found for setting key: ${setting.setting_key}`);
-                         }
+                         if (input) input.value = setting.setting_value;
                     });
-                     showInlineFeedback('settings-feedback', 'Settings loaded.', 'success');
-                 } else {
-                    showInlineFeedback('settings-feedback', 'No settings found.', 'error');
                  }
-
             } catch (error) {
                  console.error("Error loading settings:", error);
-                 showInlineFeedback('settings-feedback', 'Could not load settings.', 'error');
             }
         }
 
@@ -691,17 +541,16 @@
             const settingsToUpdate = [];
             document.querySelectorAll('#settings-form input, #settings-form select').forEach(input => {
                 if (input.id.startsWith('setting-')) {
-                    const key = input.id.replace('setting-', ''); // Keep underscores
+                    const key = input.id.replace('setting-', '');
                     settingsToUpdate.push({
                         setting_key: key,
                         setting_value: input.value,
-                        updated_by: window.currentUser.id // Log who updated
+                        updated_by: window.currentUser.id 
                     });
                 }
             });
 
             try {
-                 // RLS Policy "Admins can manage settings" allows UPDATE
                  let errors = [];
                  for (const setting of settingsToUpdate) {
                      const { error } = await window.supabaseClient
@@ -709,7 +558,6 @@
                          .update({
                              setting_value: setting.setting_value,
                              updated_by: setting.updated_by
-                             // updated_at is handled by trigger
                          })
                          .eq('setting_key', setting.setting_key);
 
@@ -717,56 +565,55 @@
                 }
 
                  if (errors.length > 0) {
-                     showInlineFeedback('settings-feedback', `Failed to update: ${errors.join(', ')}`, 'error');
+                     showInlineFeedback('settings-feedback', `Errors saving: ${errors.join(', ')}`, 'error');
                  } else {
-                    showInlineFeedback('settings-feedback', 'Settings saved successfully!', 'success');
+                    showInlineFeedback('settings-feedback', 'Settings saved!', 'success');
+                    
+                    // IMMEDIATELY APPLY SETTINGS LIVE
+                    if (window.commonFunctions && window.commonFunctions.applyWebsiteSettings) {
+                        await window.commonFunctions.applyWebsiteSettings();
+                    }
                  }
 
             } catch (error) {
-                 console.error("Error saving settings:", error);
                  showInlineFeedback('settings-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  saveBtn.disabled = false;
             }
         }
 
-
-        // --- Project Management Functions ---
         async function loadProjects() {
-            const projectListBody = document.getElementById('project-list-body');
-            projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading projects...</td></tr>';
+            const tbody = document.getElementById('project-list-body');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Loading...</td></tr>';
             
             try {
-                // RLS Policy "Admins can manage projects" allows SELECT
                 const { data: projects, error } = await window.supabaseClient
                     .from('projects')
-                    .select('id, name, slug, status, display_order')
+                    .select('*')
                     .order('display_order', { ascending: true });
 
                 if (error) throw error;
 
+                tbody.innerHTML = '';
                 if (projects && projects.length > 0) {
-                    projectListBody.innerHTML = ''; // Clear loading
                     projects.forEach(project => {
                          const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${project.display_order}</td>
                             <td>${project.name}</td>
-                             <td>${project.slug}</td>
-                             <td><span style="text-transform: capitalize;">${project.status.replace('_', ' ')}</span></td>
+                             <td><span style="color:var(--gold); border:1px solid var(--gold); padding:2px 6px; border-radius:4px; font-size:0.8em">${project.access_level || 'public'}</span></td>
+                             <td>${project.status}</td>
                             <td>
                                 <button class="action-btn" onclick="openEditProjectModal('${project.id}')">Edit</button>
-                                <button class="action-btn delete-btn" onclick="handleDeleteProject('${project.id}', '${project.name}')">Delete</button>
                             </td>
                          `;
-                         projectListBody.appendChild(row);
+                         tbody.appendChild(row);
                     });
                 } else {
-                     projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No projects found. Add one below.</td></tr>';
+                     tbody.innerHTML = '<tr><td colspan="5">No projects.</td></tr>';
                 }
             } catch (error) {
-                console.error("Error loading projects:", error);
-                projectListBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error-red);">Could not load projects: ${error.message}</td></tr>`;
+                console.error(error);
             }
         }
 
@@ -777,19 +624,8 @@
             showInlineFeedback('project-feedback', 'Adding...', 'loading');
             addBtn.disabled = true;
 
-            // --- AUTO-ORDERING LOGIC ---
-            // We want to insert BEFORE the last item (usually "Coming Soon").
-            // Assuming "Coming Soon" has a very high order (e.g. 99, 100) or is just last.
-            // Strategy: Find max order, use that for new project, and bump the "Coming Soon" (if exists) or append.
-            
-            // Simplest approach for this request: 
-            // 1. Find the highest order that IS NOT 'coming-soon' slug.
-            // 2. Add 1 to it.
-            // 3. Insert.
-            // 4. Ensure 'coming-soon' project (if exists) has a higher order.
-            
             try {
-                // Get current highest order of normal projects
+                // 1. Find max order to slot before "Coming Soon"
                 const { data: maxOrderData } = await window.supabaseClient
                     .from('projects')
                     .select('display_order')
@@ -802,7 +638,6 @@
                     newOrder = maxOrderData[0].display_order + 1;
                 }
                 
-                // Construct project object
                 const newProject = {
                     name: document.getElementById('project-name').value.trim(),
                     slug: document.getElementById('project-slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
@@ -810,174 +645,113 @@
                     url: document.getElementById('project-url').value.trim() || '#',
                     image_url: document.getElementById('project-image-url').value.trim() || null,
                     status: document.getElementById('project-status').value,
+                    access_level: document.getElementById('project-access').value, // NEW FIELD
                     display_order: newOrder,
                     created_by: window.currentUser.id 
                 };
 
-                // Validations
-                if (!newProject.name || !newProject.slug || !newProject.description) {
-                     showInlineFeedback('project-feedback', 'Name, Slug, and Description are required.', 'error');
-                     addBtn.disabled = false;
-                    return;
-                }
-                 if (!/^[a-z0-9-]+$/.test(newProject.slug)) {
-                     showInlineFeedback('project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
-                     addBtn.disabled = false;
-                     return;
-                }
+                 if (!/^[a-z0-9-]+$/.test(newProject.slug)) throw new Error("Slug must be lowercase/numbers/hyphens.");
 
                 // Insert
-                const { error: insertError } = await window.supabaseClient
-                    .from('projects')
-                    .insert([newProject]);
-
+                const { error: insertError } = await window.supabaseClient.from('projects').insert([newProject]);
                 if (insertError) throw insertError;
                 
-                // Update 'coming-soon' placeholder to be last (e.g., newOrder + 1)
-                // We do this blindly just to ensure it stays at bottom
-                await window.supabaseClient
-                    .from('projects')
-                    .update({ display_order: newOrder + 1 })
-                    .eq('slug', 'coming-soon');
+                // Push "Coming Soon" to the end
+                await window.supabaseClient.from('projects').update({ display_order: newOrder + 1 }).eq('slug', 'coming-soon');
 
-                showInlineFeedback('project-feedback', 'Project added successfully!', 'success');
+                showInlineFeedback('project-feedback', 'Success!', 'success');
                 document.getElementById('add-project-form').reset();
-                await loadProjects(); // Refresh list
+                await loadProjects(); 
 
             } catch (error) {
-                console.error("Error adding project:", error);
-                showInlineFeedback('project-feedback', `Error: ${error.message}`, 'error');
+                showInlineFeedback('project-feedback', error.message, 'error');
             } finally {
                  addBtn.disabled = false;
             }
         }
 
         async function openEditProjectModal(projectId) {
-            const feedbackEl = document.getElementById('edit-project-feedback');
-            showInlineFeedback('edit-project-feedback', 'Loading project data...', 'loading');
-            window.commonFunctions.openModal('edit-project'); // 'edit-project-modal'
-
+            window.commonFunctions.openModal('edit-project');
+            
             try {
                 const { data: project, error } = await window.supabaseClient
-                    .from('projects')
-                    .select('*')
-                    .eq('id', projectId)
-                    .single();
+                    .from('projects').select('*').eq('id', projectId).single();
 
                 if (error) throw error;
 
-                // Populate the edit form
+                // Populate Form
                 document.getElementById('edit-project-id').value = project.id;
                 document.getElementById('edit-project-name').value = project.name;
                 document.getElementById('edit-project-slug').value = project.slug;
                 document.getElementById('edit-project-description').value = project.description;
                 document.getElementById('edit-project-url').value = project.url || '';
-                document.getElementById('edit-project-image-url').value = project.image_url || '';
                 document.getElementById('edit-project-order').value = project.display_order;
-
-                // Populate status dropdown
-                 const statusSelect = document.getElementById('edit-project-status');
-                 statusSelect.innerHTML = ''; // Clear existing
-                 ['active', 'coming_soon', 'maintenance', 'deprecated'].forEach(status => {
-                     const option = document.createElement('option');
-                    option.value = status;
-                     option.textContent = status.replace('_', ' ');
-                     if (project.status === status) option.selected = true;
-                    statusSelect.appendChild(option);
+                
+                // Set Status Dropdown
+                const statusSelect = document.getElementById('edit-project-status');
+                statusSelect.innerHTML = '';
+                 ['active', 'coming_soon', 'maintenance', 'deprecated'].forEach(s => {
+                     const op = document.createElement('option');
+                     op.value = s; op.textContent = s;
+                     if (project.status === s) op.selected = true;
+                     statusSelect.appendChild(op);
                  });
 
-                 feedbackEl.textContent = ''; // Clear loading message
+                // Set Access Dropdown (NEW)
+                const accessSelect = document.getElementById('edit-project-access');
+                // Default to 'public' if null
+                accessSelect.value = project.access_level || 'public';
 
-                 // Attach/re-attach event listeners
+                // Bind handlers
                 document.getElementById('edit-project-form').onsubmit = handleUpdateProject;
                 document.getElementById('delete-project-btn').onclick = () => handleDeleteProject(project.id, project.name);
 
             } catch (error) {
-                console.error("Error loading project for edit:", error);
-                showInlineFeedback('edit-project-feedback', `Could not load project: ${error.message}`, 'error');
+                alert(error.message);
             }
         }
 
         async function handleUpdateProject(e) {
              e.preventDefault();
-             const feedbackEl = document.getElementById('edit-project-feedback');
              const updateBtn = document.getElementById('update-project-btn');
-             showInlineFeedback('edit-project-feedback', 'Updating...', 'loading');
              updateBtn.disabled = true;
 
              const projectId = document.getElementById('edit-project-id').value;
              const updatedProject = {
                  name: document.getElementById('edit-project-name').value.trim(),
-                 slug: document.getElementById('edit-project-slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
+                 slug: document.getElementById('edit-project-slug').value.trim(),
                  description: document.getElementById('edit-project-description').value.trim(),
                  url: document.getElementById('edit-project-url').value.trim() || '#',
-                 image_url: document.getElementById('edit-project-image-url').value.trim() || null,
                  status: document.getElementById('edit-project-status').value,
+                 access_level: document.getElementById('edit-project-access').value, // SAVE NEW FIELD
                  display_order: parseInt(document.getElementById('edit-project-order').value) || 99
             };
-            
-             if (!/^[a-z0-9-]+$/.test(updatedProject.slug)) {
-                 showInlineFeedback('edit-project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
-                 updateBtn.disabled = false;
-                 return;
-            }
 
              try {
-                 // RLS Policy "Admins can manage projects" allows UPDATE
-                 const { data, error } = await window.supabaseClient
-                     .from('projects')
-                     .update(updatedProject)
-                     .eq('id', projectId)
-                     .select();
-
+                 const { error } = await window.supabaseClient.from('projects').update(updatedProject).eq('id', projectId);
                  if (error) throw error;
                  
-                 showInlineFeedback('edit-project-feedback', 'Project updated successfully!', 'success');
-                 await loadProjects(); // Refresh list
-                 setTimeout(() => {
-                     window.commonFunctions.closeModal('edit-project');
-                 }, 1500);
-
+                 showInlineFeedback('edit-project-feedback', 'Updated!', 'success');
+                 await loadProjects(); 
+                 setTimeout(() => { window.commonFunctions.closeModal('edit-project'); }, 1000);
              } catch (error) {
-                console.error("Error updating project:", error);
-                showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
+                showInlineFeedback('edit-project-feedback', error.message, 'error');
             } finally {
                  updateBtn.disabled = false;
             }
         }
 
-        async function handleDeleteProject(projectId, projectName) {
-            if (!confirm(`Are you sure you want to delete the project "${projectName}"? This action cannot be undone.`)) {
-                 return;
-            }
-
-            const feedbackEl = document.getElementById('edit-project-feedback');
-            showInlineFeedback('edit-project-feedback', 'Deleting...', 'loading');
-            document.getElementById('update-project-btn').disabled = true;
-            document.getElementById('delete-project-btn').disabled = true;
-
+        async function handleDeleteProject(projectId, name) {
+            if (!confirm(`Delete ${name}?`)) return;
              try {
-                 // RLS Policy "Admins can manage projects" allows DELETE
-                 const { error } = await window.supabaseClient
-                     .from('projects')
-                     .delete()
-                     .eq('id', projectId);
-
+                 const { error } = await window.supabaseClient.from('projects').delete().eq('id', projectId);
                  if (error) throw error;
-                 
-                 showAdminFeedback(`Project "${projectName}" deleted successfully!`, 'success');
-                 await loadProjects(); // Refresh list
+                 await loadProjects(); 
                  window.commonFunctions.closeModal('edit-project');
-
             } catch (error) {
-                console.error("Error deleting project:", error);
-                 showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
-                 // Re-enable buttons if delete failed
-                 document.getElementById('update-project-btn').disabled = false;
-                 document.getElementById('delete-project-btn').disabled = false;
+                 alert(error.message);
             }
         }
-
     </script>
 </body>
 </html>
