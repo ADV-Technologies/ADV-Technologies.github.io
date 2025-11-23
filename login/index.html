@@ -4,25 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - ADV Technologies</title>
-    
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link rel="apple-touch-icon" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="/css/styles.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    
     <style>
-        /* Specific styles for the login page container */
         .auth-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            position: relative; /* Ensure it's above canvas */
+            position: relative; 
             z-index: 10;
         }
         .auth-card {
@@ -69,7 +64,6 @@
             transform: translateX(-5px);
             color: var(--light-gold);
         }
-        /* All other form styles (form-group, input, etc.) are loaded from /css/styles.css */
     </style>
 </head>
 <body>
@@ -93,9 +87,9 @@
 
             <form id="login-form">
                 <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" required placeholder="your.email@example.com">
-                    <div class="input-validation" id="login-email-validation"></div>
+                    <label for="login-identifier">Email or Username</label>
+                    <input type="text" id="login-identifier" required placeholder="Enter email or username">
+                    <div class="input-validation" id="login-identifier-validation"></div>
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
@@ -121,8 +115,6 @@
     </div>
 
     <script>
-        // Embed Supabase config directly for GitHub Pages
-        // *** NEW CREDENTIALS ***
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
@@ -136,71 +128,52 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Particles
             if (typeof window.initParticles === 'function') {
                 window.initParticles();
-            } else {
-                console.error("Particle system initialization function not found.");
-            }
-            
-            // Initialize auth functions (like inactivity timer)
-            if (typeof window.authFunctions === 'object') {
-                 // Check if already logged in (getSession is fast)
-                 window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
-                    if (session) {
-                         console.log("Already logged in, redirecting from login page...");
-                         window.location.href = '/dashboard/'; // Send to dashboard if already logged in
-                    }
-                });
-            } else {
-                console.error("Auth functions not loaded!");
             }
 
-            // --- Form Handler ---
+            if (typeof window.authFunctions === 'object') {
+                 window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    if (session) {
+                         window.location.href = '/dashboard/'; 
+                    }
+                });
+            }
+
             const loginForm = document.getElementById('login-form');
             const loginBtn = document.getElementById('login-btn');
             const loginBtnText = document.getElementById('login-btn-text');
             const loginBtnIcon = document.getElementById('login-btn-icon');
-            const loginErrorEl = document.getElementById('login-error'); // General error message
+            const loginErrorEl = document.getElementById('login-error');
 
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('login-email').value;
+                const identifier = document.getElementById('login-identifier').value.trim();
                 const password = document.getElementById('login-password').value;
 
-                // Disable button and show loading state
                 loginBtn.disabled = true;
                 loginBtnText.textContent = 'Logging in...';
                 loginBtnIcon.className = 'fas fa-spinner fa-spin';
-                loginErrorEl.style.display = 'none'; // Hide old errors
+                loginErrorEl.style.display = 'none';
 
-                // Call the handleLogin function from auth.js
-                // handleLogin now shows bubble validation internally
-                const result = await window.authFunctions.handleLogin(email, password);
+                const result = await window.authFunctions.handleLogin(identifier, password);
 
                 if (result.success) {
-                    // Success! Show success message and redirect to index.html
-                    // auth.js onAuthStateChange will handle the navbar update on index.html
-                    loginErrorEl.className = 'success-message'; // Use general message area for success
+                    loginErrorEl.className = 'success-message';
                     loginErrorEl.textContent = 'Login successful! Redirecting...';
                     loginErrorEl.style.display = 'block';
                     
                     setTimeout(() => {
-                        window.location.href = '/'; // Redirect to root (index.html)
+                        window.location.href = '/';
                     }, 1000);
 
                 } else {
-                    // Re-enable button and restore state
                     loginBtn.disabled = false;
                     loginBtnText.textContent = 'Login';
                     loginBtnIcon.className = 'fas fa-sign-in-alt';
                     
-                    // Bubble errors are shown inside handleLogin, 
-                    // but if they aren't, show a general error.
-                    const emailBubble = document.getElementById('login-email-validation').classList.contains('show');
-                    const passBubble = document.getElementById('login-password-validation').classList.contains('show');
-
-                    if (!emailBubble && !passBubble) {
+                    // If error is not specific to an input, show global error
+                    if (!document.getElementById('login-password-validation').classList.contains('show') && !document.getElementById('login-identifier-validation').classList.contains('show')) {
                         loginErrorEl.className = 'error-message';
                         loginErrorEl.textContent = result.error || 'An unknown error occurred.';
                         loginErrorEl.style.display = 'block';
@@ -208,8 +181,6 @@
                 }
             });
             
-            // Password toggle utility
-            // Make togglePassword globally accessible for the onclick attribute
             window.togglePassword = window.commonFunctions.togglePassword;
         });
     </script>
