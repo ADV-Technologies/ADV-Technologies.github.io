@@ -1,4 +1,4 @@
-// js/auth.js
+// js/auth.js - Complete Version
 
 // Ensure Supabase client is available from config.js or HTML
 if (!window.supabaseClient) {
@@ -27,7 +27,6 @@ function resetInactivityTimer() {
         inactivityTimer = setTimeout(() => {
             handleInactivityLogout();
         }, INACTIVITY_TIMEOUT);
-        // console.log("Inactivity timer reset."); // For debugging
     }
 }
 
@@ -35,10 +34,8 @@ async function handleInactivityLogout() {
     if (isAuthenticated) {
         console.log("Logging out due to inactivity.");
         await supabaseClient.auth.signOut();
-        // State will be updated by onAuthStateChange listener
         alert('You have been logged out due to inactivity. Please log in again to continue.');
-        // Optionally redirect to login page or index
-        window.location.href = '/'; // Redirect home after inactivity logout
+        window.location.href = '/'; // Redirect home
     }
 }
 
@@ -50,40 +47,36 @@ function initializeActivityTracking() {
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
             localStorage.setItem('lastActiveTime', Date.now().toString());
-             // console.log("Tab hidden, storing last active time."); // Debug
         } else {
             const lastActiveTime = localStorage.getItem('lastActiveTime');
             if (lastActiveTime && isAuthenticated) {
                 const timeAway = Date.now() - parseInt(lastActiveTime);
-                 // console.log(`Tab visible again. Time away: ${timeAway / 1000}s`); // Debug
                 if (timeAway > INACTIVITY_TIMEOUT) {
                     handleInactivityLogout();
-                    return; // Don't reset timer if already logged out
+                    return;
                 }
             }
-            resetInactivityTimer(); // Reset timer when tab becomes visible
+            resetInactivityTimer();
         }
     });
 
     // Check on initial load
      const lastActiveTime = localStorage.getItem('lastActiveTime');
-     if (lastActiveTime && isAuthenticated) { // Check if authenticated state might already be known
+     if (lastActiveTime && isAuthenticated) {
         const timeAway = Date.now() - parseInt(lastActiveTime);
         if (timeAway > INACTIVITY_TIMEOUT) {
             console.log("Logging out on load due to inactivity while away.");
-            handleInactivityLogout(); // Perform logout if timeout occurred while away
-            return; // Stop further initialization if logged out
+            handleInactivityLogout();
+            return;
         }
      }
 
-    // Start timer immediately if already authenticated on load (after initial check)
     if (isAuthenticated) {
         resetInactivityTimer();
     }
 
-     // Store time before unload
      window.addEventListener('beforeunload', () => {
-         if (isAuthenticated) { // Only store if logged in
+         if (isAuthenticated) {
              localStorage.setItem('lastActiveTime', Date.now().toString());
          }
      });
@@ -94,8 +87,7 @@ function initializeActivityTracking() {
 // --- Core Authentication Functions ---
 
 async function handleLogin(email, password) {
-    // Uses bubble validation from common.js
-    window.commonFunctions.clearAllValidationBubbles('login-form'); // Clear previous bubbles
+    window.commonFunctions.clearAllValidationBubbles('login-form');
 
     if (!email) {
         window.commonFunctions.showInputValidation('login-email', 'Please enter your email address');
@@ -118,13 +110,11 @@ async function handleLogin(email, password) {
             } else if (error.message.includes('Email not confirmed')) {
                 window.commonFunctions.showInputValidation('login-email', 'Please verify your email before logging in.');
             } else {
-                 window.commonFunctions.showInputValidation('login-email', `Login failed: ${error.message}`); // Show generic error on email field
+                 window.commonFunctions.showInputValidation('login-email', `Login failed: ${error.message}`);
             }
-            throw error; // Let the caller know it failed
+            throw error;
         }
 
-        // Login successful - state updated via onAuthStateChange
-        // Redirect handled by onAuthStateChange or caller
         return { success: true, user: data.user };
 
     } catch (error) {
@@ -134,27 +124,20 @@ async function handleLogin(email, password) {
 }
 
 
-// Signup function - collects all data
 async function handleSignup(userData) {
-    // userData = { firstName, lastName, username, email, dateOfBirth, profession, password, confirmPassword }
-    window.commonFunctions.clearAllValidationBubbles('signup-form'); // Clear previous bubbles
+    window.commonFunctions.clearAllValidationBubbles('signup-form');
 
-    // --- Form Validation (with bubble messages) ---
     let isValid = true;
     
-    // =================================================================
-    // FIX 1: Enforce lowercase for username validation and submission
-    // =================================================================
+    // Enforce lowercase for username
     const finalUsername = userData.username.toLowerCase();
-
 
     if (!userData.firstName || userData.firstName.length < 2) {
         window.commonFunctions.showInputValidation('signup-first-name', 'First name must be at least 2 characters');
         isValid = false;
     }
-    // lastName is optional
 
-    if (!userData.email || !/\S+@\S+\.\S+/.test(userData.email)) { // Basic email format check
+    if (!userData.email || !/\S+@\S+\.\S+/.test(userData.email)) {
         window.commonFunctions.showInputValidation('signup-email', 'Please enter a valid email');
         isValid = false;
     }
@@ -164,19 +147,17 @@ async function handleSignup(userData) {
          isValid = false;
      }
 
-    // Username format/length validation (using the enforced lowercase version)
-    const usernameFormatValidationResult = validateUsername(finalUsername);
-    if (!usernameFormatValidationResult.valid) {
-        window.commonFunctions.showInputValidation('signup-username', usernameFormatValidationResult.message);
+    const usernameValidationResult = validateUsername(finalUsername);
+    if (!usernameValidationResult.valid) {
+        window.commonFunctions.showInputValidation('signup-username', usernameValidationResult.message);
         isValid = false;
     }
 
      if (!userData.profession || userData.profession.trim() === '') {
-         window.commonFunctions.showMessage('signup', 'error', 'Please select or specify your profession.'); // Use general message area for dropdown
+         window.commonFunctions.showMessage('signup', 'error', 'Please select or specify your profession.');
          isValid = false;
      }
 
-    // Password validation
     if (!userData.password || userData.password.length < 8) {
         window.commonFunctions.showInputValidation('signup-password', 'Password must be at least 8 characters');
         isValid = false;
@@ -197,7 +178,7 @@ async function handleSignup(userData) {
 
     if (!isValid) return { success: false, error: 'Validation failed' };
 
-    // --- Username Uniqueness Check (using RPC with lowercase version) ---
+    // Check availability via RPC
     const isUsernameAvailable = await checkUsernameAvailability(finalUsername);
     if (!isUsernameAvailable) {
         window.commonFunctions.showInputValidation('signup-username', 'This username is already taken');
@@ -210,16 +191,15 @@ async function handleSignup(userData) {
     }
 
 
-    // --- Attempt Supabase Signup ---
     try {
         const { data, error } = await supabaseClient.auth.signUp({
             email: userData.email,
             password: userData.password,
             options: {
-                data: { // This data goes into auth.users.raw_user_meta_data
+                data: {
                     first_name: userData.firstName,
                     last_name: userData.lastName || null,
-                    username: finalUsername, // <-- Submit the enforced lowercase username
+                    username: finalUsername,
                     date_of_birth: userData.dateOfBirth,
                     profession: userData.profession
                 }
@@ -229,18 +209,15 @@ async function handleSignup(userData) {
         if (error) {
             if (error.message.includes('already registered')) {
                 window.commonFunctions.showInputValidation('signup-email', 'Email already registered. Try logging in.');
-            } else if (error.message.includes('duplicate key value violates unique constraint') && error.message.includes('username')) {
+            } else if (error.message.includes('username')) {
                  window.commonFunctions.showInputValidation('signup-username', 'This username is already taken.');
             } else {
-                window.commonFunctions.showMessage('signup', 'error', `Signup failed: ${error.message}`); // Show general error
+                window.commonFunctions.showMessage('signup', 'error', `Signup failed: ${error.message}`);
             }
             throw error;
         }
 
-        // Signup successful, waiting for OTP
-        currentUser = data.user; // Store user object for OTP step
-        pendingVerification = true; // Set OTP pending flag
-
+        currentUser = data.user;
         return { success: true, user: data.user, needsVerification: data.session === null };
 
     } catch (error) {
@@ -250,8 +227,8 @@ async function handleSignup(userData) {
 }
 
 
-async function handleOTPVerification(email, otpCode) { // Pass email explicitly
-    window.commonFunctions.clearMessages('otp'); // Clear previous OTP messages
+async function handleOTPVerification(email, otpCode) {
+    window.commonFunctions.clearMessages('otp');
 
     if (!email) {
          window.commonFunctions.showMessage('otp', 'error', 'Email context lost. Please try signing up again.');
@@ -262,22 +239,20 @@ async function handleOTPVerification(email, otpCode) { // Pass email explicitly
         return { success: false, error: 'Invalid OTP format' };
     }
 
-
     try {
         const { data, error } = await supabaseClient.auth.verifyOtp({
-            email: email, // Use the passed email
+            email: email,
             token: otpCode,
-            type: 'signup' // Must match the type used in signUp
+            type: 'signup'
         });
 
         if (error) {
             if (error.message.includes('Token has expired')) {
                 window.commonFunctions.showMessage('otp', 'error', 'Verification code has expired. Please resend.');
             } else if (error.message.includes('already verified')) {
-                window.commonFunctions.showMessage('otp', 'info', 'Your email is already verified. Redirecting to login...');
+                window.commonFunctions.showMessage('otp', 'info', 'Your email is already verified. Redirecting...');
                  isAuthenticated = true; 
-                 pendingVerification = false;
-                setTimeout(() => { window.location.href = '/login/'; }, 1500); // Redirect to login folder
+                setTimeout(() => { window.location.href = '/login/'; }, 1500);
                 return { success: true, user: null };
             }
             else {
@@ -286,11 +261,8 @@ async function handleOTPVerification(email, otpCode) { // Pass email explicitly
             throw error;
         }
 
-        // OTP Verification successful
         isAuthenticated = true;
         currentUser = data.user || currentUser;
-        pendingVerification = false;
-
         await fetchUserProfile();
         resetInactivityTimer();
 
@@ -303,8 +275,8 @@ async function handleOTPVerification(email, otpCode) { // Pass email explicitly
 }
 
 
-async function resendOTP(email) { // Pass email explicitly
-     window.commonFunctions.clearMessages('otp'); // Clear previous messages
+async function resendOTP(email) {
+     window.commonFunctions.clearMessages('otp');
     if (!email) {
         window.commonFunctions.showMessage('otp', 'error', 'Cannot resend code. Email context lost.');
         return { success: false, error: 'Email context lost' };
@@ -335,7 +307,6 @@ async function resendOTP(email) { // Pass email explicitly
 }
 
 async function handleLogout() {
-     console.log("Handling manual logout.");
      try {
         await supabaseClient.auth.signOut();
         if (inactivityTimer) {
@@ -344,16 +315,12 @@ async function handleLogout() {
         }
         localStorage.removeItem('lastActiveTime'); 
         userProfileData = null; 
-        console.log("Logout successful.");
         
-        // Always redirect to root index.html on logout
         if (window.location.pathname !== '/') {
             window.location.href = '/';
         }
-        
      } catch (error) {
         console.error('Logout error:', error);
-        alert(`Logout failed: ${error.message}`);
      }
 }
 
@@ -362,12 +329,10 @@ async function handleLogout() {
 async function fetchUserProfile() {
     if (!currentUser) {
         userProfileData = null;
-        console.log("fetchUserProfile: No current user, skipping fetch.");
         return null;
     }
 
     try {
-        console.log("fetchUserProfile: Fetching profile for user:", currentUser.id);
         const { data, error, status } = await supabaseClient
             .from('user_profiles')
             .select('*') 
@@ -380,11 +345,19 @@ async function fetchUserProfile() {
         }
 
         if (data) {
+            // === BAN CHECK ===
+            if (data.is_banned) {
+                console.warn("User is banned. Logging out.");
+                await supabaseClient.auth.signOut();
+                alert(`Your account has been banned.\nReason: ${data.ban_reason || 'Violation of terms.'}`);
+                window.location.href = '/';
+                return null;
+            }
+            
             userProfileData = data;
-            console.log("fetchUserProfile: User profile fetched successfully:", userProfileData);
             return userProfileData;
         } else {
-             console.warn("fetchUserProfile: User profile not found in database for ID:", currentUser.id);
+             console.warn("fetchUserProfile: User profile not found in database.");
              userProfileData = null; 
              return null;
         }
@@ -395,60 +368,39 @@ async function fetchUserProfile() {
     }
 }
 
-// Function to update UI elements based on role (placeholder)
-function updateRoleSpecificUI(role) {
-    // This is a placeholder. Actual implementation should be in dashboard.js or admin-panel.js
-    console.log(`UI update requested for role: ${role}. Implementation needed in specific page script.`);
-}
 
 // --- Username Validation & Suggestions ---
 
-// Validate format (lowercase, numbers, _, -) and length
 function validateUsername(username) {
-    const regex = /^[a-z0-9_-]+$/; // Only lowercase letters, numbers, underscore, hyphen
-    if (!username) {
-        return { valid: false, message: 'Username is required' };
-    }
-    if (!regex.test(username)) {
-        return { valid: false, message: 'Use only lowercase letters, numbers, _, -' };
-    }
-    if (username.length < 3) {
-        return { valid: false, message: 'Username must be at least 3 characters' };
-    }
-    if (username.length > 20) {
-        return { valid: false, message: 'Username must be 20 characters or less' };
-    }
+    const regex = /^[a-z0-9_-]+$/; 
+    if (!username) return { valid: false, message: 'Username is required' };
+    if (!regex.test(username)) return { valid: false, message: 'Use only lowercase letters, numbers, _, -' };
+    if (username.length < 3) return { valid: false, message: 'Username must be at least 3 characters' };
+    if (username.length > 20) return { valid: false, message: 'Username must be 20 characters or less' };
     return { valid: true, message: 'Username format is valid!' }; 
 }
 
-
-// Check availability against the database using RPC
 async function checkUsernameAvailability(username) {
     if (!username) return false;
     const formatValidation = validateUsername(username);
     if (!formatValidation.valid) return false;
 
     try {
-        // console.log(`Checking username availability via RPC for: ${username}`);
         const { data, error } = await supabaseClient.rpc('is_username_available', {
             check_username: username
         });
-
         if (error) {
-            console.error('RPC Error checking username availability:', error);
+            console.error('RPC Error:', error);
             return false;
         }
-        // console.log(`RPC result for ${username}: ${data}`);
-        return data; // Function returns true if available, false if taken.
+        return data; 
 
     } catch (error) {
-        console.error('Exception calling RPC checkUsernameAvailability:', error);
-        return false; // Assume taken on exception
+        console.error('Exception calling RPC:', error);
+        return false;
     }
 }
 
-
-// Generate suggestions (ensure lowercase and valid length)
 function generateUsernameSuggestions(firstName, lastName, dob) {
     const suggestions = new Set(); 
     const fn = firstName.toLowerCase().replace(/[^a-z0-9]/g, ''); 
@@ -472,7 +424,7 @@ function generateUsernameSuggestions(firstName, lastName, dob) {
              if (`${fn}_${shortYear}`.length >= 3) suggestions.add(`${fn}_${shortYear}`);
         }
          let randomUser1 = `${fn}${Math.floor(Math.random() * 99)}`;
-         if (randomUser1.length < 3) randomUser1 = `${randomUser1}0`; // Pad if needed
+         if (randomUser1.length < 3) randomUser1 = `${randomUser1}0`;
          suggestions.add(randomUser1);
 
          let randomUser2 = `${fn}_${Math.floor(Math.random() * 999)}`;
@@ -488,19 +440,16 @@ function generateUsernameSuggestions(firstName, lastName, dob) {
         suggestions.add(randomUser3);
     }
 
-    // Filter suggestions based on validation rules (format is handled, check length)
     const validSuggestions = [...suggestions]
         .filter(s => s.length >= 3 && s.length <= 20 && /^[a-z0-9_-]+$/.test(s));
 
     return validSuggestions.slice(0, 3);
 }
 
-// Function to display suggestions and check their availability (used in signup.html)
-async function displayUsernameSuggestions() { // Removed args, gets values from DOM
+async function displayUsernameSuggestions() { 
     const container = document.getElementById('username-suggestions');
-    if (!container) return; // Only run on signup page
+    if (!container) return; 
     
-    // Get values from DOM
     const firstName = document.getElementById('signup-first-name').value.trim();
     const lastName = document.getElementById('signup-last-name').value.trim();
     const dob = document.getElementById('signup-dob').value;
@@ -508,7 +457,6 @@ async function displayUsernameSuggestions() { // Removed args, gets values from 
 
     const suggestionItems = container.querySelectorAll('.suggestion-item');
 
-    // Clear previous states and hide all
     suggestionItems.forEach(item => {
         item.style.display = 'none';
         item.onclick = null;
@@ -520,7 +468,6 @@ async function displayUsernameSuggestions() { // Removed args, gets values from 
 
     if (suggestions.length > 0) {
         container.classList.add('show');
-        // Check availability for each suggestion concurrently
         const availabilityChecks = suggestions.map(suggestion => checkUsernameAvailability(suggestion));
         const availabilityResults = await Promise.all(availabilityChecks);
 
@@ -531,8 +478,8 @@ async function displayUsernameSuggestions() { // Removed args, gets values from 
                 const statusEl = item.querySelector('.suggestion-status');
 
                 textEl.textContent = suggestion;
-                item.dataset.suggestion = suggestion; // Store suggestion
-                item.style.display = 'flex'; // Show item
+                item.dataset.suggestion = suggestion; 
+                item.style.display = 'flex'; 
 
                 const isAvailable = availabilityResults[index];
                 statusEl.textContent = isAvailable ? 'Available' : 'Taken';
@@ -542,11 +489,11 @@ async function displayUsernameSuggestions() { // Removed args, gets values from 
                     item.onclick = () => {
                         const usernameInput = document.getElementById('signup-username');
                         usernameInput.value = suggestion;
-                        usernameInput.dispatchEvent(new Event('input')); // Trigger validation/check
-                        container.classList.remove('show'); // Hide suggestions after selection
+                        usernameInput.dispatchEvent(new Event('input'));
+                        container.classList.remove('show'); 
                     };
                 } else {
-                    item.onclick = null; // Not clickable
+                    item.onclick = null;
                     item.style.cursor = 'not-allowed';
                     item.style.opacity = '0.7';
                 }
@@ -559,17 +506,13 @@ async function displayUsernameSuggestions() { // Removed args, gets values from 
 
 
 // --- Auth UI Update ---
-// Central function to update UI based on authentication state
-async function updateAuthUI() { // Made async to await profile fetch
+async function updateAuthUI() { 
     const authButtons = document.getElementById('auth-buttons');
     const userProfile = document.getElementById('user-profile');
     const userAvatar = document.getElementById('user-avatar');
-    const profileUsernameNav = document.getElementById('profile-username'); // In dashboard/admin nav
+    const profileUsernameNav = document.getElementById('profile-username'); 
 
-    // Only run if auth elements are present (i.e., on index.html, dashboard, admin)
-    if (!authButtons || !userProfile || !userAvatar) {
-        return;
-    }
+    if (!authButtons || !userProfile || !userAvatar) return;
 
     if (isAuthenticated && currentUser) {
         authButtons.style.display = 'none';
@@ -583,9 +526,7 @@ async function updateAuthUI() { // Made async to await profile fetch
         const lastName = userProfileData?.last_name || currentUser.user_metadata?.last_name || '';
         const username = userProfileData?.username || currentUser.user_metadata?.username || 'User';
 
-        if (profileUsernameNav) { 
-            profileUsernameNav.textContent = username;
-        }
+        if (profileUsernameNav) profileUsernameNav.textContent = username;
 
         let avatarText = 'U'; 
         if (firstName && lastName) {
@@ -598,10 +539,8 @@ async function updateAuthUI() { // Made async to await profile fetch
         userAvatar.textContent = avatarText;
 
     } else {
-        // Not authenticated
         authButtons.style.display = 'flex'; 
         userProfile.style.display = 'none'; 
-
         if (inactivityTimer) {
             clearTimeout(inactivityTimer);
             inactivityTimer = null;
@@ -610,12 +549,11 @@ async function updateAuthUI() { // Made async to await profile fetch
     }
 }
 
-// Redirect to dashboard folder
 function redirectToProfile() {
      window.location.href = '/dashboard/';
 }
 
-// --- Initialization and Event Listeners ---
+// --- Initialization ---
 async function initializeAuth() {
     console.log("Initializing Auth...");
     try {
@@ -641,17 +579,18 @@ async function initializeAuth() {
     } finally {
         updateAuthUI(); 
         initializeActivityTracking(); 
+        if (window.commonFunctions && window.commonFunctions.applyWebsiteSettings) {
+            window.commonFunctions.applyWebsiteSettings();
+        }
         console.log("Auth initialized. isAuthenticated:", isAuthenticated);
     }
 }
 
-
-// Listen for Supabase auth state changes
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
     console.log("Auth State Change Event:", event, session); 
 
     let needsRedirect = false;
-    let redirectUrl = '/'; // Default redirect to root
+    let redirectUrl = '/'; 
 
     if (event === 'SIGNED_IN' && session) {
         isAuthenticated = true;
@@ -660,10 +599,9 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         resetInactivityTimer(); 
         updateAuthUI();
         
-        // If user signed in on login/signup page, redirect to index
         if (window.location.pathname.includes('/login/') || window.location.pathname.includes('/signup/')) {
             needsRedirect = true;
-            redirectUrl = '/'; // Go to root (index.html) after login/signup success
+            redirectUrl = '/'; 
         }
 
     } else if (event === 'SIGNED_OUT') {
@@ -678,7 +616,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         localStorage.removeItem('lastActiveTime');
         updateAuthUI();
         
-        // Redirect to index if logged out from a protected page
          if (wasLoggedIn && (window.location.pathname.includes('/dashboard/') || window.location.pathname.includes('/admin-panel/'))) {
              needsRedirect = true;
              redirectUrl = '/';
@@ -686,12 +623,9 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
     } else if (event === 'USER_UPDATED') {
         currentUser = session?.user || null;
-        if(currentUser) await fetchUserProfile(); // Re-fetch profile on update
+        if(currentUser) await fetchUserProfile(); 
         updateAuthUI();
-    } else if (event === 'PASSWORD_RECOVERY') {
-         console.log("Password recovery event");
     } else if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed");
         if (session) {
              currentUser = session.user;
              isAuthenticated = true; 
@@ -702,7 +636,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
          }
          updateAuthUI();
     } else if (event === 'INITIAL_SESSION') {
-         console.log("Initial session event processed.");
          isAuthenticated = !!session;
          currentUser = session?.user || null;
          if (isAuthenticated) {
@@ -713,31 +646,27 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     }
 
      if (needsRedirect && window.location.pathname !== redirectUrl) {
-         console.log(`Redirecting to ${redirectUrl}...`);
          window.location.href = redirectUrl;
      }
 });
 
-// Global logout function
 async function logout() {
     await handleLogout();
 }
 
-
-// --- Export functions for use in HTML pages ---
 window.authFunctions = {
     handleLogin,
     handleSignup,
     handleOTPVerification,
     resendOTP,
     logout, 
-    checkAuthStatus: initializeAuth, // Use initializeAuth as the main check
+    checkAuthStatus: initializeAuth, 
     updateAuthUI, 
     redirectToProfile, 
     validateUsername, 
     checkUsernameAvailability, 
     displayUsernameSuggestions, 
-    generateUsernameSuggestions, // Make this available for signup page
+    generateUsernameSuggestions, 
     resetInactivityTimer, 
     fetchUserProfile, 
     getUserRole: () => userProfileData?.role || 'user', 
@@ -746,14 +675,10 @@ window.authFunctions = {
     isAuthenticated: () => isAuthenticated 
 };
 
-// Perform initial check when script loads
 document.addEventListener('DOMContentLoaded', () => {
-    // initializeAuth is now the main function to call
     if (window.location.pathname.includes('/login/') || window.location.pathname.includes('/signup/')) {
-         // On login/signup pages, just initialize tracking, don't fetch profile yet
          initializeActivityTracking();
     } else {
-         // On all other pages (index, dashboard, admin), run the full auth check
         initializeAuth();
     }
 });
