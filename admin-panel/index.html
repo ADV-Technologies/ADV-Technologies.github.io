@@ -9,12 +9,19 @@
     <link rel="apple-touch-icon" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="/css/styles.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     
     <style>
-        body { background: var(--dark-gray); }
-        .navbar { position: fixed; }
+        /* Specific styles for the admin panel */
+        body {
+            background: var(--dark-gray);
+        }
+        .navbar {
+            position: fixed;
+        }
         .admin-panel-container {
             padding-top: 100px;
             min-height: calc(100vh - 100px);
@@ -23,7 +30,21 @@
             padding-bottom: 3rem;
         }
 
-        /* Modal Centering Fix */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center; justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 3000;
+            color: var(--gold);
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        /* MODAL CENTERING FIX */
         .modal {
             display: none;
             position: fixed;
@@ -37,7 +58,9 @@
             justify-content: center;
             padding: 1rem;
         }
-        .modal.active { display: flex !important; }
+        .modal.active {
+            display: flex !important;
+        }
         .modal-content {
             background: #0a0a0a;
             border: 1px solid var(--gold);
@@ -52,62 +75,176 @@
             margin: auto;
         }
 
-        /* Form Styles */
-        .project-form { display: flex; flex-direction: column; gap: 1rem; }
-        .project-form label { color: var(--gold); font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.2rem; }
+        /* Admin Tables */
+        .user-list, .project-list {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        
+        .user-list table, .project-list table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+        .user-list th, .user-list td,
+        .project-list th, .project-list td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+            vertical-align: middle;
+        }
+        .user-list th, .project-list th {
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+        
+        /* Button styles */
+        .action-btn {
+            margin-right: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--gold);
+            background-color: transparent;
+            color: var(--gold);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .action-btn:hover {
+            background-color: var(--gold);
+            color: var(--black);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+         .action-btn.delete-btn, .action-btn.ban-btn {
+            border-color: var(--error-red);
+            color: var(--error-red);
+        }
+        .action-btn.delete-btn:hover, .action-btn.ban-btn:hover {
+            background-color: var(--error-red);
+            color: var(--white);
+            border-color: var(--error-red);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+         .action-btn.unban-btn {
+            border-color: var(--success-green);
+            color: var(--success-green);
+         }
+         .action-btn.unban-btn:hover {
+             background-color: var(--success-green);
+             color: var(--black);
+         }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+        
+        .user-list select {
+            padding: 0.4rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid var(--glass-border);
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+            margin-right: 0.5rem;
+        }
+        
+        /* Settings Form */
+        .settings-form .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 1rem;
+        }
+        .settings-form .form-group label {
+            width: 200px;
+            flex-shrink: 0;
+            color: var(--gold);
+            font-weight: 600;
+        }
+        .settings-form .form-group input,
+        .settings-form .form-group select {
+            flex-grow: 1;
+            min-width: 200px;
+            max-width: 400px;
+            padding: 0.8rem;
+        }
+        
+        /* Project Form */
+        .project-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .project-form label {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+            display: block;
+        }
         .project-form input, .project-form select, .project-form textarea {
-             width: 100%; padding: 12px; background: rgba(255,255,255,0.08);
-             border: 1px solid var(--glass-border); color: white; border-radius: 8px;
+             width: 100%;
+             padding: 12px;
+             background: rgba(255,255,255,0.08);
+             border: 1px solid var(--glass-border);
+             color: white;
+             border-radius: 8px;
              font-family: 'Montserrat', sans-serif;
         }
         .project-form input:focus, .project-form select:focus, .project-form textarea:focus {
-            outline: none; border-color: var(--gold);
+            outline: none;
+            border-color: var(--gold);
         }
-        .project-form textarea { min-height: 100px; resize: vertical; }
-        .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.5rem; }
-
-        /* Tables */
-        .user-list, .project-list { overflow-x: auto; margin-top: 1rem; }
-        .user-list table, .project-list table { width: 100%; min-width: 700px; border-collapse: collapse; color: var(--white); font-size: 0.9rem; }
-        .user-list th, .user-list td, .project-list th, .project-list td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--glass-border); vertical-align: middle; }
-        .user-list th, .project-list th { color: var(--gold); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .project-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
         
-        /* Buttons */
-        .action-btn {
-            margin-right: 0.5rem; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 8px;
-            cursor: pointer; transition: all 0.3s ease; border: 1px solid var(--gold);
-            background-color: transparent; color: var(--gold); font-weight: 600; white-space: nowrap;
+        .form-row {
+            display: flex;
+            gap: 1rem;
         }
-        .action-btn:hover { background-color: var(--gold); color: var(--black); }
-        .action-btn.delete-btn { border-color: var(--error-red); color: var(--error-red); }
-        .action-btn.delete-btn:hover { background-color: var(--error-red); color: white; }
-        .action-btn.ban-btn { border-color: var(--error-red); color: var(--error-red); }
-        .action-btn.ban-btn:hover { background-color: var(--error-red); color: white; }
-        .action-btn.unban-btn { border-color: var(--success-green); color: var(--success-green); }
-        .action-btn.unban-btn:hover { background-color: var(--success-green); color: var(--black); }
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
-
+        .form-row .form-group {
+            flex: 1;
+        }
+        
         /* Feedback */
-        .feedback-inline { font-size: 0.9rem; margin-left: 1rem; font-weight: 500; }
+        .feedback-inline {
+            font-size: 0.9rem;
+            margin-left: 1rem;
+            font-weight: 500;
+        }
         .feedback-inline.success { color: var(--success-green); }
         .feedback-inline.error { color: var(--error-red); }
         .feedback-inline.loading { color: rgba(255, 255, 255, 0.7); }
-        #admin-feedback { margin-top: 1.5rem; }
 
-        .loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: flex; align-items: center; 
-            justify-content: center; flex-direction: column; gap: 1rem; 
-            z-index: 3000; color: var(--gold); font-size: 1.5rem; text-align: center;
+        #admin-feedback { margin-top: 1.5rem; }
+        
+        .admin-section {
+            margin-bottom: 4rem;
         }
         
-        .form-row { display: flex; gap: 1rem; }
-        .form-row .form-group { flex: 1; }
-        .user-list select { padding: 5px; border-radius: 5px; background: #111; color: white; border: 1px solid #444; margin-right: 5px; }
-        
-        .settings-form .form-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #222; padding-bottom: 1rem; }
-        .settings-form label { width: 200px; flex-shrink: 0; color: var(--gold); font-weight: 600; }
-        .settings-form input { flex-grow: 1; padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 5px; }
+        /* Modal Action Buttons */
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+        }
+
     </style>
 </head>
 <body>
@@ -123,9 +260,10 @@
 
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo" onclick="location.href='/'">
-                <img src="/assets/logo.png" alt="Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            <div class="logo" onclick="window.location.href='/'">
+                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
             </div>
+            
             <div class="user-profile" id="user-profile" style="display: none;">
                 <div class="user-avatar" id="user-avatar">AD</div>
                 <span id="profile-username">Admin</span>
@@ -230,7 +368,8 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="project-list-body"></tbody>
+                    <tbody id="project-list-body">
+                         </tbody>
                 </table>
             </div>
 
@@ -255,7 +394,7 @@
 
                 <div class="form-group">
                     <label for="project-url">URL</label>
-                    <input type="url" id="project-url" placeholder="https://example.com (optional)">
+                    <input type="url" id="project-url" placeholder="https://example.com/project (optional)">
                 </div>
                 
                 <div class="form-group">
@@ -356,6 +495,7 @@
     </div>
 
     <script>
+        // Embed Supabase config directly
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
@@ -368,11 +508,12 @@
     <script src="/js/auth.js"></script>
 
     <script>
-        // Initialize
+        // Initialize Global Elements
         const loadingOverlay = document.getElementById('loading-overlay');
         const adminContent = document.getElementById('admin-content');
         const adminFeedbackEl = document.getElementById('admin-feedback');
 
+        // --- Helper Functions for Admin Panel ---
         function showAdminFeedback(message, type = 'info') {
             const typeClass = type === 'success' ? 'success-message' : 'error-message';
             adminFeedbackEl.innerHTML = `<div class="${typeClass}" style="display: block;">${message}</div>`;
@@ -390,23 +531,34 @@
             }
         }
 
+        // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
             if (typeof window.initParticles === 'function') window.initParticles();
             
             try {
-                if (typeof window.authFunctions === 'undefined') throw new Error("Auth script failed.");
+                if (typeof window.authFunctions === 'undefined') {
+                    throw new Error("Auth script failed to load.");
+                }
                 
                 const { data: { session }, error } = await window.supabaseClient.auth.getSession();
                 if (error) throw error;
-                if (!session) throw new Error("No active session. Redirecting to login.");
+                if (!session) {
+                    throw new Error("No active session. Redirecting to login.");
+                }
 
                 window.isAuthenticated = true;
                 window.currentUser = session.user;
 
+                // Fetch profile
                 const profile = await window.authFunctions.fetchUserProfile();
-                if (!profile) throw new Error("Profile missing.");
+                if (!profile) {
+                    throw new Error("Could not fetch user profile.");
+                }
 
-                if (profile.role !== 'admin') throw new Error("Access denied.");
+                const userRole = profile.role;
+                if (userRole !== 'admin') {
+                     throw new Error("Access denied. Admin privileges required.");
+                }
 
                 console.log("Admin access verified.");
                 updateAdminNavbar(profile);
@@ -421,9 +573,15 @@
                 document.getElementById('settings-form').addEventListener('submit', handleSaveSettings);
                 document.getElementById('add-project-form').addEventListener('submit', handleAddProject);
 
+
             } catch (err) {
-                 console.error("Access Error:", err.message);
-                 loadingOverlay.innerHTML = `<p style="color:red; margin-top:20px;">${err.message}</p>`;
+                 console.error("Admin Panel Access Error:", err.message);
+                 loadingOverlay.innerHTML = `
+                    <div>
+                        <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
+                        <p style="margin-top: 1rem; color: var(--error-red);">${err.message}</p>
+                        <p style="font-size: 1rem; margin-top: 1rem;">Redirecting to login...</p>
+                    </div>`;
                  setTimeout(() => { window.location.href = '/login/'; }, 3000);
             }
         });
@@ -432,87 +590,144 @@
             const userAvatar = document.getElementById('user-avatar');
             const profileUsername = document.getElementById('profile-username');
             const userProfileNav = document.getElementById('user-profile');
+
             if (userProfileNav) userProfileNav.style.display = 'flex';
             if(profileUsername) profileUsername.textContent = profile.username || 'Admin';
-            if (userAvatar && profile.first_name) {
-                userAvatar.textContent = profile.first_name.charAt(0).toUpperCase();
+
+            if (userAvatar) {
+                 let avatarText = 'AD';
+                if (profile.first_name && profile.last_name) {
+                    avatarText = profile.first_name.charAt(0).toUpperCase() + profile.last_name.charAt(0).toUpperCase();
+                } else if (profile.first_name) {
+                    avatarText = profile.first_name.charAt(0).toUpperCase();
+                }
+                userAvatar.textContent = avatarText;
             }
         }
 
         async function loadAdminData() {
-            await Promise.all([loadUsers(), loadSettings(), loadProjects()]);
+            await Promise.all([
+                 loadUsers(),
+                 loadSettings(),
+                 loadProjects()
+            ]);
+            console.log("Admin data loaded.");
         }
 
+        // --- User Management Functions ---
         async function loadUsers() {
             const userListBody = document.getElementById('user-list-body');
+            userListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading users...</td></tr>';
+
             try {
+                // Querying profiles
+                // Note: Removed 'is_active' to prevent error, using 'is_banned' for status
                 const { data: users, error } = await window.supabaseClient
                     .from('user_profiles')
-                    .select('id, username, email, role, is_active, is_banned')
+                    .select('id, username, email, role, is_banned')
                     .order('username', { ascending: true });
 
                 if (error) throw error;
 
-                userListBody.innerHTML = '';
-                users.forEach(user => {
-                     const isCurrentUser = (user.id === window.currentUser.id);
-                     const row = document.createElement('tr');
-                     row.innerHTML = `
-                        <td>${user.username} ${isCurrentUser ? '(You)' : ''}</td>
-                        <td>${user.email}</td>
-                        <td>
-                            <select id="role-${user.id}" ${isCurrentUser ? 'disabled' : ''}>
-                                 <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-                                <option value="member" ${user.role === 'member' ? 'selected' : ''}>Member</option>
-                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                            </select>
-                            <button class="action-btn" onclick="changeRole('${user.id}')" ${isCurrentUser ? 'disabled' : ''}>Save</button>
-                        </td>
-                         <td>${user.is_banned ? '<span style="color:var(--error-red);">Banned</span>' : '<span style="color:var(--success-green);">Active</span>'}</td>
-                         <td>
-                            ${user.is_banned
-                                ? `<button class="action-btn unban-btn" onclick="unbanUser('${user.id}')">Unban</button>`
-                                : `<button class="action-btn ban-btn" onclick="banUser('${user.id}')" ${isCurrentUser ? 'disabled' : ''}>Ban</button>`
-                            }
-                        </td>
-                    `;
-                    userListBody.appendChild(row);
-                });
+                if (users && users.length > 0) {
+                    userListBody.innerHTML = ''; // Clear loading
+                    users.forEach(user => {
+                         const row = document.createElement('tr');
+                         const isCurrentUser = (user.id === window.currentUser.id);
+                         const isOtherAdmin = (user.role === 'admin' && !isCurrentUser);
+
+                         row.innerHTML = `
+                            <td>${user.username || 'No Username'} ${isCurrentUser ? '(You)' : ''}</td>
+                            <td>${user.email}</td>
+                            <td>
+                                <select id="role-${user.id}" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''}>
+                                     <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                    <option value="member" ${user.role === 'member' ? 'selected' : ''}>Member</option>
+                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                </select>
+                                <button class="action-btn" onclick="changeRole('${user.id}')" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''} title="Save Role Change">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </td>
+                             <td>${user.is_banned ? '<span style="color:var(--error-red);">Banned</span>' : '<span style="color:var(--success-green);">Active</span>'}</td>
+                             <td>
+                                ${user.is_banned
+                                    ? `<button class="action-btn unban-btn" onclick="unbanUser('${user.id}')">Unban</button>`
+                                    : `<button class="action-btn ban-btn" onclick="banUser('${user.id}')" ${isCurrentUser || isOtherAdmin ? 'disabled' : ''} title="${isCurrentUser ? 'Cannot ban self' : 'Ban User'}">Ban</button>`
+                                }
+                            </td>
+                        `;
+                        userListBody.appendChild(row);
+                    });
+                } else {
+                    userListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>';
+                }
             } catch (error) {
-                console.error("Error users:", error);
+                 console.error("Error loading users:", error);
+                userListBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error-red);">Could not load users: ${error.message}</td></tr>`;
             }
         }
 
         async function changeRole(userId) {
-             const newRole = document.getElementById(`role-${userId}`).value;
-             if (!confirm(`Change user role to ${newRole}?`)) return;
+             const selectElement = document.getElementById(`role-${userId}`);
+            const newRole = selectElement.value;
+             if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
+
              try {
-                 const { error } = await window.supabaseClient.rpc('change_user_role', { target_user_id: userId, new_role: newRole });
+                 const { data, error } = await window.supabaseClient.rpc('change_user_role', {
+                    target_user_id: userId,
+                    new_role: newRole
+                 });
                  if (error) throw error;
-                 showAdminFeedback(`Role updated.`, 'success');
-                 await loadUsers(); 
-            } catch (error) { showAdminFeedback(error.message, 'error'); }
+
+                 showAdminFeedback(`Successfully changed user role to ${newRole}.`, 'success');
+                 await loadUsers(); // Refresh list
+            } catch (error) {
+                 console.error("Error changing role:", error);
+                showAdminFeedback(`Error changing role: ${error.message}`, 'error');
+            }
         }
 
         async function banUser(userId) {
+            const reason = prompt("Enter reason for banning (optional):", "Violation of terms");
+            if (reason === null) return; 
+
              try {
-                 const { error } = await window.supabaseClient.rpc('ban_user', { target_user_id: userId, ban_reason_text: "Admin Action" });
+                 const { data, error } = await window.supabaseClient.rpc('ban_user', {
+                     target_user_id: userId,
+                    ban_reason_text: reason || 'Violation of terms'
+                 });
                  if (error) throw error;
-                 showAdminFeedback(`User banned.`, 'success');
+                 showAdminFeedback(`Successfully banned user.`, 'success');
                  await loadUsers(); 
-             } catch (error) { showAdminFeedback(error.message, 'error'); }
+             } catch (error) {
+                 console.error("Error banning user:", error);
+                showAdminFeedback(`Error banning user: ${error.message}`, 'error');
+            }
         }
 
         async function unbanUser(userId) {
+             if (!confirm(`Are you sure you want to unban this user?`)) return;
+
              try {
-                 const { error } = await window.supabaseClient.rpc('unban_user', { target_user_id: userId });
-                 if (error) throw error;
-                 showAdminFeedback(`User unbanned.`, 'success');
+                const { data, error } = await window.supabaseClient.rpc('unban_user', {
+                     target_user_id: userId
+                 });
+                if (error) throw error;
+                 showAdminFeedback(`Successfully unbanned user.`, 'success');
                  await loadUsers(); 
-             } catch (error) { showAdminFeedback(error.message, 'error'); }
+             } catch (error) {
+                 console.error("Error unbanning user:", error);
+                 showAdminFeedback(`Error unbanning user: ${error.message}`, 'error');
+            }
         }
 
+
+        // --- Website Settings Functions ---
         async function loadSettings() {
+             const feedbackEl = document.getElementById('settings-feedback');
+             showInlineFeedback('settings-feedback', 'Loading settings...', 'loading');
+             
              try {
                 const { data: settings, error } = await window.supabaseClient
                     .from('website_settings')
@@ -523,11 +738,18 @@
                  if (settings) {
                     settings.forEach(setting => {
                          const input = document.getElementById(`setting-${setting.setting_key}`);
-                         if (input) input.value = setting.setting_value;
+                         if (input) {
+                             input.value = setting.setting_value;
+                         }
                     });
+                     showInlineFeedback('settings-feedback', 'Settings loaded.', 'success');
+                 } else {
+                    showInlineFeedback('settings-feedback', 'No settings found.', 'error');
                  }
+
             } catch (error) {
                  console.error("Error loading settings:", error);
+                 showInlineFeedback('settings-feedback', 'Could not load settings.', 'error');
             }
         }
 
@@ -565,55 +787,59 @@
                 }
 
                  if (errors.length > 0) {
-                     showInlineFeedback('settings-feedback', `Errors saving: ${errors.join(', ')}`, 'error');
+                     showInlineFeedback('settings-feedback', `Failed to update: ${errors.join(', ')}`, 'error');
                  } else {
-                    showInlineFeedback('settings-feedback', 'Settings saved!', 'success');
+                    showInlineFeedback('settings-feedback', 'Settings saved successfully!', 'success');
                     
-                    // IMMEDIATELY APPLY SETTINGS LIVE
+                    // Apply settings immediately
                     if (window.commonFunctions && window.commonFunctions.applyWebsiteSettings) {
                         await window.commonFunctions.applyWebsiteSettings();
                     }
                  }
 
             } catch (error) {
+                 console.error("Error saving settings:", error);
                  showInlineFeedback('settings-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  saveBtn.disabled = false;
             }
         }
 
+
+        // --- Project Management Functions ---
         async function loadProjects() {
-            const tbody = document.getElementById('project-list-body');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Loading...</td></tr>';
+            const projectListBody = document.getElementById('project-list-body');
+            projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading projects...</td></tr>';
             
             try {
                 const { data: projects, error } = await window.supabaseClient
                     .from('projects')
-                    .select('*')
+                    .select('id, name, slug, status, display_order, access_level')
                     .order('display_order', { ascending: true });
 
                 if (error) throw error;
 
-                tbody.innerHTML = '';
                 if (projects && projects.length > 0) {
+                    projectListBody.innerHTML = ''; // Clear loading
                     projects.forEach(project => {
                          const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${project.display_order}</td>
                             <td>${project.name}</td>
                              <td><span style="color:var(--gold); border:1px solid var(--gold); padding:2px 6px; border-radius:4px; font-size:0.8em">${project.access_level || 'public'}</span></td>
-                             <td>${project.status}</td>
+                             <td><span style="text-transform: capitalize;">${project.status.replace('_', ' ')}</span></td>
                             <td>
                                 <button class="action-btn" onclick="openEditProjectModal('${project.id}')">Edit</button>
                             </td>
                          `;
-                         tbody.appendChild(row);
+                         projectListBody.appendChild(row);
                     });
                 } else {
-                     tbody.innerHTML = '<tr><td colspan="5">No projects.</td></tr>';
+                     projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No projects found. Add one below.</td></tr>';
                 }
             } catch (error) {
-                console.error(error);
+                console.error("Error loading projects:", error);
+                projectListBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error-red);">Could not load projects: ${error.message}</td></tr>`;
             }
         }
 
@@ -625,7 +851,8 @@
             addBtn.disabled = true;
 
             try {
-                // 1. Find max order to slot before "Coming Soon"
+                // 1. Find max order to slot BEFORE "Coming Soon"
+                // We look for projects that are NOT the 'coming-soon' slug
                 const { data: maxOrderData } = await window.supabaseClient
                     .from('projects')
                     .select('display_order')
@@ -645,41 +872,58 @@
                     url: document.getElementById('project-url').value.trim() || '#',
                     image_url: document.getElementById('project-image-url').value.trim() || null,
                     status: document.getElementById('project-status').value,
-                    access_level: document.getElementById('project-access').value, // NEW FIELD
+                    access_level: document.getElementById('project-access').value,
                     display_order: newOrder,
                     created_by: window.currentUser.id 
                 };
 
-                 if (!/^[a-z0-9-]+$/.test(newProject.slug)) throw new Error("Slug must be lowercase/numbers/hyphens.");
+                if (!/^[a-z0-9-]+$/.test(newProject.slug)) {
+                     showInlineFeedback('project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
+                     addBtn.disabled = false;
+                    return;
+                }
 
-                // Insert
-                const { error: insertError } = await window.supabaseClient.from('projects').insert([newProject]);
+                // Insert new project
+                const { error: insertError } = await window.supabaseClient
+                    .from('projects')
+                    .insert([newProject]);
+
                 if (insertError) throw insertError;
                 
-                // Push "Coming Soon" to the end
-                await window.supabaseClient.from('projects').update({ display_order: newOrder + 1 }).eq('slug', 'coming-soon');
+                // Update 'coming-soon' placeholder to be AFTER this new one
+                // We set it to newOrder + 1 to push it down
+                await window.supabaseClient
+                    .from('projects')
+                    .update({ display_order: newOrder + 1 })
+                    .eq('slug', 'coming-soon');
 
-                showInlineFeedback('project-feedback', 'Success!', 'success');
+                showInlineFeedback('project-feedback', 'Project added successfully!', 'success');
                 document.getElementById('add-project-form').reset();
                 await loadProjects(); 
 
             } catch (error) {
-                showInlineFeedback('project-feedback', error.message, 'error');
+                console.error("Error adding project:", error);
+                showInlineFeedback('project-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  addBtn.disabled = false;
             }
         }
 
         async function openEditProjectModal(projectId) {
-            window.commonFunctions.openModal('edit-project');
-            
+            const feedbackEl = document.getElementById('edit-project-feedback');
+            showInlineFeedback('edit-project-feedback', 'Loading project data...', 'loading');
+            window.commonFunctions.openModal('edit-project'); 
+
             try {
                 const { data: project, error } = await window.supabaseClient
-                    .from('projects').select('*').eq('id', projectId).single();
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
 
                 if (error) throw error;
 
-                // Populate Form
+                // Populate form
                 document.getElementById('edit-project-id').value = project.id;
                 document.getElementById('edit-project-name').value = project.name;
                 document.getElementById('edit-project-slug').value = project.slug;
@@ -687,71 +931,109 @@
                 document.getElementById('edit-project-url').value = project.url || '';
                 document.getElementById('edit-project-order').value = project.display_order;
                 
-                // Set Status Dropdown
+                // Status Dropdown
                 const statusSelect = document.getElementById('edit-project-status');
                 statusSelect.innerHTML = '';
-                 ['active', 'coming_soon', 'maintenance', 'deprecated'].forEach(s => {
-                     const op = document.createElement('option');
-                     op.value = s; op.textContent = s;
-                     if (project.status === s) op.selected = true;
-                     statusSelect.appendChild(op);
+                 ['active', 'coming_soon', 'maintenance', 'deprecated'].forEach(status => {
+                     const option = document.createElement('option');
+                    option.value = status;
+                     option.textContent = status.replace('_', ' ');
+                     if (project.status === status) option.selected = true;
+                    statusSelect.appendChild(option);
                  });
 
-                // Set Access Dropdown (NEW)
+                // Access Dropdown
                 const accessSelect = document.getElementById('edit-project-access');
-                // Default to 'public' if null
                 accessSelect.value = project.access_level || 'public';
 
-                // Bind handlers
+                 feedbackEl.textContent = ''; 
+
+                 // Bind handlers
                 document.getElementById('edit-project-form').onsubmit = handleUpdateProject;
                 document.getElementById('delete-project-btn').onclick = () => handleDeleteProject(project.id, project.name);
 
             } catch (error) {
-                alert(error.message);
+                console.error("Error loading project for edit:", error);
+                showInlineFeedback('edit-project-feedback', `Could not load project: ${error.message}`, 'error');
             }
         }
 
         async function handleUpdateProject(e) {
              e.preventDefault();
              const updateBtn = document.getElementById('update-project-btn');
+             showInlineFeedback('edit-project-feedback', 'Updating...', 'loading');
              updateBtn.disabled = true;
 
              const projectId = document.getElementById('edit-project-id').value;
              const updatedProject = {
                  name: document.getElementById('edit-project-name').value.trim(),
-                 slug: document.getElementById('edit-project-slug').value.trim(),
+                 slug: document.getElementById('edit-project-slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
                  description: document.getElementById('edit-project-description').value.trim(),
                  url: document.getElementById('edit-project-url').value.trim() || '#',
                  status: document.getElementById('edit-project-status').value,
-                 access_level: document.getElementById('edit-project-access').value, // SAVE NEW FIELD
+                 access_level: document.getElementById('edit-project-access').value,
                  display_order: parseInt(document.getElementById('edit-project-order').value) || 99
             };
+            
+             if (!/^[a-z0-9-]+$/.test(updatedProject.slug)) {
+                 showInlineFeedback('edit-project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
+                 updateBtn.disabled = false;
+                 return;
+            }
 
              try {
-                 const { error } = await window.supabaseClient.from('projects').update(updatedProject).eq('id', projectId);
+                 const { data, error } = await window.supabaseClient
+                     .from('projects')
+                     .update(updatedProject)
+                     .eq('id', projectId)
+                     .select();
+
                  if (error) throw error;
                  
-                 showInlineFeedback('edit-project-feedback', 'Updated!', 'success');
+                 showInlineFeedback('edit-project-feedback', 'Project updated successfully!', 'success');
                  await loadProjects(); 
-                 setTimeout(() => { window.commonFunctions.closeModal('edit-project'); }, 1000);
+                 setTimeout(() => {
+                     window.commonFunctions.closeModal('edit-project');
+                 }, 1500);
+
              } catch (error) {
-                showInlineFeedback('edit-project-feedback', error.message, 'error');
+                console.error("Error updating project:", error);
+                showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
             } finally {
                  updateBtn.disabled = false;
             }
         }
 
-        async function handleDeleteProject(projectId, name) {
-            if (!confirm(`Delete ${name}?`)) return;
+        async function handleDeleteProject(projectId, projectName) {
+            if (!confirm(`Are you sure you want to delete the project "${projectName}"? This action cannot be undone.`)) {
+                 return;
+            }
+
+            const feedbackEl = document.getElementById('edit-project-feedback');
+            showInlineFeedback('edit-project-feedback', 'Deleting...', 'loading');
+            document.getElementById('update-project-btn').disabled = true;
+            document.getElementById('delete-project-btn').disabled = true;
+
              try {
-                 const { error } = await window.supabaseClient.from('projects').delete().eq('id', projectId);
+                 const { error } = await window.supabaseClient
+                     .from('projects')
+                     .delete()
+                     .eq('id', projectId);
+
                  if (error) throw error;
+                 
+                 showAdminFeedback(`Project "${projectName}" deleted successfully!`, 'success');
                  await loadProjects(); 
                  window.commonFunctions.closeModal('edit-project');
+
             } catch (error) {
-                 alert(error.message);
+                console.error("Error deleting project:", error);
+                 showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
+                 document.getElementById('update-project-btn').disabled = false;
+                 document.getElementById('delete-project-btn').disabled = false;
             }
         }
+
     </script>
 </body>
 </html>
