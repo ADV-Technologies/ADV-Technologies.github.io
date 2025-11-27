@@ -14,6 +14,33 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 
+    <style>
+        /* Add minimal styling for the contact list for better readability */
+        .contact-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1.5rem;
+        }
+        .contact-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .contact-list a {
+            color: var(--gold);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .contact-list a:hover {
+            text-decoration: underline;
+        }
+        .coming-soon-link {
+            color: #ccc;
+            cursor: default;
+        }
+    </style>
+
 </head>
 <body>
     <canvas id="particles-canvas"></canvas>
@@ -25,6 +52,7 @@
                 <span style="font-weight: 700;">ADV</span>
             </div>
             <div class="menu-items">
+                <a href="#about-me">About Me</a>
                 <a href="#projects">Projects</a>
                 <a href="#contact">Contact</a>
             </div>
@@ -54,6 +82,29 @@
             </div>
         </div>
     </header>
+    
+    <section class="about section" id="about-me">
+        <div class="container">
+            <div class="glass-panel">
+                <h2 id="about-me-title">About Me</h2>
+                <p id="about-me-content" class="about-content">
+                    Loading content...
+                </p>
+                <a href="#" class="btn-secondary" style="margin-top: 1rem;">Learn More About Me</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="about section" id="about-adv">
+        <div class="container">
+            <div class="glass-panel">
+                <h2 id="about-adv-title">About ADV Technologies</h2>
+                <p id="about-adv-content" class="about-content">
+                    Loading content...
+                </p>
+            </div>
+        </div>
+    </section>
 
     <section class="projects section" id="projects">
         <div class="container">
@@ -73,23 +124,20 @@
     <section class="contact section" id="contact">
         <div class="container">
              <div class="glass-panel">
-                <h2>Get In Touch</h2>
-                <form id="contact-form" class="contact-form">
-                    <div class="form-group">
-                        <label for="name">Your Name</label>
-                        <input type="text" id="name" required placeholder="John Doe">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Your Email</label>
-                        <input type="email" id="email" required placeholder="name@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" rows="5" required placeholder="I'd like to collaborate on..."></textarea>
-                    </div>
-                    <button type="submit" class="btn-primary">Send Message</button>
-                    <p id="contact-message" style="margin-top: 1rem; color: var(--gold);"></p>
-                </form>
+                <h2>Contact Us</h2>
+                <p style="margin-bottom: 1rem;">ADV Technologies (Professional)</p>
+                
+                <ul class="contact-list" id="contact-professional-list">
+                    <li><i class="fas fa-spinner fa-spin"></i> Loading Contact Info...</li>
+                </ul>
+
+                <h4 style="margin-top: 2rem; color: var(--gold);">Personal</h4>
+                
+                <ul class="contact-list" id="contact-personal-list">
+                    <li><i class="fas fa-spinner fa-spin"></i> Loading Personal Info...</li>
+                </ul>
+                
+                <p id="contact-message" style="margin-top: 1rem; color: var(--gold);"></p>
             </div>
         </div>
     </section>
@@ -120,19 +168,107 @@
     <script src="/js/auth.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
+        // --- Helper function to render text content (About Sections) ---
+        function renderPageContent(contentData, key) {
+            const data = contentData.find(item => item.page_key === key);
+            if (data) {
+                // Set Hero Text (although common.js handles settings, this is a fallback)
+                if (key === 'hero_text_1') document.getElementById('hero-text-1').textContent = data.content;
+                if (key === 'hero_text_2') document.getElementById('hero-text-2').textContent = data.content;
+                
+                // Set About Sections
+                if (key === 'about_me') {
+                    document.getElementById('about-me-title').textContent = data.title;
+                    document.getElementById('about-me-content').textContent = data.content;
+                } else if (key === 'about_adv') {
+                    document.getElementById('about-adv-title').textContent = data.title;
+                    document.getElementById('about-adv-content').textContent = data.content;
+                }
+            }
+        }
+
+        // --- Function to Render Contact Links ---
+        function renderContactLinks(contactData) {
+            const profContainer = document.getElementById('contact-professional-list');
+            const personalContainer = document.getElementById('contact-personal-list');
+            if (!profContainer || !personalContainer) return;
+            
+            profContainer.innerHTML = '';
+            personalContainer.innerHTML = '';
+
+            const linkData = contactData.sort((a, b) => a.platform.localeCompare(b.platform));
+
+            linkData.forEach(item => {
+                // Determine platform and type
+                const platform = item.platform.replace('_professional', '').replace('_personal', '');
+                const isEmail = item.platform.includes('email');
+                
+                let url = item.url;
+                let displayUrl = url;
+                let iconClass = 'fa-link';
+                let typeText = '';
+
+                // Set Icon and Display Text
+                if (isEmail) {
+                    iconClass = 'fa-envelope';
+                    displayUrl = url.replace('mailto:', '');
+                    typeText = 'Email';
+                } else if (platform === 'github') {
+                    iconClass = 'fa-github';
+                    typeText = 'GitHub';
+                } else if (platform === 'facebook') {
+                    iconClass = 'fa-facebook-f';
+                    typeText = 'Facebook';
+                } else if (platform === 'instagram') {
+                    iconClass = 'fa-instagram';
+                    typeText = 'Instagram';
+                } else if (platform === 'x') {
+                    iconClass = 'fa-x-twitter';
+                    typeText = 'X';
+                } else if (platform === 'linkedin') {
+                    iconClass = 'fa-linkedin-in';
+                    typeText = 'LinkedIn';
+                }
+
+                // Handle 'Coming Soon' state
+                const isComingSoon = url === 'Coming Soon';
+                const linkHref = isComingSoon ? '#' : url;
+                const linkClass = isComingSoon ? 'coming-soon-link' : '';
+                const linkTarget = isComingSoon ? '' : '_blank';
+
+
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <i class="fab ${iconClass}" style="margin-right: 5px;"></i>
+                    ${typeText}: 
+                    <a href="${linkHref}" target="${linkTarget}" class="${linkClass}">
+                        ${isComingSoon ? 'Coming Soon' : displayUrl}
+                    </a>
+                `;
+
+                if (item.platform.includes('professional')) {
+                    profContainer.appendChild(listItem);
+                } else if (item.platform.includes('personal')) {
+                    personalContainer.appendChild(listItem);
+                }
+            });
+            
+             // Ensure containers are cleared if no data was found
+             if (profContainer.innerHTML === '') {
+                 profContainer.innerHTML = '<li>No professional contact info found.</li>';
+             }
+             if (personalContainer.innerHTML === '') {
+                 personalContainer.innerHTML = '<li>No personal contact info found.</li>';
+             }
+        }
+
+
+        // --- Function to Render Projects ---
+        async function loadLandingProjects() {
             const grid = document.getElementById('landing-projects-grid');
             if (!grid) return;
-
-            // Wait for common functions to initialize Supabase client
-            if (!window.supabaseClient) {
-                console.warn("Supabase client not initialized yet. Retrying in 100ms...");
-                setTimeout(() => document.dispatchEvent(new Event('DOMContentLoaded')), 100);
-                return;
-            }
-
+            
             try {
-                // 1. Fetch Public Projects from Database (Ordered by display_order)
                 const { data: projects, error } = await window.supabaseClient
                     .from('projects')
                     .select('*')
@@ -141,14 +277,10 @@
                     .order('display_order', { ascending: true });
 
                 if (error) throw error;
-
-                // 2. Clear Loading Spinner
-                grid.innerHTML = '';
+                grid.innerHTML = ''; // Clear loading
 
                 if (projects && projects.length > 0) {
                     projects.forEach(project => {
-                        
-                        // Icon Logic
                         let iconClass = 'fa-rocket';
                         if (project.slug.includes('learn') || project.slug.includes('code')) {
                             iconClass = 'fa-graduation-cap';
@@ -156,23 +288,19 @@
                             iconClass = 'fa-tools';
                         }
 
-                        // Button Logic
                         let buttonHtml = '';
                         if (project.status === 'active') {
-                            // If active, link to the URL
                             buttonHtml = `
                                 <a href="${project.url || '#'}" class="project-btn">
                                     Visit Project <i class="fas fa-arrow-right"></i>
                                 </a>`;
                         } else {
-                            // If coming soon, show disabled button
                             buttonHtml = `
                                 <button class="project-btn coming-soon" disabled>
                                     Coming Soon <i class="fas fa-hourglass-half"></i>
                                 </button>`;
                         }
 
-                        // Create the Card HTML
                         const card = document.createElement('div');
                         card.className = 'project-card';
                         card.innerHTML = `
@@ -190,21 +318,43 @@
                 console.error("Error loading landing projects:", err);
                 grid.innerHTML = '<p style="color: var(--error-red);">Unable to load projects.</p>';
             }
-        });
+        }
 
-        // Contact Form Handler
-        document.getElementById('contact-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const messageEl = document.getElementById('contact-message');
-            messageEl.textContent = 'Sending...';
 
-            // In a real application, you would send this data to a service/email handler.
-            // For now, we simulate success.
-            setTimeout(() => {
-                messageEl.textContent = 'Thank you for your message! We will be in touch soon.';
-                document.getElementById('contact-form').reset();
-                setTimeout(() => { messageEl.textContent = ''; }, 5000);
-            }, 1500);
+        // --- Main Initializer ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Wait for common functions to initialize Supabase client
+            if (!window.supabaseClient) {
+                setTimeout(() => document.dispatchEvent(new Event('DOMContentLoaded')), 100);
+                return;
+            }
+
+            // Load Dynamic Content
+            try {
+                // 1. Load Page Content (About Me/ADV and Hero texts)
+                const { data: contentData } = await window.supabaseClient
+                    .from('pages_content')
+                    .select('*');
+                if (contentData) {
+                    renderPageContent(contentData, 'about_me');
+                    renderPageContent(contentData, 'about_adv');
+                }
+
+                // 2. Load Contact Info
+                const { data: contactData } = await window.supabaseClient
+                    .from('contact_info')
+                    .select('*')
+                    .eq('is_public', true);
+                if (contactData) {
+                    renderContactLinks(contactData);
+                }
+
+            } catch(error) {
+                console.error("Error loading dynamic content:", error);
+            }
+
+            // Load Projects (defined above)
+            await loadLandingProjects();
         });
     </script>
 </body>
