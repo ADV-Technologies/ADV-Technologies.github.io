@@ -2,106 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADV Technologies - Innovative Solutions</title>
-
-    <link rel="icon" type="image/png" href="/assets/logo.png">
-    <link rel="apple-touch-icon" href="/assets/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
+    <title>ADV Technologies</title> <meta name="description" content="ADV Technologies - Innovation with a One-Man Army and AI. Pioneering the future through cutting-edge technology and artificial intelligence.">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <link rel="stylesheet" href="/css/styles.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-
-    <style>
-        /* Add minimal styling for the contact list for better readability */
-        .contact-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 1.5rem;
-        }
-        .contact-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-        .contact-list a {
-            color: var(--gold);
-            text-decoration: none;
-            word-break: break-all;
-        }
-        .contact-list a:hover {
-            text-decoration: underline;
-        }
-        .coming-soon-link {
-            color: #ccc;
-            cursor: default;
-        }
-    </style>
-
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <canvas id="particles-canvas"></canvas>
 
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo">
-                <img src="/assets/logo.png" alt="ADV Technologies Logo">
-                <span style="font-weight: 700;">ADV</span>
+            <div class="logo" onclick="location.reload()">
+                <img src="assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
             </div>
-            <div class="menu-items">
-                <a href="#about-me">About Me</a>
-                <a href="#projects">Projects</a>
-                <a href="#contact">Contact</a>
-            </div>
-            
-            <div class="user-profile" id="user-profile" style="display: none;">
-                <div class="user-avatar" id="user-avatar">?</div>
-                <span id="profile-username">User</span>
-                <a href="/dashboard/" class="btn-small" style="margin-left: 1rem; text-decoration: none;">Dashboard</a>
-                <button class="btn-small" onclick="window.authFunctions.logout()" style="margin-left: 0.5rem;">Logout</button>
-            </div>
-            
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about-me">About Me</a></li>
+                <li><a href="#about-adv">About ADV</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
             <div class="auth-buttons" id="auth-buttons">
-                <a href="/login/" class="btn-secondary">Login</a>
-                <a href="/register/" class="btn-primary">Register</a>
+                <button class="btn-small" onclick="window.location.href='/login/'">Login</button>
+                <button class="btn-small" onclick="window.location.href='/signup/'">Sign Up</button>
+            </div>
+            <div class="user-profile" id="user-profile" style="display: none;" onclick="redirectToDashboard()">
+                <div class="user-avatar" id="user-avatar">AD</div>
+                <span>Dashboard</span>
             </div>
         </div>
     </nav>
 
-    <header class="hero section">
-        <div class="container">
+    <section class="hero section visible" id="home"> <div class="container">
             <div class="hero-content">
-                <h1 id="hero-text-1">Welcome to ADV Technologies</h1>
-                <p class="tagline" id="hero-text-2">Innovation with Integrity, Secured by Design.</p>
-                <div class="hero-actions">
-                    <a href="#projects" class="btn-primary">Explore Our Work</a>
+                <div class="typing-container">
+                    <div class="typing-text" id="typing-text-1"></div>
+                    <div class="typing-text" id="typing-text-2"></div>
                 </div>
-            </div>
-        </div>
-    </header>
-    
-    <section class="about section" id="about-me">
-        <div class="container">
-            <div class="glass-panel">
-                <h2 id="about-me-title">About Me</h2>
-                <p id="about-me-content" class="about-content">
-                    Loading content...
-                </p>
-                <a href="#" class="btn-secondary" style="margin-top: 1rem;">Learn More About Me</a>
+                <div class="hero-subtitle" id="hero-subtitle">Innovation with a One-Man Army and AI</div>
+                <button class="explore-btn" id="explore-btn" onclick="window.commonFunctions.smoothScrollTo('#about-me')">
+                    <i class="fas fa-arrow-down"></i> Explore
+                </button>
             </div>
         </div>
     </section>
 
-    <section class="about section" id="about-adv">
+    <section class="about-me section" id="about-me">
         <div class="container">
             <div class="glass-panel">
-                <h2 id="about-adv-title">About ADV Technologies</h2>
-                <p id="about-adv-content" class="about-content">
-                    Loading content...
-                </p>
+                <div class="about-content">
+                    <h2>About Me</h2>
+                    <p class="about-text">
+                        I'm Aadhidev S, building ADV Technologies as a one-man army working with AI to create innovative, meaningful projects[cite: 2297].
+                        Combining human creativity with artificial intelligence to push the boundaries of what's possible in technology[cite: 2297].
+                    </p>
+                    <a href="https://aadhidev-s.github.io/Portfolio" target="_blank" class="learn-more-btn">
+                        Learn More About Me <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-adv section" id="about-adv">
+        <div class="container">
+            <div class="glass-panel">
+                <div class="adv-content">
+                    <h2>About ADV Technologies</h2>
+                    <p class="adv-description">
+                        ADV Technologies represents the future of innovation, where human ingenuity meets artificial intelligence[cite: 2297].
+                        We're not just building software – we're crafting experiences, solving complex problems, and pushing the envelope of what technology can achieve[cite: 2297].
+                        Through collaborative AI development and cutting-edge experimentation, we're creating tools and platforms that make a real difference[cite: 2297].
+                        Every project is a step toward a more connected, intelligent, and innovative tomorrow[cite: 2297].
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -111,251 +89,185 @@
             <div class="glass-panel">
                 <div class="projects-content">
                     <h2>Our Projects</h2>
-                    <div class="projects-grid" id="landing-projects-grid">
-                        <div style="text-align: center; color: var(--gold); width: 100%;">
-                            <i class="fas fa-spinner fa-spin"></i> Loading Projects...
+                    <div class="projects-grid">
+                        <div class="project-card">
+                            <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
+                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance[cite: 2297].
+                            Master programming languages through engaging, hands-on experiences designed for the modern developer[cite: 2297].</p>
+                            <a href="#" class="project-btn" onclick="alert('ADV Code Learner - Coming Soon! This project is currently under development.')">
+                                Visit Project <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-card">
+                            <h3><i class="fas fa-rocket"></i> More Projects Coming Soon</h3>
+                            <p>We're constantly innovating and developing new solutions[cite: 2297]. Stay tuned for exciting upcoming projects that will showcase the power of AI-human collaboration in solving real-world challenges[cite: 2297].</p>
+                            <button class="project-btn coming-soon" disabled>
+                                Coming Soon <i class="fas fa-hourglass-half"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    
+
     <section class="contact section" id="contact">
         <div class="container">
-             <div class="glass-panel">
-                <h2>Contact Us</h2>
-                <p style="margin-bottom: 1rem;">ADV Technologies (Professional)</p>
-                
-                <ul class="contact-list" id="contact-professional-list">
-                    <li><i class="fas fa-spinner fa-spin"></i> Loading Contact Info...</li>
-                </ul>
-
-                <h4 style="margin-top: 2rem; color: var(--gold);">Personal</h4>
-                
-                <ul class="contact-list" id="contact-personal-list">
-                    <li><i class="fas fa-spinner fa-spin"></i> Loading Personal Info...</li>
-                </ul>
-                
-                <p id="contact-message" style="margin-top: 1rem; color: var(--gold);"></p>
+            <div class="glass-panel">
+                <div class="contact-content">
+                    <h2>Contact Us</h2>
+                    <div class="contact-panels">
+                        <div class="contact-panel">
+                            <h3><i class="fas fa-building"></i> ADV Technologies (Professional)</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item" onclick="window.open('mailto:advtechlabsglobal@gmail.com')">
+                                    <div class="contact-icon"> <i class="fas fa-envelope"></i> </div>
+                                    <h4>Email</h4> <p>advtechlabsglobal@gmail.com</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://github.com/ADV-Technologies', '_blank')">
+                                    <div class="contact-icon"> <i class="fab fa-github"></i> </div>
+                                    <h4>GitHub</h4> <p>ADV-Technologies</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-panel">
+                            <h3><i class="fas fa-user"></i> Personal</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item" onclick="window.open('mailto:aadhidevshiju@gmail.com')">
+                                    <div class="contact-icon"> <i class="fas fa-envelope"></i> </div>
+                                    <h4>Email</h4> <p>aadhidevshiju@gmail.com</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://github.com/Aadhidev-S', '_blank')">
+                                    <div class="contact-icon"> <i class="fab fa-github"></i> </div>
+                                    <h4>GitHub</h4> <p>Aadhidev-S</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://www.facebook.com/profile.php?id=61580155858865&sk=grid', '_blank')">
+                                     <div class="contact-icon"> <i class="fab fa-facebook"></i> </div>
+                                     <h4>Facebook</h4> <p>Aadhidev S</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://www.instagram.com/aadhidev_s_2010/', '_blank')">
+                                     <div class="contact-icon"> <i class="fab fa-instagram"></i> </div>
+                                     <h4>Instagram</h4> <p>@aadhidev_s_2010</p>
+                                </div>
+                                <div class="contact-item" onclick="window.open('https://x.com/_Aadhidev_S_', '_blank')">
+                                     <div class="contact-icon">
+                                         <svg width="35" height="35" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                         </svg>
+                                     </div>
+                                     <h4>X</h4> <p>@_Aadhidev_S_</p>
+                                </div>
+                                <div class="contact-item" onclick="alert('LinkedIn profile coming soon!')">
+                                     <div class="contact-icon"> <i class="fab fa-linkedin"></i> </div>
+                                     <h4>LinkedIn</h4> <p>Coming Soon</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
-    
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; <span id="current-year">2025</span> ADV Technologies. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            </div>
-        </div>
-    </footer>
 
+    <div class="back-to-top" id="back-to-top" onclick="window.commonFunctions.smoothScrollTo('#home')">
+        <i class="fas fa-arrow-up"></i>
+    </div>
 
     <script>
-        // Set up the Supabase configuration globally
+        // Embed Supabase config directly for GitHub Pages
         window.SUPABASE_CONFIG = {
-            url: 'https://xblihylcpepkuriatqtg.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-wlhns'
+            url: 'https://izoraalaceastrtcncel.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b3JhYWxhY2Vhc3RydGNuY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NDU4MjksImV4cCI6MjA3NTQyMTgyOX0.P2OpUpckOHvdrqhYP7OjvhOj6LDdsdjncg31akGJNxU'
         };
-        document.getElementById('current-year').textContent = new Date().getFullYear();
     </script>
 
-    <script src="/js/config.js"></script>
-    <script src="/js/common.js"></script>
-    <script src="/js/particles.js"></script>
-    <script src="/js/auth.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/auth.js"></script>
 
     <script>
-        // --- Helper function to render text content (About Sections) ---
-        function renderPageContent(contentData, key) {
-            const data = contentData.find(item => item.page_key === key);
-            if (data) {
-                // Set Hero Text (although common.js handles settings, this is a fallback)
-                if (key === 'hero_text_1') document.getElementById('hero-text-1').textContent = data.content;
-                if (key === 'hero_text_2') document.getElementById('hero-text-2').textContent = data.content;
-                
-                // Set About Sections
-                if (key === 'about_me') {
-                    document.getElementById('about-me-title').textContent = data.title;
-                    document.getElementById('about-me-content').textContent = data.content;
-                } else if (key === 'about_adv') {
-                    document.getElementById('about-adv-title').textContent = data.title;
-                    document.getElementById('about-adv-content').textContent = data.content;
-                }
+        // Initialize Particles when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.initParticles === 'function') {
+                window.initParticles(); // From particles.js
+            } else {
+                console.error("Particle system initialization function not found.");
             }
-        }
 
-        // --- Function to Render Contact Links ---
-        function renderContactLinks(contactData) {
-            const profContainer = document.getElementById('contact-professional-list');
-            const personalContainer = document.getElementById('contact-personal-list');
-            if (!profContainer || !personalContainer) return;
-            
-            profContainer.innerHTML = '';
-            personalContainer.innerHTML = '';
+            // Initialize Hero Typing Animation (ensure elements exist)
+            const el1 = document.getElementById('typing-text-1');
+            const el2 = document.getElementById('typing-text-2');
+            const subtitle = document.getElementById('hero-subtitle');
+            const exploreBtn = document.getElementById('explore-btn');
 
-            const linkData = contactData.sort((a, b) => a.platform.localeCompare(b.platform));
+            if (el1 && el2 && subtitle && exploreBtn) {
+                setTimeout(() => {
+                    function typeWriter(element, text, speed = 50, callback) {
+                        let i = 0;
+                        element.innerHTML = ''; // Clear existing content
+                        element.classList.add('glow');
 
-            linkData.forEach(item => {
-                // Determine platform and type
-                const platform = item.platform.replace('_professional', '').replace('_personal', '');
-                const isEmail = item.platform.includes('email');
-                
-                let url = item.url;
-                let displayUrl = url;
-                let iconClass = 'fa-link';
-                let typeText = '';
-
-                // Set Icon and Display Text
-                if (isEmail) {
-                    iconClass = 'fa-envelope';
-                    displayUrl = url.replace('mailto:', '');
-                    typeText = 'Email';
-                } else if (platform === 'github') {
-                    iconClass = 'fa-github';
-                    typeText = 'GitHub';
-                } else if (platform === 'facebook') {
-                    iconClass = 'fa-facebook-f';
-                    typeText = 'Facebook';
-                } else if (platform === 'instagram') {
-                    iconClass = 'fa-instagram';
-                    typeText = 'Instagram';
-                } else if (platform === 'x') {
-                    iconClass = 'fa-x-twitter';
-                    typeText = 'X';
-                } else if (platform === 'linkedin') {
-                    iconClass = 'fa-linkedin-in';
-                    typeText = 'LinkedIn';
-                }
-
-                // Handle 'Coming Soon' state
-                const isComingSoon = url === 'Coming Soon';
-                const linkHref = isComingSoon ? '#' : url;
-                const linkClass = isComingSoon ? 'coming-soon-link' : '';
-                const linkTarget = isComingSoon ? '' : '_blank';
-
-
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <i class="fab ${iconClass}" style="margin-right: 5px;"></i>
-                    ${typeText}: 
-                    <a href="${linkHref}" target="${linkTarget}" class="${linkClass}">
-                        ${isComingSoon ? 'Coming Soon' : displayUrl}
-                    </a>
-                `;
-
-                if (item.platform.includes('professional')) {
-                    profContainer.appendChild(listItem);
-                } else if (item.platform.includes('personal')) {
-                    personalContainer.appendChild(listItem);
-                }
-            });
-            
-             // Ensure containers are cleared if no data was found
-             if (profContainer.innerHTML === '') {
-                 profContainer.innerHTML = '<li>No professional contact info found.</li>';
-             }
-             if (personalContainer.innerHTML === '') {
-                 personalContainer.innerHTML = '<li>No personal contact info found.</li>';
-             }
-        }
-
-
-        // --- Function to Render Projects ---
-        async function loadLandingProjects() {
-            const grid = document.getElementById('landing-projects-grid');
-            if (!grid) return;
-            
-            try {
-                const { data: projects, error } = await window.supabaseClient
-                    .from('projects')
-                    .select('*')
-                    .or('status.eq.active,status.eq.coming_soon')
-                    .eq('access_level', 'public') 
-                    .order('display_order', { ascending: true });
-
-                if (error) throw error;
-                grid.innerHTML = ''; // Clear loading
-
-                if (projects && projects.length > 0) {
-                    projects.forEach(project => {
-                        let iconClass = 'fa-rocket';
-                        if (project.slug.includes('learn') || project.slug.includes('code')) {
-                            iconClass = 'fa-graduation-cap';
-                        } else if (project.slug.includes('tool')) {
-                            iconClass = 'fa-tools';
+                        function type() {
+                            if (i < text.length) {
+                                element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
+                                i++;
+                                setTimeout(type, speed);
+                            } else {
+                                // Keep cursor for a bit, then remove
+                                setTimeout(() => {
+                                    element.innerHTML = text; // Remove cursor
+                                    element.classList.remove('glow'); // Optional: remove glow after typing
+                                    if (callback) callback();
+                                }, 800); // Cursor visible duration after typing
+                            }
                         }
+                        type();
+                    }
 
-                        let buttonHtml = '';
-                        if (project.status === 'active') {
-                            buttonHtml = `
-                                <a href="${project.url || '#'}" class="project-btn">
-                                    Visit Project <i class="fas fa-arrow-right"></i>
-                                </a>`;
-                        } else {
-                            buttonHtml = `
-                                <button class="project-btn coming-soon" disabled>
-                                    Coming Soon <i class="fas fa-hourglass-half"></i>
-                                </button>`;
-                        }
-
-                        const card = document.createElement('div');
-                        card.className = 'project-card';
-                        card.innerHTML = `
-                            <h3><i class="fas ${iconClass}"></i> ${project.name}</h3>
-                            <p>${project.description}</p>
-                            ${buttonHtml}
-                        `;
-                        grid.appendChild(card);
+                    typeWriter(el1, 'Welcome to ADV Technologies', 50, () => {
+                        setTimeout(() => {
+                            typeWriter(el2, 'Innovation with AI', 50, () => {
+                                setTimeout(() => {
+                                    subtitle.classList.add('show');
+                                    setTimeout(() => {
+                                        exploreBtn.classList.add('show');
+                                    }, 300); // Explore button delay
+                                }, 200); // Subtitle delay
+                            });
+                        }, 200); // Delay between lines
                     });
-                } else {
-                    grid.innerHTML = '<p>No public projects listed yet.</p>';
-                }
-
-            } catch (err) {
-                console.error("Error loading landing projects:", err);
-                grid.innerHTML = '<p style="color: var(--error-red);">Unable to load projects.</p>';
+                }, 300); // Initial delay
+            } else {
+                 console.warn("Hero animation elements not found.");
             }
+
+            // Add event listeners for nav links smooth scroll (now in common.js)
+            // Initialize common features like scroll animations, navbar effect
+            if (window.commonFunctions) {
+                window.commonFunctions.initializeScrollAnimations();
+                window.commonFunctions.initializeNavbarEffect();
+                // Add click handlers for nav links AFTER common.js is loaded
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = link.getAttribute('href');
+                        window.commonFunctions.smoothScrollTo(targetId);
+                    });
+                });
+            } else {
+                console.error("Common functions not loaded.");
+            }
+
+            // Note: Auth state check and UI update are handled globally by auth.js
+            // which runs its check on DOMContentLoaded
+        });
+
+        // Updated function to redirect to the correct folder path
+        function redirectToDashboard() {
+            window.location.href = '/dashboard/'; // Use folder path
         }
 
-
-        // --- Main Initializer ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Wait for common functions to initialize Supabase client
-            if (!window.supabaseClient) {
-                setTimeout(() => document.dispatchEvent(new Event('DOMContentLoaded')), 100);
-                return;
-            }
-
-            // Load Dynamic Content
-            try {
-                // 1. Load Page Content (About Me/ADV and Hero texts)
-                const { data: contentData } = await window.supabaseClient
-                    .from('pages_content')
-                    .select('*');
-                if (contentData) {
-                    renderPageContent(contentData, 'about_me');
-                    renderPageContent(contentData, 'about_adv');
-                }
-
-                // 2. Load Contact Info
-                const { data: contactData } = await window.supabaseClient
-                    .from('contact_info')
-                    .select('*')
-                    .eq('is_public', true);
-                if (contactData) {
-                    renderContactLinks(contactData);
-                }
-
-            } catch(error) {
-                console.error("Error loading dynamic content:", error);
-            }
-
-            // Load Projects (defined above)
-            await loadLandingProjects();
-        });
     </script>
 </body>
 </html>
