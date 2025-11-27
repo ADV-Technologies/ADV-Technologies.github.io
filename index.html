@@ -2,190 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
-    <title>ADV Technologies</title>
-    <meta name="description" content="ADV Technologies - Innovation with a One-Man Army and AI. Pioneering the future through cutting-edge technology and artificial intelligence.">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADV Technologies - Innovative Solutions</title>
+
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link rel="apple-touch-icon" href="/assets/logo.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    
     <link rel="stylesheet" href="/css/styles.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+
 </head>
 <body>
     <canvas id="particles-canvas"></canvas>
 
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo" onclick="location.href='/'"> 
-                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            <div class="logo">
+                <img src="/assets/logo.png" alt="ADV Technologies Logo">
+                <span style="font-weight: 700;">ADV</span>
             </div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about-me">About Me</a></li>
-                <li><a href="#about-adv">About ADV</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
+            <div class="menu-items">
+                <a href="#projects">Projects</a>
+                <a href="#contact">Contact</a>
+            </div>
+            
+            <div class="user-profile" id="user-profile" style="display: none;">
+                <div class="user-avatar" id="user-avatar">?</div>
+                <span id="profile-username">User</span>
+                <a href="/dashboard/" class="btn-small" style="margin-left: 1rem; text-decoration: none;">Dashboard</a>
+                <button class="btn-small" onclick="window.authFunctions.logout()" style="margin-left: 0.5rem;">Logout</button>
+            </div>
+            
             <div class="auth-buttons" id="auth-buttons">
-                <button class="btn-small" onclick="window.location.href='/login/'">Login</button>
-                <button class="btn-small" onclick="window.location.href='/signup/'">Sign Up</button>
-            </div>
-            <div class="user-profile" id="user-profile" style="display: none;" onclick="window.authFunctions.redirectToProfile()">
-                <div class="user-avatar" id="user-avatar">AD</div>
-                <span>Dashboard</span>
+                <a href="/login/" class="btn-secondary">Login</a>
+                <a href="/register/" class="btn-primary">Register</a>
             </div>
         </div>
     </nav>
 
-    <section class="hero section visible" id="home">
+    <header class="hero section">
         <div class="container">
             <div class="hero-content">
-                <div class="typing-container">
-                    <div class="typing-text" id="typing-text-1"></div>
-                    <div class="typing-text" id="typing-text-2"></div>
-                </div>
-                <div class="hero-subtitle" id="hero-subtitle">Innovation with a One-Man Army and AI</div>
-                <button class="explore-btn" id="explore-btn" onclick="window.commonFunctions.smoothScrollTo('#about-me')">
-                    <i class="fas fa-arrow-down"></i> Explore
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <section class="about-me section" id="about-me">
-        <div class="container">
-            <div class="glass-panel">
-                <div class="about-content">
-                    <h2>About Me</h2>
-                    <p class="about-text">
-                        I'm Aadhidev S, building ADV Technologies as a one-man army working with AI to create innovative, meaningful projects.
-                        Combining human creativity with artificial intelligence to push the boundaries of what's possible in technology.
-                    </p>
-                    <a href="https://aadhidev-s.github.io/Portfolio" target="_blank" class="learn-more-btn">
-                        Learn More About Me <i class="fas fa-external-link-alt"></i>
-                    </a>
+                <h1 id="hero-text-1">Welcome to ADV Technologies</h1>
+                <p class="tagline" id="hero-text-2">Innovation with Integrity, Secured by Design.</p>
+                <div class="hero-actions">
+                    <a href="#projects" class="btn-primary">Explore Our Work</a>
                 </div>
             </div>
         </div>
-    </section>
-
-    <section class="about-adv section" id="about-adv">
-        <div class="container">
-            <div class="glass-panel">
-                <div class="adv-content">
-                    <h2>About ADV Technologies</h2>
-                    <p class="adv-description">
-                        ADV Technologies represents the future of innovation, where human ingenuity meets artificial intelligence.
-                        We're not just building software – we're crafting experiences, solving complex problems, and pushing the envelope of what technology can achieve.
-                        Through collaborative AI development and cutting-edge experimentation, we're creating tools and platforms that make a real difference.
-                        Every project is a step toward a more connected, intelligent, and innovative tomorrow.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+    </header>
 
     <section class="projects section" id="projects">
         <div class="container">
             <div class="glass-panel">
                 <div class="projects-content">
                     <h2>Our Projects</h2>
-                    <div class="projects-grid">
-                        <div class="project-card">
-                            <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
-                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance.
-                            Master programming languages through engaging, hands-on experiences designed for the modern developer.</p>
-                            <a href="#" class="project-btn" onclick="alert('ADV Code Learner - Coming Soon! This project is currently under development.')">
-                                Visit Project <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                        <div class="project-card">
-                            <h3><i class="fas fa-rocket"></i> More Projects Coming Soon</h3>
-                            <p>We're constantly innovating and developing new solutions. Stay tuned for exciting upcoming projects that will showcase the power of AI-human collaboration in solving real-world challenges.</p>
-                            <button class="project-btn coming-soon" disabled>
-                                Coming Soon <i class="fas fa-hourglass-half"></i>
-                            </button>
+                    <div class="projects-grid" id="landing-projects-grid">
+                        <div style="text-align: center; color: var(--gold); width: 100%;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading Projects...
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
+    
     <section class="contact section" id="contact">
         <div class="container">
-            <div class="glass-panel">
-                <div class="contact-content">
-                    <h2>Contact Us</h2>
-                    <div class="contact-panels">
-                        <div class="contact-panel">
-                            <h3><i class="fas fa-building"></i> ADV Technologies (Professional)</h3>
-                            <div class="contact-grid">
-                                <div class="contact-item" onclick="window.open('mailto:advtechlabsglobal@gmail.com')">
-                                    <div class="contact-icon"> <i class="fas fa-envelope"></i> </div>
-                                    <h4>Email</h4> <p>advtechlabsglobal@gmail.com</p>
-                                </div>
-                                <div class="contact-item" onclick="window.open('https://github.com/ADV-Technologies', '_blank')">
-                                    <div class="contact-icon"> <i class="fab fa-github"></i> </div>
-                                    <h4>GitHub</h4> <p>ADV-Technologies</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="contact-panel">
-                            <h3><i class="fas fa-user"></i> Personal</h3>
-                            <div class="contact-grid">
-                                <div class="contact-item" onclick="window.open('mailto:aadhidevshiju@gmail.com')">
-                                    <div class="contact-icon"> <i class="fas fa-envelope"></i> </div>
-                                    <h4>Email</h4> <p>aadhidevshiju@gmail.com</p>
-                                </div>
-                                <div class="contact-item" onclick="window.open('https://github.com/Aadhidev-S', '_blank')">
-                                    <div class="contact-icon"> <i class="fab fa-github"></i> </div>
-                                    <h4>GitHub</h4> <p>Aadhidev-S</p>
-                                </div>
-                                <div class="contact-item" onclick="window.open('https://www.facebook.com/profile.php?id=61580155858865&sk=grid', '_blank')">
-                                     <div class="contact-icon"> <i class="fab fa-facebook"></i> </div>
-                                     <h4>Facebook</h4> <p>Aadhidev S</p>
-                                </div>
-                                <div class="contact-item" onclick="window.open('https://www.instagram.com/aadhidev_s_2010/', '_blank')">
-                                     <div class="contact-icon"> <i class="fab fa-instagram"></i> </div>
-                                     <h4>Instagram</h4> <p>@aadhidev_s_2010</p>
-                                </div>
-                                <div class="contact-item" onclick="window.open('https://x.com/_Aadhidev_S_', '_blank')">
-                                     <div class="contact-icon">
-                                         <svg width="35" height="35" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
-                                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                                         </svg>
-                                     </div>
-                                     <h4>X</h4> <p>@_Aadhidev_S_</p>
-                                </div>
-                                <div class="contact-item" onclick="alert('LinkedIn profile coming soon!')">
-                                     <div class="contact-icon"> <i class="fab fa-linkedin"></i> </div>
-                                     <h4>LinkedIn</h4> <p>Coming Soon</p>
-                                </div>
-                            </div>
-                        </div>
+             <div class="glass-panel">
+                <h2>Get In Touch</h2>
+                <form id="contact-form" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" required placeholder="John Doe">
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="email">Your Email</label>
+                        <input type="email" id="email" required placeholder="name@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" rows="5" required placeholder="I'd like to collaborate on..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                    <p id="contact-message" style="margin-top: 1rem; color: var(--gold);"></p>
+                </form>
             </div>
         </div>
     </section>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="current-year">2025</span> ADV Technologies. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </footer>
 
-    <div class="back-to-top" id="back-to-top" onclick="window.commonFunctions.smoothScrollTo('#home')">
-        <i class="fas fa-arrow-up"></i>
-    </div>
 
     <script>
-        // Embed Supabase config directly for GitHub Pages
-        // *** NEW CREDENTIALS ***
+        // Set up the Supabase configuration globally
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-wlhns'
         };
+        document.getElementById('current-year').textContent = new Date().getFullYear();
     </script>
 
     <script src="/js/config.js"></script>
@@ -194,93 +120,92 @@
     <script src="/js/auth.js"></script>
 
     <script>
-        // Initialize Particles when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof window.initParticles === 'function') {
-                window.initParticles(); // From particles.js
-            } else {
-                console.error("Particle system initialization function not found.");
+        document.addEventListener('DOMContentLoaded', async () => {
+            const grid = document.getElementById('landing-projects-grid');
+            if (!grid) return;
+
+            // Wait for common functions to initialize Supabase client
+            if (!window.supabaseClient) {
+                console.warn("Supabase client not initialized yet. Retrying in 100ms...");
+                setTimeout(() => document.dispatchEvent(new Event('DOMContentLoaded')), 100);
+                return;
             }
 
-            // Initialize Hero Typing Animation (ensure elements exist)
-            const el1 = document.getElementById('typing-text-1');
-            const el2 = document.getElementById('typing-text-2');
-            const subtitle = document.getElementById('hero-subtitle');
-            const exploreBtn = document.getElementById('explore-btn');
+            try {
+                // 1. Fetch Public Projects from Database (Ordered by display_order)
+                const { data: projects, error } = await window.supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .or('status.eq.active,status.eq.coming_soon')
+                    .eq('access_level', 'public') 
+                    .order('display_order', { ascending: true });
 
-            if (el1 && el2 && subtitle && exploreBtn) {
-                setTimeout(() => {
-                    function typeWriter(element, text, speed = 50, callback) {
-                        let i = 0;
-                        element.innerHTML = ''; // Clear existing content
-                        element.classList.add('glow');
+                if (error) throw error;
 
-                        function type() {
-                            if (i < text.length) {
-                                element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
-                                i++;
-                                setTimeout(type, speed);
-                            } else {
-                                setTimeout(() => {
-                                    element.innerHTML = text; // Remove cursor
-                                    element.classList.remove('glow'); 
-                                    if (callback) callback();
-                                }, 800); 
-                            }
+                // 2. Clear Loading Spinner
+                grid.innerHTML = '';
+
+                if (projects && projects.length > 0) {
+                    projects.forEach(project => {
+                        
+                        // Icon Logic
+                        let iconClass = 'fa-rocket';
+                        if (project.slug.includes('learn') || project.slug.includes('code')) {
+                            iconClass = 'fa-graduation-cap';
+                        } else if (project.slug.includes('tool')) {
+                            iconClass = 'fa-tools';
                         }
-                        type();
-                    }
 
-                    // These text values will be loaded from the database by auth.js/common.js
-                    // But we provide defaults here.
-                    const heroText1 = 'Welcome to ADV Technologies';
-                    const heroText2 = 'Innovation with AI';
+                        // Button Logic
+                        let buttonHtml = '';
+                        if (project.status === 'active') {
+                            // If active, link to the URL
+                            buttonHtml = `
+                                <a href="${project.url || '#'}" class="project-btn">
+                                    Visit Project <i class="fas fa-arrow-right"></i>
+                                </a>`;
+                        } else {
+                            // If coming soon, show disabled button
+                            buttonHtml = `
+                                <button class="project-btn coming-soon" disabled>
+                                    Coming Soon <i class="fas fa-hourglass-half"></i>
+                                </button>`;
+                        }
 
-                    typeWriter(el1, heroText1, 50, () => {
-                        setTimeout(() => {
-                            typeWriter(el2, heroText2, 50, () => {
-                                setTimeout(() => {
-                                    subtitle.classList.add('show');
-                                    setTimeout(() => {
-                                        exploreBtn.classList.add('show');
-                                    }, 300); // Explore button delay
-                                }, 200); // Subtitle delay
-                            });
-                        }, 200); // Delay between lines
+                        // Create the Card HTML
+                        const card = document.createElement('div');
+                        card.className = 'project-card';
+                        card.innerHTML = `
+                            <h3><i class="fas ${iconClass}"></i> ${project.name}</h3>
+                            <p>${project.description}</p>
+                            ${buttonHtml}
+                        `;
+                        grid.appendChild(card);
                     });
-                }, 300); // Initial delay
-            } else {
-                 console.warn("Hero animation elements not found.");
-            }
+                } else {
+                    grid.innerHTML = '<p>No public projects listed yet.</p>';
+                }
 
-            // Initialize common features
-            if (window.commonFunctions) {
-                window.commonFunctions.initializeScrollAnimations();
-                window.commonFunctions.initializeNavbarEffect();
-                // Add click handlers for nav links
-                document.querySelectorAll('.nav-links a').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const targetId = link.getAttribute('href');
-                        window.commonFunctions.smoothScrollTo(targetId);
-                    });
-                });
-            } else {
-                console.error("Common functions not loaded.");
+            } catch (err) {
+                console.error("Error loading landing projects:", err);
+                grid.innerHTML = '<p style="color: var(--error-red);">Unable to load projects.</p>';
             }
-            
-            // Note: Auth state check is handled globally by auth.js
         });
-        
-        // This is the global redirect function called by the profile button
-        // It's defined here because it's specific to index.html's profile button
-        if (typeof window.authFunctions === 'object') {
-            // Override the default redirectToProfile from auth.js
-            window.authFunctions.redirectToProfile = function() {
-                window.location.href = '/dashboard/'; // Use folder path
-            }
-        }
 
+        // Contact Form Handler
+        document.getElementById('contact-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const messageEl = document.getElementById('contact-message');
+            messageEl.textContent = 'Sending...';
+
+            // In a real application, you would send this data to a service/email handler.
+            // For now, we simulate success.
+            setTimeout(() => {
+                messageEl.textContent = 'Thank you for your message! We will be in touch soon.';
+                document.getElementById('contact-form').reset();
+                setTimeout(() => { messageEl.textContent = ''; }, 5000);
+            }, 1500);
+        });
     </script>
 </body>
 </html>
