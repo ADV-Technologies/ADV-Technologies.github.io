@@ -12,16 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    
     <link rel="stylesheet" href="/css/styles.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
 <body>
     <canvas id="particles-canvas"></canvas>
 
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo" onclick="location.href='/'"> <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            <div class="logo" onclick="location.href='/'"> 
+                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
             </div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
@@ -30,10 +31,12 @@
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            
             <div class="auth-buttons" id="auth-buttons">
                 <button class="btn-small" onclick="window.location.href='/login/'">Login</button>
                 <button class="btn-small" onclick="window.location.href='/signup/'">Sign Up</button>
             </div>
+            
             <div class="user-profile" id="user-profile" style="display: none;" onclick="window.authFunctions.redirectToProfile()">
                 <div class="user-avatar" id="user-avatar">AD</div>
                 <span>Dashboard</span>
@@ -94,21 +97,16 @@
             <div class="glass-panel">
                 <div class="projects-content">
                     <h2>Our Projects</h2>
-                    <div class="projects-grid">
+                    <div class="projects-grid" id="landing-projects-grid">
                         <div class="project-card">
                             <h3><i class="fas fa-graduation-cap"></i> ADV Code Learner</h3>
-                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance.
-                            Master programming languages through engaging, hands-on experiences designed for the modern developer.</p>
-                            <a href="#" class="project-btn" onclick="alert('ADV Code Learner - Coming Soon! This project is currently under development.')">
-                                Visit Project <i class="fas fa-arrow-right"></i>
-                            </a>
+                            <p>Learn Code In Style - An innovative learning platform that combines interactive coding lessons with AI-powered assistance. Master programming languages through engaging, hands-on experiences designed for the modern developer.</p>
+                            <a href="#" class="project-btn" onclick="alert('ADV Code Learner - Coming Soon!')">Visit Project <i class="fas fa-arrow-right"></i></a>
                         </div>
                         <div class="project-card">
                             <h3><i class="fas fa-rocket"></i> More Projects Coming Soon</h3>
                             <p>We're constantly innovating and developing new solutions. Stay tuned for exciting upcoming projects that will showcase the power of AI-human collaboration in solving real-world challenges.</p>
-                            <button class="project-btn coming-soon" disabled>
-                                Coming Soon <i class="fas fa-hourglass-half"></i>
-                            </button>
+                            <button class="project-btn coming-soon" disabled>Coming Soon <i class="fas fa-hourglass-half"></i></button>
                         </div>
                     </div>
                 </div>
@@ -150,9 +148,9 @@
                                      <div class="contact-icon"> <i class="fab fa-facebook"></i> </div>
                                      <h4>Facebook</h4> <p>Aadhidev S</p>
                                 </div>
-                                <div class="contact-item" onclick="window.open('https://www.instagram.com/aadhi.dev_s/', '_blank')">
+                                <div class="contact-item" onclick="window.open('https://www.instagram.com/aadhidev_s_2010/', '_blank')">
                                      <div class="contact-icon"> <i class="fab fa-instagram"></i> </div>
-                                     <h4>Instagram</h4> <p>@aadhi.dev_s</p>
+                                     <h4>Instagram</h4> <p>@aadhidev_s_2010</p>
                                 </div>
                                 <div class="contact-item" onclick="window.open('https://x.com/_Aadhidev_S_', '_blank')">
                                      <div class="contact-icon">
@@ -179,7 +177,7 @@
     </div>
 
     <script>
-        // Embed Supabase config directly for GitHub Pages
+        // Supabase Credentials
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
@@ -192,27 +190,22 @@
     <script src="/js/auth.js"></script>
 
     <script>
-        // Initialize Particles when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof window.initParticles === 'function') {
-                window.initParticles(); // From particles.js
-            } else {
-                console.error("Particle system initialization function not found.");
-            }
+            // 1. Initialize Particles
+            if (typeof window.initParticles === 'function') window.initParticles();
 
-            // Initialize Hero Typing Animation (ensure elements exist)
+            // 2. Hero Animation (Restored Original Logic)
             const el1 = document.getElementById('typing-text-1');
             const el2 = document.getElementById('typing-text-2');
             const subtitle = document.getElementById('hero-subtitle');
             const exploreBtn = document.getElementById('explore-btn');
 
-            if (el1 && el2 && subtitle && exploreBtn) {
+            if (el1 && el2) {
                 setTimeout(() => {
                     function typeWriter(element, text, speed = 50, callback) {
                         let i = 0;
-                        element.innerHTML = ''; // Clear existing content
+                        element.innerHTML = '';
                         element.classList.add('glow');
-
                         function type() {
                             if (i < text.length) {
                                 element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor">|</span>';
@@ -220,7 +213,7 @@
                                 setTimeout(type, speed);
                             } else {
                                 setTimeout(() => {
-                                    element.innerHTML = text; // Remove cursor
+                                    element.innerHTML = text; 
                                     element.classList.remove('glow'); 
                                     if (callback) callback();
                                 }, 800); 
@@ -228,43 +221,80 @@
                         }
                         type();
                     }
-
                     typeWriter(el1, 'Welcome to ADV Technologies', 50, () => {
                         setTimeout(() => {
                             typeWriter(el2, 'Innovation with AI', 50, () => {
                                 setTimeout(() => {
-                                    subtitle.classList.add('show');
-                                    setTimeout(() => {
-                                        exploreBtn.classList.add('show');
-                                    }, 300); // Explore button delay
-                                }, 200); // Subtitle delay
+                                    if(subtitle) subtitle.classList.add('show');
+                                    setTimeout(() => { if(exploreBtn) exploreBtn.classList.add('show'); }, 300);
+                                }, 200);
                             });
-                        }, 200); // Delay between lines
+                        }, 200);
                     });
-                }, 300); // Initial delay
-            } else {
-                 console.warn("Hero animation elements not found.");
+                }, 300);
             }
 
-            // Initialize common features
+            // 3. Initialize Common (Scrolls, Navbar)
             if (window.commonFunctions) {
                 window.commonFunctions.initializeScrollAnimations();
                 window.commonFunctions.initializeNavbarEffect();
-                // Add click handlers for nav links
                 document.querySelectorAll('.nav-links a').forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const targetId = link.getAttribute('href');
-                        window.commonFunctions.smoothScrollTo(targetId);
+                        window.commonFunctions.smoothScrollTo(link.getAttribute('href'));
                     });
                 });
-            } else {
-                console.error("Common functions not loaded.");
             }
-            
-            // Note: Auth state check is handled globally by auth.js
+
+            // 4. Dynamic Project Fetching (Optional overwrite of hardcoded projects)
+            // This ensures Admin Panel changes still update the site
+            fetchDynamicProjects();
         });
 
+        async function fetchDynamicProjects() {
+            const grid = document.getElementById('landing-projects-grid');
+            if (!grid || !window.supabaseClient) return;
+
+            try {
+                // Fetch active/coming_soon public projects
+                const { data: projects, error } = await window.supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .or('status.eq.active,status.eq.coming_soon')
+                    .eq('access_level', 'public')
+                    .order('display_order', { ascending: true });
+
+                if (error || !projects || projects.length === 0) {
+                    console.log("Using default hardcoded projects.");
+                    return; // Keep hardcoded HTML if no DB data
+                }
+
+                // If data exists, overwrite hardcoded HTML with Dynamic Data
+                grid.innerHTML = ''; 
+                projects.forEach(project => {
+                    let iconClass = 'fa-rocket';
+                    if (project.slug.includes('code') || project.slug.includes('learn')) iconClass = 'fa-graduation-cap';
+                    
+                    let buttonHtml = '';
+                    if (project.status === 'active') {
+                        buttonHtml = `<a href="${project.url || '#'}" class="project-btn">Visit Project <i class="fas fa-arrow-right"></i></a>`;
+                    } else {
+                        buttonHtml = `<button class="project-btn coming-soon" disabled>Coming Soon <i class="fas fa-hourglass-half"></i></button>`;
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'project-card';
+                    card.innerHTML = `
+                        <h3><i class="fas ${iconClass}"></i> ${project.name}</h3>
+                        <p>${project.description}</p>
+                        ${buttonHtml}
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Project fetch error:", err);
+            }
+        }
     </script>
 </body>
 </html>
