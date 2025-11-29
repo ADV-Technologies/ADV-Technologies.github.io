@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
     <title>ADV Technologies</title>
-    <meta name="description" content="ADV Technologies - Innovation with a One-Man Army and AI.">
+    
+    <meta name="description" id="meta-description" content="Loading ADV Technologies...">
     
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link rel="apple-touch-icon" href="/assets/logo.png">
@@ -49,7 +50,8 @@
                     <div class="typing-text" id="typing-text-1"></div>
                     <div class="typing-text" id="typing-text-2"></div>
                 </div>
-                <div class="hero-subtitle" id="hero-subtitle">Innovation with a One-Man Army and AI</div>
+                <div class="hero-subtitle" id="hero-subtitle"></div>
+                
                 <button class="explore-btn" id="explore-btn" onclick="window.commonFunctions.smoothScrollTo('#about-me')">
                     <i class="fas fa-arrow-down"></i> Explore
                 </button>
@@ -62,9 +64,7 @@
             <div class="glass-panel">
                 <div class="about-content">
                     <h2 id="about-me-title">About Me</h2>
-                    <p class="about-text" id="about-me-text">
-                        Loading...
-                    </p>
+                    <p class="about-text" id="about-me-text">Loading...</p>
                     <a href="https://aadhidev-s.github.io/Portfolio" target="_blank" class="learn-more-btn">
                         Learn More About Me <i class="fas fa-external-link-alt"></i>
                     </a>
@@ -78,9 +78,7 @@
             <div class="glass-panel">
                 <div class="adv-content">
                     <h2 id="about-adv-title">About ADV Technologies</h2>
-                    <p class="adv-description" id="about-adv-text">
-                        Loading...
-                    </p>
+                    <p class="adv-description" id="about-adv-text">Loading...</p>
                 </div>
             </div>
         </div>
@@ -105,21 +103,18 @@
                 <div class="contact-content">
                     <h2>Contact Us</h2>
                     <div class="contact-panels">
-                        
                         <div class="contact-panel">
                             <h3><i class="fas fa-building"></i> ADV Technologies (Professional)</h3>
                             <div class="contact-grid" id="contact-professional">
                                 <p>Loading...</p>
                             </div>
                         </div>
-
                         <div class="contact-panel">
                             <h3><i class="fas fa-user"></i> Personal</h3>
                             <div class="contact-grid" id="contact-personal">
                                 <p>Loading...</p>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -165,23 +160,36 @@
             if (!window.supabaseClient) return;
 
             try {
-                // --- A. LOAD HERO TEXT & ABOUT SECTIONS ---
+                // --- A. LOAD SETTINGS & TEXTS ---
                 let hero1 = "Welcome to ADV Technologies"; 
                 let hero2 = "Innovation with AI";
+                let subtitleText = "Innovation with a One-Man Army and AI";
 
-                // Fetch Settings & Content in parallel
+                // Fetch Settings (Hero, Subtitle, Meta Description)
                 const [settingsResponse, pagesResponse] = await Promise.all([
                     window.supabaseClient.from('website_settings').select('*'),
                     window.supabaseClient.from('pages_content').select('*')
                 ]);
 
-                // Apply Hero Settings
                 if (settingsResponse.data) {
                     const s1 = settingsResponse.data.find(s => s.setting_key === 'hero_text_1');
                     const s2 = settingsResponse.data.find(s => s.setting_key === 'hero_text_2');
+                    const sub = settingsResponse.data.find(s => s.setting_key === 'hero_subtitle');
+                    const desc = settingsResponse.data.find(s => s.setting_key === 'site_description');
+
                     if (s1) hero1 = s1.setting_value;
                     if (s2) hero2 = s2.setting_value;
+                    if (sub) subtitleText = sub.setting_value;
+                    
+                    // Update Meta Description Dynamically
+                    if (desc) {
+                        document.getElementById('meta-description').setAttribute('content', desc.setting_value);
+                    }
                 }
+
+                // Update Subtitle & Start Typing
+                document.getElementById('hero-subtitle').textContent = subtitleText;
+                startTypingAnimation(hero1, hero2);
 
                 // Apply About Section Content
                 if (pagesResponse.data) {
@@ -198,10 +206,6 @@
                     }
                 }
 
-                // Start Typing Animation with DB values
-                startTypingAnimation(hero1, hero2);
-
-
                 // --- B. LOAD CONTACT INFO ---
                 const { data: contacts } = await window.supabaseClient
                     .from('contact_info')
@@ -211,7 +215,6 @@
                 if (contacts) {
                     renderContactGrid(contacts);
                 }
-
 
                 // --- C. LOAD PROJECTS ---
                 const { data: projects } = await window.supabaseClient
@@ -254,29 +257,22 @@
             persContainer.innerHTML = '';
 
             contacts.forEach(c => {
-                let iconClass = 'fas fa-link'; // Default
+                let iconClass = 'fas fa-link';
                 let label = 'Link';
                 
-                // Icon Logic - FIX FOR EMAIL VISIBILITY
-                if (c.platform.includes('email')) { 
-                    iconClass = 'fas fa-envelope'; // Solid icon for email
-                    label = 'Email'; 
-                }
+                if (c.platform.includes('email')) { iconClass = 'fas fa-envelope'; label = 'Email'; }
                 else if (c.platform.includes('github')) { iconClass = 'fab fa-github'; label = 'GitHub'; }
                 else if (c.platform.includes('facebook')) { iconClass = 'fab fa-facebook'; label = 'Facebook'; }
                 else if (c.platform.includes('instagram')) { iconClass = 'fab fa-instagram'; label = 'Instagram'; }
                 else if (c.platform.includes('linkedin')) { iconClass = 'fab fa-linkedin'; label = 'LinkedIn'; }
                 
-                // Special handling for X (Twitter) using SVG if needed, or FontAwesome
                 let iconHtml = `<div class="contact-icon"><i class="${iconClass}"></i></div>`;
-                
                 if (c.platform === 'x') { 
                     label = 'X';
                     iconHtml = `<div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>`;
                 }
 
-                // Use the display_text from DB, fallback to URL if missing
-                const displayText = c.display_text || c.url.replace('mailto:', '').replace('https://', '');
+                const displayText = c.display_text || c.url;
 
                 const html = `
                     <div class="contact-item" onclick="${c.url !== '#' && c.url !== 'Coming Soon' ? `window.open('${c.url}')` : "alert('Coming Soon!')"}">
