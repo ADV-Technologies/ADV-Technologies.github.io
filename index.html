@@ -61,10 +61,9 @@
         <div class="container">
             <div class="glass-panel">
                 <div class="about-content">
-                    <h2>About Me</h2>
-                    <p class="about-text">
-                        I'm Aadhidev S, building ADV Technologies as a one-man army working with AI to create innovative, meaningful projects.
-                        Combining human creativity with artificial intelligence to push the boundaries of what's possible in technology.
+                    <h2 id="about-me-title">About Me</h2>
+                    <p class="about-text" id="about-me-text">
+                        Loading...
                     </p>
                     <a href="https://aadhidev-s.github.io/Portfolio" target="_blank" class="learn-more-btn">
                         Learn More About Me <i class="fas fa-external-link-alt"></i>
@@ -78,12 +77,9 @@
         <div class="container">
             <div class="glass-panel">
                 <div class="adv-content">
-                    <h2>About ADV Technologies</h2>
-                    <p class="adv-description">
-                        ADV Technologies represents the future of innovation, where human ingenuity meets artificial intelligence.
-                        We're not just building software – we're crafting experiences, solving complex problems, and pushing the envelope of what technology can achieve.
-                        Through collaborative AI development and cutting-edge experimentation, we're creating tools and platforms that make a real difference.
-                        Every project is a step toward a more connected, intelligent, and innovative tomorrow.
+                    <h2 id="about-adv-title">About ADV Technologies</h2>
+                    <p class="adv-description" id="about-adv-text">
+                        Loading...
                     </p>
                 </div>
             </div>
@@ -169,19 +165,37 @@
             if (!window.supabaseClient) return;
 
             try {
-                // --- A. LOAD HERO TEXT ---
-                let hero1 = "Welcome to ADV Technologies"; // Fallback
-                let hero2 = "Innovation with AI"; // Fallback
+                // --- A. LOAD HERO TEXT & ABOUT SECTIONS ---
+                let hero1 = "Welcome to ADV Technologies"; 
+                let hero2 = "Innovation with AI";
 
-                const { data: settings } = await window.supabaseClient
-                    .from('website_settings')
-                    .select('setting_key, setting_value');
+                // Fetch Settings & Content in parallel
+                const [settingsResponse, pagesResponse] = await Promise.all([
+                    window.supabaseClient.from('website_settings').select('*'),
+                    window.supabaseClient.from('pages_content').select('*')
+                ]);
 
-                if (settings) {
-                    const s1 = settings.find(s => s.setting_key === 'hero_text_1');
-                    const s2 = settings.find(s => s.setting_key === 'hero_text_2');
+                // Apply Hero Settings
+                if (settingsResponse.data) {
+                    const s1 = settingsResponse.data.find(s => s.setting_key === 'hero_text_1');
+                    const s2 = settingsResponse.data.find(s => s.setting_key === 'hero_text_2');
                     if (s1) hero1 = s1.setting_value;
                     if (s2) hero2 = s2.setting_value;
+                }
+
+                // Apply About Section Content
+                if (pagesResponse.data) {
+                    const aboutMe = pagesResponse.data.find(p => p.page_key === 'about_me');
+                    const aboutAdv = pagesResponse.data.find(p => p.page_key === 'about_adv');
+                    
+                    if (aboutMe) {
+                        document.getElementById('about-me-title').textContent = aboutMe.title || 'About Me';
+                        document.getElementById('about-me-text').textContent = aboutMe.content;
+                    }
+                    if (aboutAdv) {
+                        document.getElementById('about-adv-title').textContent = aboutAdv.title || 'About ADV Technologies';
+                        document.getElementById('about-adv-text').textContent = aboutAdv.content;
+                    }
                 }
 
                 // Start Typing Animation with DB values
@@ -224,8 +238,7 @@
                         projectGrid.appendChild(card);
                     });
                 } else {
-                    // Fallback to avoid empty section if DB fails
-                    projectGrid.innerHTML = `<div class="project-card"><h3><i class="fas fa-rocket"></i> Projects Loading</h3><p>Connecting to database...</p></div>`;
+                    projectGrid.innerHTML = `<p>No projects currently available.</p>`;
                 }
 
             } catch (err) {
@@ -241,30 +254,35 @@
             persContainer.innerHTML = '';
 
             contacts.forEach(c => {
-                let icon = 'fa-link';
+                let iconClass = 'fas fa-link'; // Default
                 let label = 'Link';
                 
-                // Icon Logic
-                if (c.platform.includes('email')) { icon = 'fa-envelope'; label = 'Email'; }
-                else if (c.platform.includes('github')) { icon = 'fab fa-github'; label = 'GitHub'; }
-                else if (c.platform.includes('facebook')) { icon = 'fab fa-facebook'; label = 'Facebook'; }
-                else if (c.platform.includes('instagram')) { icon = 'fab fa-instagram'; label = 'Instagram'; }
-                else if (c.platform.includes('linkedin')) { icon = 'fab fa-linkedin'; label = 'LinkedIn'; }
-                else if (c.platform === 'x') { 
-                    icon = ''; // Special case for SVG
+                // Icon Logic - FIX FOR EMAIL VISIBILITY
+                if (c.platform.includes('email')) { 
+                    iconClass = 'fas fa-envelope'; // Solid icon for email
+                    label = 'Email'; 
+                }
+                else if (c.platform.includes('github')) { iconClass = 'fab fa-github'; label = 'GitHub'; }
+                else if (c.platform.includes('facebook')) { iconClass = 'fab fa-facebook'; label = 'Facebook'; }
+                else if (c.platform.includes('instagram')) { iconClass = 'fab fa-instagram'; label = 'Instagram'; }
+                else if (c.platform.includes('linkedin')) { iconClass = 'fab fa-linkedin'; label = 'LinkedIn'; }
+                
+                // Special handling for X (Twitter) using SVG if needed, or FontAwesome
+                let iconHtml = `<div class="contact-icon"><i class="${iconClass}"></i></div>`;
+                
+                if (c.platform === 'x') { 
                     label = 'X';
+                    iconHtml = `<div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>`;
                 }
 
-                // X Icon SVG
-                const iconHtml = icon === '' 
-                    ? `<div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>`
-                    : `<div class="contact-icon"><i class="${icon}"></i></div>`;
+                // Use the display_text from DB, fallback to URL if missing
+                const displayText = c.display_text || c.url.replace('mailto:', '').replace('https://', '');
 
                 const html = `
-                    <div class="contact-item" onclick="${c.url !== '#' ? `window.open('${c.url}')` : "alert('Coming Soon!')"}">
+                    <div class="contact-item" onclick="${c.url !== '#' && c.url !== 'Coming Soon' ? `window.open('${c.url}')` : "alert('Coming Soon!')"}">
                         ${iconHtml}
                         <h4>${label}</h4> 
-                        <p>${c.display_text || c.url}</p>
+                        <p>${displayText}</p>
                     </div>
                 `;
 
