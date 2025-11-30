@@ -27,7 +27,7 @@
             min-height: calc(100vh - 100px);
             position: relative;
             z-index: 5;
-            padding-bottom: 3rem;
+            padding-bottom: 5rem;
         }
 
         .loading-overlay {
@@ -44,216 +44,230 @@
             text-align: center;
         }
 
-        /* MODAL CENTERING FIX */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 3000;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .modal.active {
-            display: flex !important;
-        }
-        .modal-content {
-            background: #0a0a0a;
-            border: 1px solid var(--gold);
-            border-radius: 20px;
+        /* Forms & Inputs */
+        .glass-panel {
+            margin-bottom: 2rem;
             padding: 2rem;
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.1);
-            margin: auto;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            border-radius: 20px;
+        }
+        h3 {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+        h4 {
+            color: white;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.2rem;
+            border-left: 3px solid var(--gold);
+            padding-left: 10px;
         }
 
-        /* Admin Tables */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            color: var(--gold);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255,255,255,0.1);
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Contact Grid Layout - Fully Expanded */
+        .contact-section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .contact-card {
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .contact-card h5 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .contact-card h5 i {
+            color: var(--gold);
+        }
+
+        /* Tables & Buttons */
         .user-list, .project-list {
             overflow-x: auto;
-            margin-top: 1rem;
         }
-        
-        .user-list table, .project-list table {
+        table {
             width: 100%;
-            min-width: 700px;
             border-collapse: collapse;
-            color: var(--white);
-            font-size: 0.9rem;
+            color: white;
+            font-size: 0.95rem;
+            min-width: 800px;
         }
-        .user-list th, .user-list td,
-        .project-list th, .project-list td {
-            padding: 1rem;
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             text-align: left;
-            border-bottom: 1px solid var(--glass-border);
-            vertical-align: middle;
         }
-        .user-list th, .project-list th {
+        th {
             color: var(--gold);
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
-            font-size: 0.8rem;
             letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+        tr:hover {
+            background: rgba(255,255,255,0.02);
         }
         
-        /* Button styles */
         .action-btn {
-            margin-right: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid var(--gold);
-            background-color: transparent;
-            color: var(--gold);
-            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
-            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
         }
         .action-btn:hover {
-            background-color: var(--gold);
-            color: var(--black);
-            box-shadow: 0 5px 15px var(--shadow-gold);
+            background: var(--gold);
+            color: black;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
-         .action-btn.delete-btn, .action-btn.ban-btn {
+        .action-btn.delete-btn {
             border-color: var(--error-red);
             color: var(--error-red);
         }
-        .action-btn.delete-btn:hover, .action-btn.ban-btn:hover {
-            background-color: var(--error-red);
-            color: var(--white);
-            border-color: var(--error-red);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        .action-btn.delete-btn:hover {
+            background: var(--error-red);
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
         }
-         .action-btn.unban-btn {
+        .action-btn.ban-btn {
+            border-color: var(--error-red);
+            color: var(--error-red);
+        }
+        .action-btn.ban-btn:hover {
+            background: var(--error-red);
+            color: white;
+        }
+        .action-btn.unban-btn {
             border-color: var(--success-green);
             color: var(--success-green);
-         }
-         .action-btn.unban-btn:hover {
-             background-color: var(--success-green);
-             color: var(--black);
-         }
+        }
+        .action-btn.unban-btn:hover {
+            background: var(--success-green);
+            color: black;
+        }
         .action-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             filter: grayscale(1);
         }
         
-        .user-list select {
-            padding: 0.4rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--white);
-            border: 1px solid var(--glass-border);
-            border-radius: 5px;
-            font-family: 'Montserrat', sans-serif;
-            margin-right: 0.5rem;
-        }
-        
-        /* Settings Form */
-        .settings-form .form-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 1rem;
-        }
-        .settings-form .form-group label {
-            width: 200px;
-            flex-shrink: 0;
-            color: var(--gold);
-            font-weight: 600;
-        }
-        .settings-form .form-group input,
-        .settings-form .form-group select {
-            flex-grow: 1;
-            min-width: 200px;
-            max-width: 400px;
-            padding: 0.8rem;
-        }
-        
-        /* Project Form */
-        .project-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .project-form label {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.2rem;
-            display: block;
-        }
-        .project-form input, .project-form select, .project-form textarea {
-             width: 100%;
-             padding: 12px;
-             background: rgba(255,255,255,0.08);
-             border: 1px solid var(--glass-border);
-             color: white;
-             border-radius: 8px;
-             font-family: 'Montserrat', sans-serif;
-        }
-        .project-form input:focus, .project-form select:focus, .project-form textarea:focus {
-            outline: none;
-            border-color: var(--gold);
-        }
-        .project-form textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 1rem;
-        }
-        .form-row .form-group {
-            flex: 1;
-        }
-        
-        /* Feedback */
         .feedback-inline {
-            font-size: 0.9rem;
-            margin-left: 1rem;
+            margin-left: 15px;
+            font-size: 0.95rem;
             font-weight: 500;
         }
         .feedback-inline.success { color: var(--success-green); }
         .feedback-inline.error { color: var(--error-red); }
-        .feedback-inline.loading { color: rgba(255, 255, 255, 0.7); }
 
-        #admin-feedback { margin-top: 1.5rem; }
-        
-        .admin-section {
-            margin-bottom: 4rem;
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
         }
-        
-        /* Modal Action Buttons */
-        .modal-actions {
+        .modal.active {
             display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 1.5rem;
+        }
+        .modal-content {
+            background: #111;
+            border: 1px solid var(--gold);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
+        }
+        .modal-close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--gold);
         }
 
+        /* Responsive Fixes */
+        @media (max-width: 768px) {
+            .contact-section-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
     </style>
 </head>
 <body>
     
     <div id="loading-overlay" class="loading-overlay">
-        <div>
-            <i class="fas fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 1rem;">Verifying Admin Access...</p>
-        </div>
+        <i class="fas fa-spinner fa-spin fa-3x"></i>
+        <p style="margin-top: 1rem;">Verifying Admin Access...</p>
     </div>
 
     <canvas id="particles-canvas"></canvas>
@@ -263,12 +277,11 @@
             <div class="logo" onclick="window.location.href='/'">
                 <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
             </div>
-            
             <div class="user-profile" id="user-profile" style="display: none;">
                 <div class="user-avatar" id="user-avatar">AD</div>
-                <span id="profile-username">Admin</span>
-                <a href="/dashboard/" class="btn-small" style="margin-left: 1rem; text-decoration: none;">Dashboard</a>
-                <button class="btn-small" onclick="window.authFunctions.logout()" style="margin-left: 0.5rem;">Logout</button>
+                <span id="profile-username" style="color: var(--gold); margin-right: 15px; font-weight: 600;">Admin</span>
+                <a href="/dashboard/" class="btn-small" style="margin-right: 10px;">Dashboard</a>
+                <button class="btn-small" onclick="window.authFunctions.logout()">Logout</button>
             </div>
         </div>
     </nav>
@@ -276,146 +289,235 @@
     <div class="admin-panel-container container section" id="admin-content" style="display: none;">
         <div class="dashboard-header">
             <h1><i class="fas fa-cogs"></i> Admin Panel</h1>
-            <p>Manage users, settings, and projects.</p>
+            <p>Manage all aspects of your website from one central location.</p>
         </div>
 
-        <div id="admin-feedback" style="display: none;"></div>
-
-        <section class="glass-panel user-management">
-            <h3><i class="fas fa-users-cog"></i> User Management</h3>
-            <div class="user-list">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-list-body">
-                         <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="glass-panel website-settings">
-            <h3><i class="fas fa-sliders-h"></i> Website Settings</h3>
-            <form id="settings-form" class="settings-form">
-                <h4>Theme & Appearance</h4>
-                <div class="form-group">
-                    <label for="setting-glassmorphism_opacity">Glass Opacity:</label>
-                    <input type="number" id="setting-glassmorphism_opacity" step="0.01" min="0" max="1" placeholder="e.g., 0.08">
+        <section class="glass-panel" id="content-editor">
+            <h3><i class="fas fa-pen-fancy"></i> Site Content Editor</h3>
+            <p style="margin-bottom: 2rem; color: rgba(255,255,255,0.7);">Edit the main text displayed on your homepage.</p>
+            
+            <form id="content-form">
+                
+                <h4>Hero Section</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hero_text_1">Main Title (Line 1 - Static)</label>
+                        <input type="text" id="hero_text_1" placeholder="Welcome to...">
+                    </div>
+                    <div class="form-group">
+                        <label for="hero_text_2">Main Title (Line 2 - Animated)</label>
+                        <input type="text" id="hero_text_2" placeholder="Innovation with...">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="setting-glassmorphism_blur">Glass Blur (px):</label>
-                    <input type="number" id="setting-glassmorphism_blur" step="1" min="0" max="50" placeholder="e.g., 25">
-                </div>
-                 <div class="form-group">
-                    <label for="setting-primary_color">Primary Color:</label>
-                    <input type="color" id="setting-primary_color" value="#FFD700" style="height: 40px;">
+                    <label for="hero_subtitle">Subtitle (Below Animation)</label>
+                    <input type="text" id="hero_subtitle" placeholder="Innovation with a One-Man Army...">
                 </div>
 
-                <h4>Particle System</h4>
-                 <div class="form-group">
-                    <label for="setting-particle_count_desktop">Particles (Desktop):</label>
-                    <input type="number" id="setting-particle_count_desktop" step="1" min="10" max="200" placeholder="e.g., 80">
-                </div>
-                 <div class="form-group">
-                    <label for="setting-particle_count_mobile">Particles (Mobile):</label>
-                    <input type="number" id="setting-particle_count_mobile" step="1" min="5" max="100" placeholder="e.g., 40">
+                <h4>About Sections</h4>
+                <div class="form-group">
+                    <label for="about_me_title">About Me (Title)</label>
+                    <input type="text" id="about_me_title">
                 </div>
                 <div class="form-group">
-                    <label for="setting-particle_speed">Particle Speed:</label>
-                    <input type="number" id="setting-particle_speed" step="0.1" min="0.1" max="5" placeholder="e.g., 1.8">
-                </div>
-                <div class="form-group">
-                    <label for="setting-particle_connection_distance">Connection Dist (px):</label>
-                    <input type="number" id="setting-particle_connection_distance" step="1" min="30" max="300" placeholder="e.g., 120">
-                </div>
-
-                <h4>Content</h4>
-                 <div class="form-group">
-                    <label for="setting-hero_text_1">Hero Line 1:</label>
-                    <input type="text" id="setting-hero_text_1" placeholder="Welcome to...">
-                </div>
-                 <div class="form-group">
-                    <label for="setting-hero_text_2">Hero Line 2:</label>
-                    <input type="text" id="setting-hero_text_2" placeholder="Innovation with...">
+                    <label for="about_me_content">About Me (Content)</label>
+                    <textarea id="about_me_content"></textarea>
                 </div>
                 
-                <button type="submit" class="action-btn" id="save-settings-btn" style="margin-top: 1rem; width: auto; display: inline-block;">
-                    <i class="fas fa-save"></i> Save Settings
-                </button>
-                 <span id="settings-feedback" class="feedback-inline"></span>
+                <div class="form-group">
+                    <label for="about_adv_title">About ADV Technologies (Title)</label>
+                    <input type="text" id="about_adv_title">
+                </div>
+                <div class="form-group">
+                    <label for="about_adv_content">About ADV Technologies (Content)</label>
+                    <textarea id="about_adv_content"></textarea>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="action-btn" id="save-content-btn">
+                        <i class="fas fa-save"></i> Save Content Changes
+                    </button>
+                    <span id="content-feedback" class="feedback-inline"></span>
+                </div>
             </form>
         </section>
 
-        <section class="glass-panel project-management">
-            <h3><i class="fas fa-project-diagram"></i> Project Management</h3>
+        <section class="glass-panel" id="contact-editor">
+            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+            <p style="margin-bottom: 2rem; color: rgba(255,255,255,0.7);">Update your social links and display text (e.g., IDs/Usernames).</p>
+            
+            <form id="contact-form">
+                <div class="contact-section-grid">
+                    
+                    <div class="contact-column">
+                        <h4 style="margin-top: 0;">Professional</h4>
+                        
+                        <div class="contact-card">
+                            <h5><i class="fas fa-envelope"></i> Professional Email</h5>
+                            <div class="form-group">
+                                <label>Link (mailto:)</label>
+                                <input type="text" id="url-email_professional">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-email_professional">
+                            </div>
+                        </div>
+                        <br>
+                        
+                        <div class="contact-card">
+                            <h5><i class="fab fa-github"></i> Professional GitHub</h5>
+                            <div class="form-group">
+                                <label>Link</label>
+                                <input type="text" id="url-github_professional">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-github_professional">
+                            </div>
+                        </div>
+                    </div>
 
-            <h4>Current Projects</h4>
+                    <div class="contact-column">
+                        <h4 style="margin-top: 0;">Personal</h4>
+                        
+                        <div class="contact-card">
+                            <h5><i class="fas fa-envelope"></i> Personal Email</h5>
+                            <div class="form-group">
+                                <label>Link (mailto:)</label>
+                                <input type="text" id="url-email_personal">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-email_personal">
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="contact-card">
+                            <h5><i class="fab fa-github"></i> Personal GitHub</h5>
+                            <div class="form-group">
+                                <label>Link</label>
+                                <input type="text" id="url-github_personal">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-github_personal">
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="contact-card">
+                            <h5><i class="fab fa-facebook"></i> Facebook</h5>
+                            <div class="form-group">
+                                <label>Link</label>
+                                <input type="text" id="url-facebook">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-facebook">
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="contact-card">
+                            <h5><i class="fab fa-instagram"></i> Instagram</h5>
+                            <div class="form-group">
+                                <label>Link</label>
+                                <input type="text" id="url-instagram">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-instagram">
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="contact-card">
+                            <h5><i class="fab fa-x-twitter"></i> X (Twitter)</h5>
+                            <div class="form-group">
+                                <label>Link</label>
+                                <input type="text" id="url-x">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-x">
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="contact-card">
+                            <h5><i class="fab fa-linkedin"></i> LinkedIn</h5>
+                            <div class="form-group">
+                                <label>Link</label>
+                                <input type="text" id="url-linkedin">
+                            </div>
+                            <div class="form-group">
+                                <label>Display Text</label>
+                                <input type="text" id="txt-linkedin">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="action-btn" id="save-contact-btn">
+                        <i class="fas fa-save"></i> Save Contact Info
+                    </button>
+                    <span id="contact-feedback" class="feedback-inline"></span>
+                </div>
+            </form>
+        </section>
+
+        <section class="glass-panel" id="project-management">
+            <h3><i class="fas fa-project-diagram"></i> Project Management</h3>
+            
             <div class="project-list">
                  <table>
                     <thead>
                         <tr>
                             <th>Order</th>
-                            <th>Name</th>
-                            <th>Access</th>
+                            <th>Project Name</th>
+                            <th>Slug</th>
+                            <th>Access Level</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="project-list-body">
-                         </tbody>
+                         <tr><td colspan="6" style="text-align: center;">Loading projects...</td></tr>
+                    </tbody>
                 </table>
             </div>
 
-            <h4 style="margin-top: 3rem; margin-bottom: 1rem; color: var(--gold); border-top: 1px solid var(--glass-border); padding-top: 2rem;">Add New Project</h4>
-            
-            <form id="add-project-form" class="project-form">
+            <h4 style="margin-top: 3rem;">Add New Project</h4>
+            <form id="add-project-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="project-name">Project Name</label>
-                        <input type="text" id="project-name" required placeholder="e.g., Awesome Tool">
+                        <label for="p-name">Project Name</label>
+                        <input type="text" id="p-name" required placeholder="e.g. My New Tool">
                     </div>
                     <div class="form-group">
-                        <label for="project-slug">Slug (ID)</label>
-                        <input type="text" id="project-slug" required placeholder="e.g., awesome-tool">
+                        <label for="p-slug">Slug (URL ID)</label>
+                        <input type="text" id="p-slug" required placeholder="e.g. my-new-tool">
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="project-description">Description</label>
-                    <textarea id="project-description" required placeholder="A brief description..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="project-url">URL</label>
-                    <input type="url" id="project-url" placeholder="https://example.com/project (optional)">
                 </div>
                 
                 <div class="form-group">
-                    <label for="project-image-url">Image URL</label>
-                    <input type="url" id="project-image-url" placeholder="/assets/project-image.png (optional)">
+                    <label for="p-desc">Description</label>
+                    <textarea id="p-desc" required placeholder="Brief description of the project..."></textarea>
                 </div>
-
+                
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="project-status">Status</label>
-                        <select id="project-status" required>
-                            <option value="active">Active</option>
-                            <option value="coming_soon" selected>Coming Soon</option>
-                            <option value="maintenance">Maintenance</option>
-                            <option value="deprecated">Deprecated</option>
-                        </select>
+                        <label for="p-url">Project URL</label>
+                        <input type="url" id="p-url" placeholder="https://...">
                     </div>
                     <div class="form-group">
-                        <label for="project-access">Access Level</label>
-                        <select id="project-access" required style="border-color: var(--gold);">
-                            <option value="public" selected>Public (Users)</option>
+                        <label for="p-access">Access Level</label>
+                        <select id="p-access">
+                            <option value="public">Public (Everyone)</option>
                             <option value="member">Members Only</option>
                             <option value="admin">Admins Only</option>
                         </select>
@@ -429,610 +531,495 @@
             </form>
         </section>
 
+        <section class="glass-panel" id="user-management">
+            <h3><i class="fas fa-users-cog"></i> User Management</h3>
+            <div class="user-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Current Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list-body">
+                         <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass-panel" id="theme-settings">
+            <h3><i class="fas fa-palette"></i> Theme Settings</h3>
+            <form id="theme-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="primary_color">Primary Accent Color</label>
+                        <input type="color" id="primary_color" style="height: 50px; cursor: pointer;">
+                    </div>
+                    <div class="form-group">
+                        <label for="glassmorphism_opacity">Glass Background Opacity (0.0 - 1.0)</label>
+                        <input type="number" id="glassmorphism_opacity" step="0.01" min="0" max="1" placeholder="0.08">
+                    </div>
+                </div>
+                <button type="submit" class="action-btn" id="save-theme-btn" style="margin-top: 1rem;">
+                    <i class="fas fa-paint-brush"></i> Update Theme
+                </button>
+                <span id="theme-feedback" class="feedback-inline"></span>
+            </form>
+        </section>
+
     </div> 
 
     <div id="edit-project-modal" class="modal">
          <div class="modal-content">
-            <span class="modal-close" onclick="window.commonFunctions.closeModal('edit-project')">&times;</span>
-            <h3>Edit Project</h3>
+            <div class="modal-header">
+                <h3>Edit Project</h3>
+                <span class="modal-close" onclick="window.commonFunctions.closeModal('edit-project')">&times;</span>
+            </div>
             
-            <form id="edit-project-form" class="project-form">
-                <input type="hidden" id="edit-project-id">
+            <form id="edit-project-form">
+                <input type="hidden" id="ep-id">
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="edit-project-name" required>
+                        <label for="ep-name">Name</label>
+                        <input type="text" id="ep-name" required>
                     </div>
                     <div class="form-group">
-                        <label>Slug</label>
-                        <input type="text" id="edit-project-slug" required>
+                        <label for="ep-slug">Slug</label>
+                        <input type="text" id="ep-slug" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="edit-project-description" required></textarea>
+                    <label for="ep-desc">Description</label>
+                    <textarea id="ep-desc" required></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>URL</label>
-                    <input type="url" id="edit-project-url">
+                    <label for="ep-url">URL</label>
+                    <input type="url" id="ep-url">
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Order</label>
-                        <input type="number" id="edit-project-order" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="edit-project-status">
+                        <label for="ep-status">Status</label>
+                        <select id="ep-status">
                             <option value="active">Active</option>
                             <option value="coming_soon">Coming Soon</option>
                             <option value="maintenance">Maintenance</option>
                             <option value="deprecated">Deprecated</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="ep-access">Access Level</label>
+                        <select id="ep-access">
+                            <option value="public">Public</option>
+                            <option value="member">Member</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label style="color: var(--gold);">Access Level</label>
-                    <select id="edit-project-access" style="border-color: var(--gold);">
-                        <option value="public">Public (Users)</option>
-                        <option value="member">Members Only</option>
-                        <option value="admin">Admins Only</option>
-                    </select>
+                    <label for="ep-order">Display Order</label>
+                    <input type="number" id="ep-order">
                 </div>
                 
-                <div class="modal-actions">
-                    <button type="submit" class="action-btn" id="update-project-btn" style="flex: 1;">Update</button>
-                    <button type="button" class="action-btn delete-btn" id="delete-project-btn">Delete</button>
+                <div style="display:flex; justify-content:space-between; margin-top:2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button type="submit" class="action-btn" style="flex: 1; margin-right: 1rem;">Update Project</button>
+                    <button type="button" class="action-btn delete-btn" id="delete-project-btn">Delete Project</button>
                 </div>
-                <span id="edit-project-feedback" class="feedback-inline" style="display: block; margin-top: 1rem;"></span>
             </form>
         </div>
     </div>
 
     <script>
-        // Embed Supabase config directly
+        // Supabase Credentials
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
-
     <script src="/js/config.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/particles.js"></script>
     <script src="/js/auth.js"></script>
 
     <script>
-        // Initialize Global Elements
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const adminContent = document.getElementById('admin-content');
-        const adminFeedbackEl = document.getElementById('admin-feedback');
-
-        // --- Helper Functions for Admin Panel ---
-        function showAdminFeedback(message, type = 'info') {
-            const typeClass = type === 'success' ? 'success-message' : 'error-message';
-            adminFeedbackEl.innerHTML = `<div class="${typeClass}" style="display: block;">${message}</div>`;
-            adminFeedbackEl.style.display = 'block';
-            window.scrollTo(0, 0);
-             setTimeout(() => { adminFeedbackEl.style.display = 'none'; }, 5000);
-        }
-        
-        function showInlineFeedback(elementId, message, type = 'info') {
-            const feedbackEl = document.getElementById(elementId);
-            if (feedbackEl) {
-                feedbackEl.className = `feedback-inline ${type}`;
-                feedbackEl.textContent = message;
-                setTimeout(() => { if (feedbackEl.textContent === message) feedbackEl.textContent = ''; }, 4000);
+        // --- GLOBAL ADMIN LOGIC ---
+        const feedback = (id, msg, type) => {
+            const el = document.getElementById(id);
+            if(el) { 
+                el.textContent = msg; 
+                el.className = `feedback-inline ${type}`; 
+                setTimeout(() => el.textContent='', 4000); 
             }
-        }
+        };
 
-        // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
+            // Init Particles
             if (typeof window.initParticles === 'function') window.initParticles();
             
             try {
-                if (typeof window.authFunctions === 'undefined') {
-                    throw new Error("Auth script failed to load.");
-                }
+                if (typeof window.authFunctions === 'undefined') throw new Error("Auth script failed.");
                 
+                // Auth Check
                 const { data: { session }, error } = await window.supabaseClient.auth.getSession();
                 if (error) throw error;
-                if (!session) {
-                    throw new Error("No active session. Redirecting to login.");
-                }
+                if (!session) throw new Error("No active session.");
 
-                window.isAuthenticated = true;
-                window.currentUser = session.user;
-
-                // Fetch profile
+                // Check Role
                 const profile = await window.authFunctions.fetchUserProfile();
-                if (!profile) {
-                    throw new Error("Could not fetch user profile.");
-                }
+                if (!profile || profile.role !== 'admin') throw new Error("Access Denied");
 
-                const userRole = profile.role;
-                if (userRole !== 'admin') {
-                     throw new Error("Access denied. Admin privileges required.");
-                }
+                // Show UI
+                document.getElementById('user-profile').style.display = 'flex';
+                document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
 
-                console.log("Admin access verified.");
-                updateAdminNavbar(profile);
-                await loadAdminData(); 
-
-                loadingOverlay.style.display = 'none';
-                adminContent.style.display = 'block';
-                adminContent.classList.add('visible');
-
+                // Setup Timer
                 window.authFunctions.resetInactivityTimer();
                 
-                document.getElementById('settings-form').addEventListener('submit', handleSaveSettings);
-                document.getElementById('add-project-form').addEventListener('submit', handleAddProject);
-
+                // LOAD ALL DATA SECTIONS
+                await Promise.all([
+                    loadContent(), 
+                    loadContact(), 
+                    loadProjects(), 
+                    loadUsers(), 
+                    loadTheme()
+                ]);
 
             } catch (err) {
-                 console.error("Admin Panel Access Error:", err.message);
-                 loadingOverlay.innerHTML = `
-                    <div>
-                        <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
-                        <p style="margin-top: 1rem; color: var(--error-red);">${err.message}</p>
-                        <p style="font-size: 1rem; margin-top: 1rem;">Redirecting to login...</p>
-                    </div>`;
-                 setTimeout(() => { window.location.href = '/login/'; }, 3000);
+                console.error(err);
+                document.querySelector('#loading-overlay p').textContent = "Access Denied. Redirecting to login...";
+                setTimeout(() => window.location.href = '/login/', 2000);
             }
         });
 
-        function updateAdminNavbar(profile) {
-            const userAvatar = document.getElementById('user-avatar');
-            const profileUsername = document.getElementById('profile-username');
-            const userProfileNav = document.getElementById('user-profile');
+        // --- 1. CONTENT EDITOR LOGIC ---
+        async function loadContent() {
+            const { data: settings } = await window.supabaseClient.from('website_settings').select('*');
+            const { data: pages } = await window.supabaseClient.from('pages_content').select('*');
 
-            if (userProfileNav) userProfileNav.style.display = 'flex';
-            if(profileUsername) profileUsername.textContent = profile.username || 'Admin';
-
-            if (userAvatar) {
-                 let avatarText = 'AD';
-                if (profile.first_name && profile.last_name) {
-                    avatarText = profile.first_name.charAt(0).toUpperCase() + profile.last_name.charAt(0).toUpperCase();
-                } else if (profile.first_name) {
-                    avatarText = profile.first_name.charAt(0).toUpperCase();
-                }
-                userAvatar.textContent = avatarText;
-            }
-        }
-
-        async function loadAdminData() {
-            await Promise.all([
-                 loadUsers(),
-                 loadSettings(),
-                 loadProjects()
-            ]);
-            console.log("Admin data loaded.");
-        }
-
-        // --- User Management Functions ---
-        async function loadUsers() {
-            const userListBody = document.getElementById('user-list-body');
-            userListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading users...</td></tr>';
-
-            try {
-                // Querying profiles
-                // Note: Removed 'is_active' to prevent error, using 'is_banned' for status
-                const { data: users, error } = await window.supabaseClient
-                    .from('user_profiles')
-                    .select('id, username, email, role, is_banned')
-                    .order('username', { ascending: true });
-
-                if (error) throw error;
-
-                if (users && users.length > 0) {
-                    userListBody.innerHTML = ''; // Clear loading
-                    users.forEach(user => {
-                         const row = document.createElement('tr');
-                         const isCurrentUser = (user.id === window.currentUser.id);
-                         const isOtherAdmin = (user.role === 'admin' && !isCurrentUser);
-
-                         row.innerHTML = `
-                            <td>${user.username || 'No Username'} ${isCurrentUser ? '(You)' : ''}</td>
-                            <td>${user.email}</td>
-                            <td>
-                                <select id="role-${user.id}" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''}>
-                                     <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-                                    <option value="member" ${user.role === 'member' ? 'selected' : ''}>Member</option>
-                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                                </select>
-                                <button class="action-btn" onclick="changeRole('${user.id}')" ${isOtherAdmin || isCurrentUser ? 'disabled' : ''} title="Save Role Change">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                            </td>
-                             <td>${user.is_banned ? '<span style="color:var(--error-red);">Banned</span>' : '<span style="color:var(--success-green);">Active</span>'}</td>
-                             <td>
-                                ${user.is_banned
-                                    ? `<button class="action-btn unban-btn" onclick="unbanUser('${user.id}')">Unban</button>`
-                                    : `<button class="action-btn ban-btn" onclick="banUser('${user.id}')" ${isCurrentUser || isOtherAdmin ? 'disabled' : ''} title="${isCurrentUser ? 'Cannot ban self' : 'Ban User'}">Ban</button>`
-                                }
-                            </td>
-                        `;
-                        userListBody.appendChild(row);
-                    });
-                } else {
-                    userListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>';
-                }
-            } catch (error) {
-                 console.error("Error loading users:", error);
-                userListBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error-red);">Could not load users: ${error.message}</td></tr>`;
-            }
-        }
-
-        async function changeRole(userId) {
-             const selectElement = document.getElementById(`role-${userId}`);
-            const newRole = selectElement.value;
-             if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
-
-             try {
-                 const { data, error } = await window.supabaseClient.rpc('change_user_role', {
-                    target_user_id: userId,
-                    new_role: newRole
-                 });
-                 if (error) throw error;
-
-                 showAdminFeedback(`Successfully changed user role to ${newRole}.`, 'success');
-                 await loadUsers(); // Refresh list
-            } catch (error) {
-                 console.error("Error changing role:", error);
-                showAdminFeedback(`Error changing role: ${error.message}`, 'error');
-            }
-        }
-
-        async function banUser(userId) {
-            const reason = prompt("Enter reason for banning (optional):", "Violation of terms");
-            if (reason === null) return; 
-
-             try {
-                 const { data, error } = await window.supabaseClient.rpc('ban_user', {
-                     target_user_id: userId,
-                    ban_reason_text: reason || 'Violation of terms'
-                 });
-                 if (error) throw error;
-                 showAdminFeedback(`Successfully banned user.`, 'success');
-                 await loadUsers(); 
-             } catch (error) {
-                 console.error("Error banning user:", error);
-                showAdminFeedback(`Error banning user: ${error.message}`, 'error');
-            }
-        }
-
-        async function unbanUser(userId) {
-             if (!confirm(`Are you sure you want to unban this user?`)) return;
-
-             try {
-                const { data, error } = await window.supabaseClient.rpc('unban_user', {
-                     target_user_id: userId
-                 });
-                if (error) throw error;
-                 showAdminFeedback(`Successfully unbanned user.`, 'success');
-                 await loadUsers(); 
-             } catch (error) {
-                 console.error("Error unbanning user:", error);
-                 showAdminFeedback(`Error unbanning user: ${error.message}`, 'error');
-            }
-        }
-
-
-        // --- Website Settings Functions ---
-        async function loadSettings() {
-             const feedbackEl = document.getElementById('settings-feedback');
-             showInlineFeedback('settings-feedback', 'Loading settings...', 'loading');
-             
-             try {
-                const { data: settings, error } = await window.supabaseClient
-                    .from('website_settings')
-                    .select('setting_key, setting_value');
-
-                 if (error) throw error;
-
-                 if (settings) {
-                    settings.forEach(setting => {
-                         const input = document.getElementById(`setting-${setting.setting_key}`);
-                         if (input) {
-                             input.value = setting.setting_value;
-                         }
-                    });
-                     showInlineFeedback('settings-feedback', 'Settings loaded.', 'success');
-                 } else {
-                    showInlineFeedback('settings-feedback', 'No settings found.', 'error');
-                 }
-
-            } catch (error) {
-                 console.error("Error loading settings:", error);
-                 showInlineFeedback('settings-feedback', 'Could not load settings.', 'error');
-            }
-        }
-
-        async function handleSaveSettings(e) {
-            e.preventDefault();
-            const feedbackEl = document.getElementById('settings-feedback');
-            const saveBtn = document.getElementById('save-settings-btn');
-            showInlineFeedback('settings-feedback', 'Saving...', 'loading');
-            saveBtn.disabled = true;
-
-            const settingsToUpdate = [];
-            document.querySelectorAll('#settings-form input, #settings-form select').forEach(input => {
-                if (input.id.startsWith('setting-')) {
-                    const key = input.id.replace('setting-', '');
-                    settingsToUpdate.push({
-                        setting_key: key,
-                        setting_value: input.value,
-                        updated_by: window.currentUser.id 
-                    });
-                }
-            });
-
-            try {
-                 let errors = [];
-                 for (const setting of settingsToUpdate) {
-                     const { error } = await window.supabaseClient
-                        .from('website_settings')
-                         .update({
-                             setting_value: setting.setting_value,
-                             updated_by: setting.updated_by
-                         })
-                         .eq('setting_key', setting.setting_key);
-
-                     if (error) errors.push(setting.setting_key);
-                }
-
-                 if (errors.length > 0) {
-                     showInlineFeedback('settings-feedback', `Failed to update: ${errors.join(', ')}`, 'error');
-                 } else {
-                    showInlineFeedback('settings-feedback', 'Settings saved successfully!', 'success');
-                    
-                    // Apply settings immediately
-                    if (window.commonFunctions && window.commonFunctions.applyWebsiteSettings) {
-                        await window.commonFunctions.applyWebsiteSettings();
+            // Populate Hero Inputs
+            if(settings) {
+                const map = { 
+                    'hero_text_1': 'hero_text_1', 
+                    'hero_text_2': 'hero_text_2', 
+                    'hero_subtitle': 'hero_subtitle' 
+                };
+                settings.forEach(s => { 
+                    if(map[s.setting_key]) {
+                        const el = document.getElementById(map[s.setting_key]);
+                        if(el) el.value = s.setting_value; 
                     }
-                 }
-
-            } catch (error) {
-                 console.error("Error saving settings:", error);
-                 showInlineFeedback('settings-feedback', `Error: ${error.message}`, 'error');
-            } finally {
-                 saveBtn.disabled = false;
+                });
+            }
+            
+            // Populate About Sections
+            if(pages) {
+                const me = pages.find(p => p.page_key === 'about_me');
+                const adv = pages.find(p => p.page_key === 'about_adv');
+                
+                if(me) { 
+                    document.getElementById('about_me_title').value = me.title; 
+                    document.getElementById('about_me_content').value = me.content; 
+                }
+                if(adv) { 
+                    document.getElementById('about_adv_title').value = adv.title; 
+                    document.getElementById('about_adv_content').value = adv.content; 
+                }
             }
         }
 
-
-        // --- Project Management Functions ---
-        async function loadProjects() {
-            const projectListBody = document.getElementById('project-list-body');
-            projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading projects...</td></tr>';
+        document.getElementById('content-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-content-btn'); 
+            btn.disabled = true; 
+            btn.textContent = "Saving...";
             
             try {
-                const { data: projects, error } = await window.supabaseClient
-                    .from('projects')
-                    .select('id, name, slug, status, display_order, access_level')
-                    .order('display_order', { ascending: true });
+                const uid = window.authFunctions.getCurrentUser().id;
+                const updates = [
+                    { table: 'website_settings', key: 'hero_text_1', val: document.getElementById('hero_text_1').value },
+                    { table: 'website_settings', key: 'hero_text_2', val: document.getElementById('hero_text_2').value },
+                    { table: 'website_settings', key: 'hero_subtitle', val: document.getElementById('hero_subtitle').value },
+                    { table: 'pages_content', key: 'about_me', title: document.getElementById('about_me_title').value, content: document.getElementById('about_me_content').value },
+                    { table: 'pages_content', key: 'about_adv', title: document.getElementById('about_adv_title').value, content: document.getElementById('about_adv_content').value }
+                ];
 
-                if (error) throw error;
-
-                if (projects && projects.length > 0) {
-                    projectListBody.innerHTML = ''; // Clear loading
-                    projects.forEach(project => {
-                         const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${project.display_order}</td>
-                            <td>${project.name}</td>
-                             <td><span style="color:var(--gold); border:1px solid var(--gold); padding:2px 6px; border-radius:4px; font-size:0.8em">${project.access_level || 'public'}</span></td>
-                             <td><span style="text-transform: capitalize;">${project.status.replace('_', ' ')}</span></td>
-                            <td>
-                                <button class="action-btn" onclick="openEditProjectModal('${project.id}')">Edit</button>
-                            </td>
-                         `;
-                         projectListBody.appendChild(row);
-                    });
-                } else {
-                     projectListBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No projects found. Add one below.</td></tr>';
+                for (const item of updates) {
+                    if (item.table === 'website_settings') {
+                        await window.supabaseClient.from('website_settings').update({ setting_value: item.val, updated_by: uid }).eq('setting_key', item.key);
+                    } else {
+                        await window.supabaseClient.from('pages_content').update({ title: item.title, content: item.content, updated_by: uid }).eq('page_key', item.key);
+                    }
                 }
-            } catch (error) {
-                console.error("Error loading projects:", error);
-                projectListBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error-red);">Could not load projects: ${error.message}</td></tr>`;
+                feedback('content-feedback', 'Content Saved Successfully!', 'success');
+            } catch(err) { 
+                console.error(err);
+                feedback('content-feedback', 'Error saving content', 'error'); 
             }
-        }
+            btn.disabled = false; 
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Content Changes';
+        });
 
-        async function handleAddProject(e) {
-            e.preventDefault();
-            const feedbackEl = document.getElementById('project-feedback');
-            const addBtn = document.getElementById('add-project-btn');
-            showInlineFeedback('project-feedback', 'Adding...', 'loading');
-            addBtn.disabled = true;
-
-            try {
-                // 1. Find max order to slot BEFORE "Coming Soon"
-                // We look for projects that are NOT the 'coming-soon' slug
-                const { data: maxOrderData } = await window.supabaseClient
-                    .from('projects')
-                    .select('display_order')
-                    .neq('slug', 'coming-soon') 
-                    .order('display_order', { ascending: false })
-                    .limit(1);
+        // --- 2. CONTACT EDITOR LOGIC (Explicit Mapping) ---
+        async function loadContact() {
+            const { data } = await window.supabaseClient.from('contact_info').select('*');
+            
+            if(data) {
+                // Mapping platform keys to input IDs
+                data.forEach(c => {
+                    const urlInput = document.getElementById(`url-${c.platform}`);
+                    const txtInput = document.getElementById(`txt-${c.platform}`);
                     
-                let newOrder = 1;
-                if (maxOrderData && maxOrderData.length > 0) {
-                    newOrder = maxOrderData[0].display_order + 1;
-                }
-                
-                const newProject = {
-                    name: document.getElementById('project-name').value.trim(),
-                    slug: document.getElementById('project-slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
-                    description: document.getElementById('project-description').value.trim(),
-                    url: document.getElementById('project-url').value.trim() || '#',
-                    image_url: document.getElementById('project-image-url').value.trim() || null,
-                    status: document.getElementById('project-status').value,
-                    access_level: document.getElementById('project-access').value,
-                    display_order: newOrder,
-                    created_by: window.currentUser.id 
-                };
-
-                if (!/^[a-z0-9-]+$/.test(newProject.slug)) {
-                     showInlineFeedback('project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
-                     addBtn.disabled = false;
-                    return;
-                }
-
-                // Insert new project
-                const { error: insertError } = await window.supabaseClient
-                    .from('projects')
-                    .insert([newProject]);
-
-                if (insertError) throw insertError;
-                
-                // Update 'coming-soon' placeholder to be AFTER this new one
-                // We set it to newOrder + 1 to push it down
-                await window.supabaseClient
-                    .from('projects')
-                    .update({ display_order: newOrder + 1 })
-                    .eq('slug', 'coming-soon');
-
-                showInlineFeedback('project-feedback', 'Project added successfully!', 'success');
-                document.getElementById('add-project-form').reset();
-                await loadProjects(); 
-
-            } catch (error) {
-                console.error("Error adding project:", error);
-                showInlineFeedback('project-feedback', `Error: ${error.message}`, 'error');
-            } finally {
-                 addBtn.disabled = false;
+                    if (urlInput) urlInput.value = c.url;
+                    if (txtInput) txtInput.value = c.display_text || '';
+                });
             }
         }
 
-        async function openEditProjectModal(projectId) {
-            const feedbackEl = document.getElementById('edit-project-feedback');
-            showInlineFeedback('edit-project-feedback', 'Loading project data...', 'loading');
-            window.commonFunctions.openModal('edit-project'); 
-
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-contact-btn'); 
+            btn.disabled = true; 
+            btn.textContent = "Saving...";
+            
             try {
-                const { data: project, error } = await window.supabaseClient
-                    .from('projects')
-                    .select('*')
-                    .eq('id', projectId)
-                    .single();
-
-                if (error) throw error;
-
-                // Populate form
-                document.getElementById('edit-project-id').value = project.id;
-                document.getElementById('edit-project-name').value = project.name;
-                document.getElementById('edit-project-slug').value = project.slug;
-                document.getElementById('edit-project-description').value = project.description;
-                document.getElementById('edit-project-url').value = project.url || '';
-                document.getElementById('edit-project-order').value = project.display_order;
+                const uid = window.authFunctions.getCurrentUser().id;
+                const platforms = [
+                    'email_professional', 'github_professional', 
+                    'email_personal', 'github_personal', 
+                    'facebook', 'instagram', 'x', 'linkedin'
+                ];
                 
-                // Status Dropdown
-                const statusSelect = document.getElementById('edit-project-status');
-                statusSelect.innerHTML = '';
-                 ['active', 'coming_soon', 'maintenance', 'deprecated'].forEach(status => {
-                     const option = document.createElement('option');
-                    option.value = status;
-                     option.textContent = status.replace('_', ' ');
-                     if (project.status === status) option.selected = true;
-                    statusSelect.appendChild(option);
-                 });
+                for (const plat of platforms) {
+                    const urlVal = document.getElementById(`url-${plat}`).value;
+                    const txtVal = document.getElementById(`txt-${plat}`).value;
+                    
+                    await window.supabaseClient.from('contact_info')
+                        .update({ url: urlVal, display_text: txtVal, updated_by: uid })
+                        .eq('platform', plat);
+                }
+                feedback('contact-feedback', 'Contact Info Updated!', 'success');
+            } catch(err) { 
+                console.error(err);
+                feedback('contact-feedback', 'Error saving contacts', 'error'); 
+            }
+            btn.disabled = false; 
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Contact Info';
+        });
 
-                // Access Dropdown
-                const accessSelect = document.getElementById('edit-project-access');
-                accessSelect.value = project.access_level || 'public';
-
-                 feedbackEl.textContent = ''; 
-
-                 // Bind handlers
-                document.getElementById('edit-project-form').onsubmit = handleUpdateProject;
-                document.getElementById('delete-project-btn').onclick = () => handleDeleteProject(project.id, project.name);
-
-            } catch (error) {
-                console.error("Error loading project for edit:", error);
-                showInlineFeedback('edit-project-feedback', `Could not load project: ${error.message}`, 'error');
+        // --- 3. PROJECT LOGIC ---
+        async function loadProjects() {
+            const { data } = await window.supabaseClient.from('projects').select('*').order('display_order');
+            const tbody = document.getElementById('project-list-body');
+            tbody.innerHTML = '';
+            
+            if(data && data.length > 0) {
+                data.forEach(p => {
+                    tbody.innerHTML += `
+                    <tr>
+                        <td>${p.display_order}</td>
+                        <td>${p.name}</td>
+                        <td>${p.slug}</td>
+                        <td><span style="color:var(--gold); border:1px solid var(--gold); padding:2px 6px; border-radius:4px; font-size:0.8em">${p.access_level}</span></td>
+                        <td>${p.status}</td>
+                        <td><button class="action-btn" onclick="editProject('${p.id}')">Edit</button></td>
+                    </tr>`;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No projects found.</td></tr>';
             }
         }
 
-        async function handleUpdateProject(e) {
-             e.preventDefault();
-             const updateBtn = document.getElementById('update-project-btn');
-             showInlineFeedback('edit-project-feedback', 'Updating...', 'loading');
-             updateBtn.disabled = true;
+        window.editProject = async (id) => {
+            const { data } = await window.supabaseClient.from('projects').select('*').eq('id', id).single();
+            if(data) {
+                document.getElementById('ep-id').value = data.id;
+                document.getElementById('ep-name').value = data.name;
+                document.getElementById('ep-slug').value = data.slug;
+                document.getElementById('ep-desc').value = data.description;
+                document.getElementById('ep-url').value = data.url || '';
+                document.getElementById('ep-status').value = data.status;
+                document.getElementById('ep-access').value = data.access_level || 'public';
+                document.getElementById('ep-order').value = data.display_order;
+                
+                document.getElementById('delete-project-btn').onclick = () => deleteProject(data.id, data.name);
+                
+                window.commonFunctions.openModal('edit-project');
+            }
+        };
 
-             const projectId = document.getElementById('edit-project-id').value;
-             const updatedProject = {
-                 name: document.getElementById('edit-project-name').value.trim(),
-                 slug: document.getElementById('edit-project-slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
-                 description: document.getElementById('edit-project-description').value.trim(),
-                 url: document.getElementById('edit-project-url').value.trim() || '#',
-                 status: document.getElementById('edit-project-status').value,
-                 access_level: document.getElementById('edit-project-access').value,
-                 display_order: parseInt(document.getElementById('edit-project-order').value) || 99
+        document.getElementById('add-project-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('add-project-btn');
+            btn.disabled = true;
+            
+            try {
+                // Auto calculate order: before coming soon
+                const { data: max } = await window.supabaseClient.from('projects')
+                    .select('display_order')
+                    .neq('slug', 'coming-soon')
+                    .order('display_order', {ascending:false})
+                    .limit(1);
+                
+                const newOrder = (max && max.length) ? max[0].display_order + 1 : 1;
+
+                const p = {
+                    name: document.getElementById('p-name').value,
+                    slug: document.getElementById('p-slug').value,
+                    description: document.getElementById('p-desc').value,
+                    url: document.getElementById('p-url').value || '#',
+                    access_level: document.getElementById('p-access').value,
+                    display_order: newOrder,
+                    status: 'coming_soon',
+                    created_by: window.authFunctions.getCurrentUser().id
+                };
+                
+                const { error } = await window.supabaseClient.from('projects').insert([p]);
+                if(error) throw error;
+
+                // Push coming-soon down
+                await window.supabaseClient.from('projects').update({display_order: newOrder + 1}).eq('slug', 'coming-soon');
+                
+                feedback('project-feedback', 'Project Added!', 'success'); 
+                document.getElementById('add-project-form').reset(); 
+                loadProjects(); 
+            } catch(err) {
+                feedback('project-feedback', 'Error adding project', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('edit-project-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('ep-id').value;
+            const p = {
+                name: document.getElementById('ep-name').value,
+                slug: document.getElementById('ep-slug').value,
+                description: document.getElementById('ep-desc').value,
+                url: document.getElementById('ep-url').value,
+                status: document.getElementById('ep-status').value,
+                access_level: document.getElementById('ep-access').value,
+                display_order: document.getElementById('ep-order').value
             };
             
-             if (!/^[a-z0-9-]+$/.test(updatedProject.slug)) {
-                 showInlineFeedback('edit-project-feedback', 'Slug must be lowercase, numbers, and hyphens only.', 'error');
-                 updateBtn.disabled = false;
-                 return;
+            const { error } = await window.supabaseClient.from('projects').update(p).eq('id', id);
+            if(!error) { 
+                window.commonFunctions.closeModal('edit-project'); 
+                loadProjects(); 
+            } else {
+                alert("Error updating project");
             }
+        });
 
-             try {
-                 const { data, error } = await window.supabaseClient
-                     .from('projects')
-                     .update(updatedProject)
-                     .eq('id', projectId)
-                     .select();
+        async function deleteProject(id, name) {
+            if(confirm(`Are you sure you want to delete "${name}"?`)) {
+                await window.supabaseClient.from('projects').delete().eq('id', id);
+                window.commonFunctions.closeModal('edit-project');
+                loadProjects();
+            }
+        }
 
-                 if (error) throw error;
-                 
-                 showInlineFeedback('edit-project-feedback', 'Project updated successfully!', 'success');
-                 await loadProjects(); 
-                 setTimeout(() => {
-                     window.commonFunctions.closeModal('edit-project');
-                 }, 1500);
+        // --- 4. USER LOGIC ---
+        async function loadUsers() {
+            const { data: users } = await window.supabaseClient.from('user_profiles')
+                .select('id, username, email, role, is_banned')
+                .order('username');
+                
+            const tbody = document.getElementById('user-list-body');
+            tbody.innerHTML = '';
+            
+            if(users) {
+                users.forEach(u => {
+                    const isMe = u.id === window.authFunctions.getCurrentUser().id;
+                    tbody.innerHTML += `<tr>
+                        <td>${u.username} ${isMe ? '(You)':''}</td>
+                        <td>${u.email}</td>
+                        <td>
+                            <select id="role-${u.id}" ${isMe?'disabled':''}>
+                                <option value="user" ${u.role==='user'?'selected':''}>User</option>
+                                <option value="member" ${u.role==='member'?'selected':''}>Member</option>
+                                <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                            </select>
+                            <button class="action-btn" onclick="changeRole('${u.id}')" ${isMe?'disabled':''}>Save</button>
+                        </td>
+                        <td>${u.is_banned ? '<span style="color:var(--error-red)">Banned</span>':'<span style="color:var(--success-green)">Active</span>'}</td>
+                        <td>
+                            ${u.is_banned 
+                                ? `<button class="action-btn unban-btn" onclick="toggleBan('${u.id}', false)">Unban</button>`
+                                : `<button class="action-btn ban-btn" onclick="toggleBan('${u.id}', true)" ${isMe?'disabled':''}>Ban</button>`
+                            }
+                        </td>
+                    </tr>`;
+                });
+            }
+        }
 
-             } catch (error) {
-                console.error("Error updating project:", error);
-                showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
+        window.changeRole = async (id) => {
+            const role = document.getElementById(`role-${id}`).value;
+            if(confirm(`Are you sure you want to set role to ${role}?`)) {
+                try {
+                    await window.supabaseClient.rpc('change_user_role', { target_user_id: id, new_role: role });
+                    loadUsers();
+                } catch(e) { alert("Error changing role"); }
+            }
+        };
+
+        window.toggleBan = async (id, shouldBan) => {
+            try {
+                if(shouldBan) {
+                    const r = prompt("Reason for banning?"); 
+                    if(!r) return;
+                    await window.supabaseClient.rpc('ban_user', { target_user_id: id, ban_reason_text: r });
+                } else {
+                    await window.supabaseClient.rpc('unban_user', { target_user_id: id });
+                }
+                loadUsers();
+            } catch(e) { alert("Error updating ban status"); }
+        };
+
+        // --- 5. THEME LOGIC ---
+        async function loadTheme() {
+            const { data } = await window.supabaseClient.from('website_settings').select('*');
+            if(data) {
+                const color = data.find(s => s.setting_key === 'primary_color');
+                const opacity = data.find(s => s.setting_key === 'glassmorphism_opacity');
+                if(color) document.getElementById('primary_color').value = color.setting_value;
+                if(opacity) document.getElementById('glassmorphism_opacity').value = opacity.setting_value;
+            }
+        }
+
+        document.getElementById('theme-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const uid = window.authFunctions.getCurrentUser().id;
+            const btn = document.getElementById('save-theme-btn');
+            btn.disabled = true;
+            
+            try {
+                await window.supabaseClient.from('website_settings')
+                    .update({setting_value: document.getElementById('primary_color').value, updated_by: uid})
+                    .eq('setting_key', 'primary_color');
+                    
+                await window.supabaseClient.from('website_settings')
+                    .update({setting_value: document.getElementById('glassmorphism_opacity').value, updated_by: uid})
+                    .eq('setting_key', 'glassmorphism_opacity');
+                
+                if(window.commonFunctions.applyWebsiteSettings) window.commonFunctions.applyWebsiteSettings();
+                feedback('theme-feedback', 'Theme Updated!', 'success');
+            } catch(err) {
+                feedback('theme-feedback', 'Error saving theme', 'error');
             } finally {
-                 updateBtn.disabled = false;
+                btn.disabled = false;
             }
-        }
-
-        async function handleDeleteProject(projectId, projectName) {
-            if (!confirm(`Are you sure you want to delete the project "${projectName}"? This action cannot be undone.`)) {
-                 return;
-            }
-
-            const feedbackEl = document.getElementById('edit-project-feedback');
-            showInlineFeedback('edit-project-feedback', 'Deleting...', 'loading');
-            document.getElementById('update-project-btn').disabled = true;
-            document.getElementById('delete-project-btn').disabled = true;
-
-             try {
-                 const { error } = await window.supabaseClient
-                     .from('projects')
-                     .delete()
-                     .eq('id', projectId);
-
-                 if (error) throw error;
-                 
-                 showAdminFeedback(`Project "${projectName}" deleted successfully!`, 'success');
-                 await loadProjects(); 
-                 window.commonFunctions.closeModal('edit-project');
-
-            } catch (error) {
-                console.error("Error deleting project:", error);
-                 showInlineFeedback('edit-project-feedback', `Error: ${error.message}`, 'error');
-                 document.getElementById('update-project-btn').disabled = false;
-                 document.getElementById('delete-project-btn').disabled = false;
-            }
-        }
+        });
 
     </script>
 </body>
