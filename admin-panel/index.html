@@ -6,7 +6,6 @@
     <title>Admin Panel - ADV Technologies</title>
 
     <link rel="icon" type="image/png" href="/assets/logo.png">
-    <link rel="apple-touch-icon" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
@@ -15,259 +14,63 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     
     <style>
-        /* Specific styles for the admin panel */
-        body {
-            background: var(--dark-gray);
-        }
-        .navbar {
-            position: fixed;
-        }
-        .admin-panel-container {
-            padding-top: 100px;
-            min-height: calc(100vh - 100px);
-            position: relative;
-            z-index: 5;
-            padding-bottom: 5rem;
-        }
+        body { background: var(--dark-gray); }
+        .navbar { position: fixed; }
+        .admin-panel-container { padding-top: 100px; padding-bottom: 5rem; min-height: 100vh; position: relative; z-index: 5; }
 
         .loading-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            align-items: center; justify-content: center;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 3000;
-            color: var(--gold);
-            font-size: 1.5rem;
-            text-align: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 1rem; z-index: 9999; color: var(--gold);
         }
 
-        /* Forms & Inputs */
-        .glass-panel {
-            margin-bottom: 2rem;
-            padding: 2rem;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--glass-blur));
-            border-radius: 20px;
-        }
-        h3 {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-            color: var(--gold);
-            font-size: 1.5rem;
-        }
-        h4 {
-            color: white;
-            margin: 2rem 0 1rem 0;
-            font-size: 1.2rem;
-            border-left: 3px solid var(--gold);
-            padding-left: 10px;
-        }
+        /* Glass Panel & Forms */
+        .glass-panel { margin-bottom: 2rem; padding: 2rem; border: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: 20px; }
+        h3 { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; color: var(--gold); }
+        h4 { color: white; margin: 1.5rem 0 1rem 0; border-left: 3px solid var(--gold); padding-left: 10px; }
 
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-        .form-group label {
-            display: block;
-            color: var(--gold);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; color: var(--gold); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            color: white;
-            border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; border-radius: 8px; font-family: 'Montserrat', sans-serif;
         }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--gold);
-            background: rgba(255,255,255,0.1);
-        }
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-            line-height: 1.6;
-        }
-        .form-row {
-            display: flex;
-            gap: 1.5rem;
-        }
-        .form-row .form-group {
-            flex: 1;
-        }
+        .form-group input:focus { outline: none; border-color: var(--gold); background: rgba(255,255,255,0.1); }
+        .form-row { display: flex; gap: 1.5rem; }
+        .form-row .form-group { flex: 1; }
 
-        /* Contact Grid Layout - Fully Expanded */
-        .contact-section-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        .contact-card {
-            background: rgba(0,0,0,0.3);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .contact-card h5 {
-            color: white;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .contact-card h5 i {
-            color: var(--gold);
-        }
+        /* Contact Grid */
+        .contact-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .contact-card { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1rem; }
+        .contact-card h5 { color: white; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
+        .contact-card h5 i { color: var(--gold); }
 
         /* Tables & Buttons */
-        .user-list, .project-list {
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            color: white;
-            font-size: 0.95rem;
-            min-width: 800px;
-        }
-        th, td {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-align: left;
-        }
-        th {
-            color: var(--gold);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.85rem;
-        }
-        tr:hover {
-            background: rgba(255,255,255,0.02);
-        }
+        .user-list table, .project-list table { width: 100%; border-collapse: collapse; color: white; min-width: 700px; }
+        th, td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
+        th { color: var(--gold); text-transform: uppercase; font-size: 0.8rem; }
         
-        .action-btn {
-            padding: 10px 20px;
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
-        }
-        .action-btn:hover {
-            background: var(--gold);
-            color: black;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-        .action-btn.delete-btn {
-            border-color: var(--error-red);
-            color: var(--error-red);
-        }
-        .action-btn.delete-btn:hover {
-            background: var(--error-red);
-            color: white;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-        }
-        .action-btn.ban-btn {
-            border-color: var(--error-red);
-            color: var(--error-red);
-        }
-        .action-btn.ban-btn:hover {
-            background: var(--error-red);
-            color: white;
-        }
-        .action-btn.unban-btn {
-            border-color: var(--success-green);
-            color: var(--success-green);
-        }
-        .action-btn.unban-btn:hover {
-            background: var(--success-green);
-            color: black;
-        }
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            filter: grayscale(1);
-        }
-        
-        .feedback-inline {
-            margin-left: 15px;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
+        .action-btn { padding: 8px 16px; background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .action-btn:hover { background: var(--gold); color: black; }
+        .delete-btn { border-color: var(--error-red); color: var(--error-red); }
+        .delete-btn:hover { background: var(--error-red); color: white; }
+
+        .feedback-inline { margin-left: 15px; font-size: 0.9rem; }
         .feedback-inline.success { color: var(--success-green); }
         .feedback-inline.error { color: var(--error-red); }
 
         /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 4000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: #111;
-            border: 1px solid var(--gold);
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 1rem;
-        }
-        .modal-close {
-            font-size: 2rem;
-            cursor: pointer;
-            color: var(--gold);
-        }
-
-        /* Responsive Fixes */
-        @media (max-width: 768px) {
-            .contact-section-grid {
-                grid-template-columns: 1fr;
-            }
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-        }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal.active { display: flex; }
+        .modal-content { background: #111; border: 1px solid var(--gold); padding: 2rem; width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto; border-radius: 15px; position: relative; }
+        
+        @media (max-width: 768px) { .contact-section-grid { grid-template-columns: 1fr; } .form-row { flex-direction: column; gap: 0; } }
     </style>
 </head>
 <body>
     
     <div id="loading-overlay" class="loading-overlay">
         <i class="fas fa-spinner fa-spin fa-3x"></i>
-        <p style="margin-top: 1rem;">Verifying Admin Access...</p>
+        <p style="margin-top: 1rem;">Loading Admin Panel...</p>
     </div>
 
     <canvas id="particles-canvas"></canvas>
@@ -275,10 +78,9 @@
     <nav class="navbar" id="navbar">
         <div class="container">
             <div class="logo" onclick="window.location.href='/'">
-                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+                <img src="/assets/logo.png" style="height: 50px; border-radius: 12px;">
             </div>
             <div class="user-profile" id="user-profile" style="display: none;">
-                <div class="user-avatar" id="user-avatar">AD</div>
                 <span id="profile-username" style="color: var(--gold); margin-right: 15px; font-weight: 600;">Admin</span>
                 <a href="/dashboard/" class="btn-small" style="margin-right: 10px;">Dashboard</a>
                 <button class="btn-small" onclick="window.authFunctions.logout()">Logout</button>
@@ -289,324 +91,161 @@
     <div class="admin-panel-container container section" id="admin-content" style="display: none;">
         <div class="dashboard-header">
             <h1><i class="fas fa-cogs"></i> Admin Panel</h1>
-            <p>Manage all aspects of your website from one central location.</p>
         </div>
 
-        <section class="glass-panel" id="content-editor">
-            <h3><i class="fas fa-pen-fancy"></i> Site Content Editor</h3>
-            <p style="margin-bottom: 2rem; color: rgba(255,255,255,0.7);">Edit the main text displayed on your homepage.</p>
-            
+        <section class="glass-panel">
+            <h3><i class="fas fa-pen-fancy"></i> Site Content</h3>
             <form id="content-form">
-                
                 <h4>Hero Section</h4>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="hero_text_1">Main Title (Line 1 - Static)</label>
-                        <input type="text" id="hero_text_1" placeholder="Welcome to...">
+                        <label>Main Title (Line 1)</label>
+                        <input type="text" id="hero_text_1">
                     </div>
                     <div class="form-group">
-                        <label for="hero_text_2">Main Title (Line 2 - Animated)</label>
-                        <input type="text" id="hero_text_2" placeholder="Innovation with...">
+                        <label>Main Title (Line 2)</label>
+                        <input type="text" id="hero_text_2">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="hero_subtitle">Subtitle (Below Animation)</label>
-                    <input type="text" id="hero_subtitle" placeholder="Innovation with a One-Man Army...">
+                    <label>Subtitle</label>
+                    <input type="text" id="hero_subtitle">
                 </div>
 
-                <h4>About Sections</h4>
-                <div class="form-group">
-                    <label for="about_me_title">About Me (Title)</label>
-                    <input type="text" id="about_me_title">
-                </div>
-                <div class="form-group">
-                    <label for="about_me_content">About Me (Content)</label>
-                    <textarea id="about_me_content"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="about_adv_title">About ADV Technologies (Title)</label>
-                    <input type="text" id="about_adv_title">
-                </div>
-                <div class="form-group">
-                    <label for="about_adv_content">About ADV Technologies (Content)</label>
-                    <textarea id="about_adv_content"></textarea>
-                </div>
+                <h4>About Me</h4>
+                <div class="form-group"><label>Title</label><input type="text" id="about_me_title"></div>
+                <div class="form-group"><label>Content</label><textarea id="about_me_content"></textarea></div>
 
-                <div style="margin-top: 2rem;">
-                    <button type="submit" class="action-btn" id="save-content-btn">
-                        <i class="fas fa-save"></i> Save Content Changes
-                    </button>
-                    <span id="content-feedback" class="feedback-inline"></span>
-                </div>
+                <h4>About ADV</h4>
+                <div class="form-group"><label>Title</label><input type="text" id="about_adv_title"></div>
+                <div class="form-group"><label>Content</label><textarea id="about_adv_content"></textarea></div>
+
+                <button type="submit" class="action-btn" id="save-content-btn">Save Content</button>
+                <span id="content-feedback" class="feedback-inline"></span>
             </form>
         </section>
 
-        <section class="glass-panel" id="contact-editor">
-            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
-            <p style="margin-bottom: 2rem; color: rgba(255,255,255,0.7);">Update your social links and display text (e.g., IDs/Usernames).</p>
-            
+        <section class="glass-panel">
+            <h3><i class="fas fa-address-book"></i> Contact Info</h3>
             <form id="contact-form">
                 <div class="contact-section-grid">
-                    
                     <div class="contact-column">
-                        <h4 style="margin-top: 0;">Professional</h4>
-                        
+                        <h4>Professional</h4>
                         <div class="contact-card">
-                            <h5><i class="fas fa-envelope"></i> Professional Email</h5>
-                            <div class="form-group">
-                                <label>Link (mailto:)</label>
-                                <input type="text" id="url-email_professional">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-email_professional">
-                            </div>
+                            <h5><i class="fas fa-envelope"></i> Email</h5>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-email_professional"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-email_professional"></div>
                         </div>
-                        <br>
-                        
                         <div class="contact-card">
-                            <h5><i class="fab fa-github"></i> Professional GitHub</h5>
-                            <div class="form-group">
-                                <label>Link</label>
-                                <input type="text" id="url-github_professional">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-github_professional">
-                            </div>
+                            <h5><i class="fab fa-github"></i> GitHub</h5>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-github_professional"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-github_professional"></div>
                         </div>
                     </div>
 
                     <div class="contact-column">
-                        <h4 style="margin-top: 0;">Personal</h4>
-                        
+                        <h4>Personal</h4>
                         <div class="contact-card">
-                            <h5><i class="fas fa-envelope"></i> Personal Email</h5>
-                            <div class="form-group">
-                                <label>Link (mailto:)</label>
-                                <input type="text" id="url-email_personal">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-email_personal">
-                            </div>
+                            <h5><i class="fas fa-envelope"></i> Email</h5>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-email_personal"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-email_personal"></div>
                         </div>
-                        <br>
-
                         <div class="contact-card">
-                            <h5><i class="fab fa-github"></i> Personal GitHub</h5>
-                            <div class="form-group">
-                                <label>Link</label>
-                                <input type="text" id="url-github_personal">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-github_personal">
-                            </div>
+                            <h5><i class="fab fa-github"></i> GitHub</h5>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-github_personal"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-github_personal"></div>
                         </div>
-                        <br>
-
                         <div class="contact-card">
                             <h5><i class="fab fa-facebook"></i> Facebook</h5>
-                            <div class="form-group">
-                                <label>Link</label>
-                                <input type="text" id="url-facebook">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-facebook">
-                            </div>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-facebook"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-facebook"></div>
                         </div>
-                        <br>
-
                         <div class="contact-card">
                             <h5><i class="fab fa-instagram"></i> Instagram</h5>
-                            <div class="form-group">
-                                <label>Link</label>
-                                <input type="text" id="url-instagram">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-instagram">
-                            </div>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-instagram"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-instagram"></div>
                         </div>
-                        <br>
-
                         <div class="contact-card">
                             <h5><i class="fab fa-x-twitter"></i> X (Twitter)</h5>
-                            <div class="form-group">
-                                <label>Link</label>
-                                <input type="text" id="url-x">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-x">
-                            </div>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-x"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-x"></div>
                         </div>
-                        <br>
-
                         <div class="contact-card">
                             <h5><i class="fab fa-linkedin"></i> LinkedIn</h5>
-                            <div class="form-group">
-                                <label>Link</label>
-                                <input type="text" id="url-linkedin">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Text</label>
-                                <input type="text" id="txt-linkedin">
-                            </div>
+                            <div class="form-group"><label>Link</label><input type="text" id="url-linkedin"></div>
+                            <div class="form-group"><label>Display Text</label><input type="text" id="txt-linkedin"></div>
                         </div>
-
                     </div>
                 </div>
-
-                <div style="margin-top: 2rem;">
-                    <button type="submit" class="action-btn" id="save-contact-btn">
-                        <i class="fas fa-save"></i> Save Contact Info
-                    </button>
-                    <span id="contact-feedback" class="feedback-inline"></span>
-                </div>
+                <button type="submit" class="action-btn" id="save-contact-btn">Save Contacts</button>
+                <span id="contact-feedback" class="feedback-inline"></span>
             </form>
         </section>
 
-        <section class="glass-panel" id="project-management">
-            <h3><i class="fas fa-project-diagram"></i> Project Management</h3>
-            
-            <div class="project-list">
+        <section class="glass-panel">
+            <h3><i class="fas fa-project-diagram"></i> Projects</h3>
+            <div class="project-list" style="margin-bottom: 2rem;">
                  <table>
-                    <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>Project Name</th>
-                            <th>Slug</th>
-                            <th>Access Level</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="project-list-body">
-                         <tr><td colspan="6" style="text-align: center;">Loading projects...</td></tr>
-                    </tbody>
+                    <thead><tr><th>Order</th><th>Name</th><th>Access</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="project-list-body"></tbody>
                 </table>
             </div>
-
-            <h4 style="margin-top: 3rem;">Add New Project</h4>
+            
+            <h4>Add New Project</h4>
             <form id="add-project-form">
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="p-name">Project Name</label>
-                        <input type="text" id="p-name" required placeholder="e.g. My New Tool">
-                    </div>
-                    <div class="form-group">
-                        <label for="p-slug">Slug (URL ID)</label>
-                        <input type="text" id="p-slug" required placeholder="e.g. my-new-tool">
-                    </div>
+                    <div class="form-group"><label>Name</label><input type="text" id="p-name" required></div>
+                    <div class="form-group"><label>Slug</label><input type="text" id="p-slug" required></div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="p-desc">Description</label>
-                    <textarea id="p-desc" required placeholder="Brief description of the project..."></textarea>
-                </div>
-                
+                <div class="form-group"><label>Description</label><textarea id="p-desc" required></textarea></div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="p-url">Project URL</label>
-                        <input type="url" id="p-url" placeholder="https://...">
-                    </div>
-                    <div class="form-group">
-                        <label for="p-access">Access Level</label>
-                        <select id="p-access">
-                            <option value="public">Public (Everyone)</option>
-                            <option value="member">Members Only</option>
-                            <option value="admin">Admins Only</option>
-                        </select>
+                    <div class="form-group"><label>URL</label><input type="url" id="p-url"></div>
+                    <div class="form-group"><label>Access</label>
+                        <select id="p-access"><option value="public">Public</option><option value="member">Member</option><option value="admin">Admin</option></select>
                     </div>
                 </div>
-
-                <button type="submit" class="action-btn" id="add-project-btn" style="margin-top: 1rem;">
-                    <i class="fas fa-plus"></i> Add Project
-                </button>
+                <button type="submit" class="action-btn" id="add-project-btn">Add Project</button>
                 <span id="project-feedback" class="feedback-inline"></span>
             </form>
         </section>
 
-        <section class="glass-panel" id="user-management">
-            <h3><i class="fas fa-users-cog"></i> User Management</h3>
+        <section class="glass-panel">
+            <h3><i class="fas fa-users-cog"></i> Users</h3>
             <div class="user-list">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Current Role</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-list-body">
-                         <tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>
-                    </tbody>
+                    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="user-list-body"></tbody>
                 </table>
             </div>
         </section>
 
-        <section class="glass-panel" id="theme-settings">
-            <h3><i class="fas fa-palette"></i> Theme Settings</h3>
+        <section class="glass-panel">
+            <h3><i class="fas fa-palette"></i> Theme</h3>
             <form id="theme-form">
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="primary_color">Primary Accent Color</label>
-                        <input type="color" id="primary_color" style="height: 50px; cursor: pointer;">
-                    </div>
-                    <div class="form-group">
-                        <label for="glassmorphism_opacity">Glass Background Opacity (0.0 - 1.0)</label>
-                        <input type="number" id="glassmorphism_opacity" step="0.01" min="0" max="1" placeholder="0.08">
-                    </div>
+                    <div class="form-group"><label>Primary Color</label><input type="color" id="primary_color" style="height:45px;"></div>
+                    <div class="form-group"><label>Glass Opacity</label><input type="number" id="glassmorphism_opacity" step="0.01"></div>
                 </div>
-                <button type="submit" class="action-btn" id="save-theme-btn" style="margin-top: 1rem;">
-                    <i class="fas fa-paint-brush"></i> Update Theme
-                </button>
+                <button type="submit" class="action-btn" id="save-theme-btn">Update Theme</button>
                 <span id="theme-feedback" class="feedback-inline"></span>
             </form>
         </section>
-
-    </div> 
+    </div>
 
     <div id="edit-project-modal" class="modal">
          <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Project</h3>
-                <span class="modal-close" onclick="window.commonFunctions.closeModal('edit-project')">&times;</span>
-            </div>
-            
+            <span style="float:right; cursor:pointer; font-size:1.5rem;" onclick="window.commonFunctions.closeModal('edit-project')">&times;</span>
+            <h3>Edit Project</h3>
             <form id="edit-project-form">
                 <input type="hidden" id="ep-id">
-                
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="ep-name">Name</label>
-                        <input type="text" id="ep-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ep-slug">Slug</label>
-                        <input type="text" id="ep-slug" required>
-                    </div>
+                    <div class="form-group"><label>Name</label><input type="text" id="ep-name" required></div>
+                    <div class="form-group"><label>Slug</label><input type="text" id="ep-slug" required></div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="ep-desc">Description</label>
-                    <textarea id="ep-desc" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="ep-url">URL</label>
-                    <input type="url" id="ep-url">
-                </div>
-
+                <div class="form-group"><label>Description</label><textarea id="ep-desc" required></textarea></div>
+                <div class="form-group"><label>URL</label><input type="url" id="ep-url"></div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="ep-status">Status</label>
+                    <div class="form-group"><label>Status</label>
                         <select id="ep-status">
                             <option value="active">Active</option>
                             <option value="coming_soon">Coming Soon</option>
@@ -614,8 +253,7 @@
                             <option value="deprecated">Deprecated</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="ep-access">Access Level</label>
+                    <div class="form-group"><label>Access</label>
                         <select id="ep-access">
                             <option value="public">Public</option>
                             <option value="member">Member</option>
@@ -623,22 +261,17 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-group"><label>Order</label><input type="number" id="ep-order"></div>
                 
-                <div class="form-group">
-                    <label for="ep-order">Display Order</label>
-                    <input type="number" id="ep-order">
-                </div>
-                
-                <div style="display:flex; justify-content:space-between; margin-top:2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <button type="submit" class="action-btn" style="flex: 1; margin-right: 1rem;">Update Project</button>
-                    <button type="button" class="action-btn delete-btn" id="delete-project-btn">Delete Project</button>
+                <div style="display:flex; justify-content:space-between; margin-top:2rem;">
+                    <button type="submit" class="action-btn">Update</button>
+                    <button type="button" class="action-btn delete-btn" id="delete-project-btn">Delete</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Supabase Credentials
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
@@ -650,192 +283,137 @@
     <script src="/js/auth.js"></script>
 
     <script>
-        // --- GLOBAL ADMIN LOGIC ---
         const feedback = (id, msg, type) => {
             const el = document.getElementById(id);
-            if(el) { 
-                el.textContent = msg; 
-                el.className = `feedback-inline ${type}`; 
-                setTimeout(() => el.textContent='', 4000); 
-            }
+            if(el) { el.textContent = msg; el.className = `feedback-inline ${type}`; setTimeout(() => el.textContent='', 4000); }
         };
 
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // Init Particles
             if (typeof window.initParticles === 'function') window.initParticles();
             
             try {
-                if (typeof window.authFunctions === 'undefined') throw new Error("Auth script failed.");
+                if (typeof window.authFunctions === 'undefined') throw new Error("Auth script missing");
                 
-                // Auth Check
-                const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-                if (error) throw error;
-                if (!session) throw new Error("No active session.");
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (!session) throw new Error("No session");
 
-                // Check Role
                 const profile = await window.authFunctions.fetchUserProfile();
                 if (!profile || profile.role !== 'admin') throw new Error("Access Denied");
 
                 // Show UI
                 document.getElementById('user-profile').style.display = 'flex';
+                
+                // HIDE LOADER AND SHOW CONTENT IMMEDIATELY
                 document.getElementById('loading-overlay').style.display = 'none';
                 document.getElementById('admin-content').style.display = 'block';
 
-                // Setup Timer
-                window.authFunctions.resetInactivityTimer();
-                
-                // LOAD ALL DATA SECTIONS
-                await Promise.all([
-                    loadContent(), 
-                    loadContact(), 
-                    loadProjects(), 
-                    loadUsers(), 
-                    loadTheme()
-                ]);
+                // Load Data with Safety
+                loadContent();
+                loadContact();
+                loadProjects();
+                loadUsers();
+                loadTheme();
 
             } catch (err) {
                 console.error(err);
-                document.querySelector('#loading-overlay p').textContent = "Access Denied. Redirecting to login...";
+                document.querySelector('#loading-overlay p').textContent = "Access Denied.";
                 setTimeout(() => window.location.href = '/login/', 2000);
             }
         });
 
-        // --- 1. CONTENT EDITOR LOGIC ---
+        // --- 1. LOAD CONTENT ---
         async function loadContent() {
-            const { data: settings } = await window.supabaseClient.from('website_settings').select('*');
-            const { data: pages } = await window.supabaseClient.from('pages_content').select('*');
+            try {
+                const { data: settings } = await window.supabaseClient.from('website_settings').select('*');
+                if(settings) {
+                    const setVal = (key, id) => {
+                        const item = settings.find(s => s.setting_key === key);
+                        if(item) document.getElementById(id).value = item.setting_value;
+                    };
+                    setVal('hero_text_1', 'hero_text_1');
+                    setVal('hero_text_2', 'hero_text_2');
+                    setVal('hero_subtitle', 'hero_subtitle');
+                }
 
-            // Populate Hero Inputs
-            if(settings) {
-                const map = { 
-                    'hero_text_1': 'hero_text_1', 
-                    'hero_text_2': 'hero_text_2', 
-                    'hero_subtitle': 'hero_subtitle' 
-                };
-                settings.forEach(s => { 
-                    if(map[s.setting_key]) {
-                        const el = document.getElementById(map[s.setting_key]);
-                        if(el) el.value = s.setting_value; 
-                    }
-                });
-            }
-            
-            // Populate About Sections
-            if(pages) {
-                const me = pages.find(p => p.page_key === 'about_me');
-                const adv = pages.find(p => p.page_key === 'about_adv');
-                
-                if(me) { 
-                    document.getElementById('about_me_title').value = me.title; 
-                    document.getElementById('about_me_content').value = me.content; 
+                const { data: pages } = await window.supabaseClient.from('pages_content').select('*');
+                if(pages) {
+                    const me = pages.find(p => p.page_key === 'about_me');
+                    if(me) { document.getElementById('about_me_title').value = me.title; document.getElementById('about_me_content').value = me.content; }
+                    
+                    const adv = pages.find(p => p.page_key === 'about_adv');
+                    if(adv) { document.getElementById('about_adv_title').value = adv.title; document.getElementById('about_adv_content').value = adv.content; }
                 }
-                if(adv) { 
-                    document.getElementById('about_adv_title').value = adv.title; 
-                    document.getElementById('about_adv_content').value = adv.content; 
-                }
-            }
+            } catch(e) { console.error("Content load error", e); }
         }
 
         document.getElementById('content-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('save-content-btn'); 
-            btn.disabled = true; 
-            btn.textContent = "Saving...";
-            
+            const btn = document.getElementById('save-content-btn'); btn.disabled=true; btn.textContent="Saving...";
             try {
                 const uid = window.authFunctions.getCurrentUser().id;
-                const updates = [
-                    { table: 'website_settings', key: 'hero_text_1', val: document.getElementById('hero_text_1').value },
-                    { table: 'website_settings', key: 'hero_text_2', val: document.getElementById('hero_text_2').value },
-                    { table: 'website_settings', key: 'hero_subtitle', val: document.getElementById('hero_subtitle').value },
-                    { table: 'pages_content', key: 'about_me', title: document.getElementById('about_me_title').value, content: document.getElementById('about_me_content').value },
-                    { table: 'pages_content', key: 'about_adv', title: document.getElementById('about_adv_title').value, content: document.getElementById('about_adv_content').value }
-                ];
+                const upsertSettings = async (key, val) => {
+                    await window.supabaseClient.from('website_settings').upsert({setting_key: key, setting_value: val, updated_by: uid}, {onConflict: 'setting_key'});
+                };
+                await upsertSettings('hero_text_1', document.getElementById('hero_text_1').value);
+                await upsertSettings('hero_text_2', document.getElementById('hero_text_2').value);
+                await upsertSettings('hero_subtitle', document.getElementById('hero_subtitle').value);
 
-                for (const item of updates) {
-                    if (item.table === 'website_settings') {
-                        await window.supabaseClient.from('website_settings').update({ setting_value: item.val, updated_by: uid }).eq('setting_key', item.key);
-                    } else {
-                        await window.supabaseClient.from('pages_content').update({ title: item.title, content: item.content, updated_by: uid }).eq('page_key', item.key);
-                    }
-                }
-                feedback('content-feedback', 'Content Saved Successfully!', 'success');
-            } catch(err) { 
-                console.error(err);
-                feedback('content-feedback', 'Error saving content', 'error'); 
-            }
-            btn.disabled = false; 
-            btn.innerHTML = '<i class="fas fa-save"></i> Save Content Changes';
+                const upsertPage = async (key, title, content) => {
+                    await window.supabaseClient.from('pages_content').upsert({page_key: key, title: title, content: content, updated_by: uid}, {onConflict: 'page_key'});
+                };
+                await upsertPage('about_me', document.getElementById('about_me_title').value, document.getElementById('about_me_content').value);
+                await upsertPage('about_adv', document.getElementById('about_adv_title').value, document.getElementById('about_adv_content').value);
+
+                feedback('content-feedback', 'Saved!', 'success');
+            } catch(e) { feedback('content-feedback', 'Error', 'error'); }
+            btn.disabled=false; btn.textContent="Save Content";
         });
 
-        // --- 2. CONTACT EDITOR LOGIC (Explicit Mapping) ---
+        // --- 2. LOAD CONTACT ---
         async function loadContact() {
-            const { data } = await window.supabaseClient.from('contact_info').select('*');
-            
-            if(data) {
-                // Mapping platform keys to input IDs
-                data.forEach(c => {
-                    const urlInput = document.getElementById(`url-${c.platform}`);
-                    const txtInput = document.getElementById(`txt-${c.platform}`);
-                    
-                    if (urlInput) urlInput.value = c.url;
-                    if (txtInput) txtInput.value = c.display_text || '';
-                });
-            }
+            try {
+                const { data } = await window.supabaseClient.from('contact_info').select('*');
+                if(data) {
+                    data.forEach(c => {
+                        const urlEl = document.getElementById(`url-${c.platform}`);
+                        const txtEl = document.getElementById(`txt-${c.platform}`);
+                        if(urlEl) urlEl.value = c.url;
+                        if(txtEl) txtEl.value = c.display_text || '';
+                    });
+                }
+            } catch(e) { console.error("Contact load error", e); }
         }
 
         document.getElementById('contact-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('save-contact-btn'); 
-            btn.disabled = true; 
-            btn.textContent = "Saving...";
-            
+            const btn = document.getElementById('save-contact-btn'); btn.disabled=true; btn.textContent="Saving...";
             try {
                 const uid = window.authFunctions.getCurrentUser().id;
-                const platforms = [
-                    'email_professional', 'github_professional', 
-                    'email_personal', 'github_personal', 
-                    'facebook', 'instagram', 'x', 'linkedin'
-                ];
+                const platforms = ['email_professional', 'github_professional', 'email_personal', 'github_personal', 'facebook', 'instagram', 'x', 'linkedin'];
                 
-                for (const plat of platforms) {
-                    const urlVal = document.getElementById(`url-${plat}`).value;
-                    const txtVal = document.getElementById(`txt-${plat}`).value;
-                    
-                    await window.supabaseClient.from('contact_info')
-                        .update({ url: urlVal, display_text: txtVal, updated_by: uid })
-                        .eq('platform', plat);
+                for(const p of platforms) {
+                    const url = document.getElementById(`url-${p}`).value;
+                    const txt = document.getElementById(`txt-${p}`).value;
+                    await window.supabaseClient.from('contact_info').upsert({platform: p, url: url, display_text: txt, updated_by: uid}, {onConflict: 'platform'});
                 }
-                feedback('contact-feedback', 'Contact Info Updated!', 'success');
-            } catch(err) { 
-                console.error(err);
-                feedback('contact-feedback', 'Error saving contacts', 'error'); 
-            }
-            btn.disabled = false; 
-            btn.innerHTML = '<i class="fas fa-save"></i> Save Contact Info';
+                feedback('contact-feedback', 'Saved!', 'success');
+            } catch(e) { feedback('contact-feedback', 'Error', 'error'); }
+            btn.disabled=false; btn.textContent="Save Contacts";
         });
 
-        // --- 3. PROJECT LOGIC ---
+        // --- 3. LOAD PROJECTS ---
         async function loadProjects() {
-            const { data } = await window.supabaseClient.from('projects').select('*').order('display_order');
             const tbody = document.getElementById('project-list-body');
-            tbody.innerHTML = '';
-            
-            if(data && data.length > 0) {
-                data.forEach(p => {
-                    tbody.innerHTML += `
-                    <tr>
-                        <td>${p.display_order}</td>
-                        <td>${p.name}</td>
-                        <td>${p.slug}</td>
-                        <td><span style="color:var(--gold); border:1px solid var(--gold); padding:2px 6px; border-radius:4px; font-size:0.8em">${p.access_level}</span></td>
-                        <td>${p.status}</td>
-                        <td><button class="action-btn" onclick="editProject('${p.id}')">Edit</button></td>
-                    </tr>`;
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No projects found.</td></tr>';
-            }
+            try {
+                const { data } = await window.supabaseClient.from('projects').select('*').order('display_order');
+                tbody.innerHTML = '';
+                if(data && data.length) {
+                    data.forEach(p => {
+                        tbody.innerHTML += `<tr><td>${p.display_order}</td><td>${p.name}</td><td>${p.access_level}</td><td>${p.status}</td><td><button class="action-btn" onclick="editProject('${p.id}')">Edit</button></td></tr>`;
+                    });
+                } else { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No projects found</td></tr>'; }
+            } catch(e) { console.error(e); }
         }
 
         window.editProject = async (id) => {
@@ -845,57 +423,40 @@
                 document.getElementById('ep-name').value = data.name;
                 document.getElementById('ep-slug').value = data.slug;
                 document.getElementById('ep-desc').value = data.description;
-                document.getElementById('ep-url').value = data.url || '';
+                document.getElementById('ep-url').value = data.url;
                 document.getElementById('ep-status').value = data.status;
                 document.getElementById('ep-access').value = data.access_level || 'public';
                 document.getElementById('ep-order').value = data.display_order;
                 
                 document.getElementById('delete-project-btn').onclick = () => deleteProject(data.id, data.name);
-                
                 window.commonFunctions.openModal('edit-project');
             }
         };
 
         document.getElementById('add-project-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('add-project-btn');
-            btn.disabled = true;
-            
+            const btn = document.getElementById('add-project-btn'); btn.disabled=true;
             try {
-                // Auto calculate order: before coming soon
-                const { data: max } = await window.supabaseClient.from('projects')
-                    .select('display_order')
-                    .neq('slug', 'coming-soon')
-                    .order('display_order', {ascending:false})
-                    .limit(1);
+                const { data: max } = await window.supabaseClient.from('projects').select('display_order').neq('slug', 'coming-soon').order('display_order', {ascending:false}).limit(1);
+                const order = (max && max.length) ? max[0].display_order + 1 : 1;
                 
-                const newOrder = (max && max.length) ? max[0].display_order + 1 : 1;
-
                 const p = {
                     name: document.getElementById('p-name').value,
                     slug: document.getElementById('p-slug').value,
                     description: document.getElementById('p-desc').value,
-                    url: document.getElementById('p-url').value || '#',
+                    url: document.getElementById('p-url').value,
                     access_level: document.getElementById('p-access').value,
-                    display_order: newOrder,
+                    display_order: order,
                     status: 'coming_soon',
                     created_by: window.authFunctions.getCurrentUser().id
                 };
-                
                 const { error } = await window.supabaseClient.from('projects').insert([p]);
-                if(error) throw error;
-
-                // Push coming-soon down
-                await window.supabaseClient.from('projects').update({display_order: newOrder + 1}).eq('slug', 'coming-soon');
-                
-                feedback('project-feedback', 'Project Added!', 'success'); 
-                document.getElementById('add-project-form').reset(); 
-                loadProjects(); 
-            } catch(err) {
-                feedback('project-feedback', 'Error adding project', 'error');
-            } finally {
-                btn.disabled = false;
-            }
+                if(!error) {
+                    await window.supabaseClient.from('projects').update({display_order: order + 1}).eq('slug', 'coming-soon');
+                    feedback('project-feedback', 'Added!', 'success'); document.getElementById('add-project-form').reset(); loadProjects();
+                }
+            } catch(e) { feedback('project-feedback', 'Error', 'error'); }
+            btn.disabled=false;
         });
 
         document.getElementById('edit-project-form').addEventListener('submit', async (e) => {
@@ -910,115 +471,93 @@
                 access_level: document.getElementById('ep-access').value,
                 display_order: document.getElementById('ep-order').value
             };
-            
             const { error } = await window.supabaseClient.from('projects').update(p).eq('id', id);
-            if(!error) { 
-                window.commonFunctions.closeModal('edit-project'); 
-                loadProjects(); 
-            } else {
-                alert("Error updating project");
-            }
+            if(!error) { window.commonFunctions.closeModal('edit-project'); loadProjects(); }
         });
 
         async function deleteProject(id, name) {
-            if(confirm(`Are you sure you want to delete "${name}"?`)) {
+            if(confirm(`Delete ${name}?`)) {
                 await window.supabaseClient.from('projects').delete().eq('id', id);
                 window.commonFunctions.closeModal('edit-project');
                 loadProjects();
             }
         }
 
-        // --- 4. USER LOGIC ---
+        // --- 4. LOAD USERS ---
         async function loadUsers() {
-            const { data: users } = await window.supabaseClient.from('user_profiles')
-                .select('id, username, email, role, is_banned')
-                .order('username');
-                
             const tbody = document.getElementById('user-list-body');
-            tbody.innerHTML = '';
-            
-            if(users) {
-                users.forEach(u => {
-                    const isMe = u.id === window.authFunctions.getCurrentUser().id;
-                    tbody.innerHTML += `<tr>
-                        <td>${u.username} ${isMe ? '(You)':''}</td>
-                        <td>${u.email}</td>
-                        <td>
-                            <select id="role-${u.id}" ${isMe?'disabled':''}>
-                                <option value="user" ${u.role==='user'?'selected':''}>User</option>
-                                <option value="member" ${u.role==='member'?'selected':''}>Member</option>
-                                <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                            </select>
-                            <button class="action-btn" onclick="changeRole('${u.id}')" ${isMe?'disabled':''}>Save</button>
-                        </td>
-                        <td>${u.is_banned ? '<span style="color:var(--error-red)">Banned</span>':'<span style="color:var(--success-green)">Active</span>'}</td>
-                        <td>
-                            ${u.is_banned 
-                                ? `<button class="action-btn unban-btn" onclick="toggleBan('${u.id}', false)">Unban</button>`
-                                : `<button class="action-btn ban-btn" onclick="toggleBan('${u.id}', true)" ${isMe?'disabled':''}>Ban</button>`
-                            }
-                        </td>
-                    </tr>`;
-                });
-            }
+            try {
+                // FIXED: Removed is_active
+                const { data } = await window.supabaseClient.from('user_profiles').select('id, username, email, role, is_banned').order('username');
+                tbody.innerHTML = '';
+                if(data) {
+                    data.forEach(u => {
+                        const isMe = u.id === window.authFunctions.getCurrentUser().id;
+                        tbody.innerHTML += `<tr>
+                            <td>${u.username} ${isMe?'(You)':''}</td><td>${u.email}</td>
+                            <td>
+                                <select id="role-${u.id}" ${isMe?'disabled':''}>
+                                    <option value="user" ${u.role==='user'?'selected':''}>User</option>
+                                    <option value="member" ${u.role==='member'?'selected':''}>Member</option>
+                                    <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                                </select>
+                                <button class="action-btn" onclick="changeRole('${u.id}')" ${isMe?'disabled':''}>Save</button>
+                            </td>
+                            <td>${u.is_banned ? '<span style="color:red">Banned</span>':'Active'}</td>
+                            <td>
+                                ${u.is_banned ? `<button class="action-btn unban-btn" onclick="toggleBan('${u.id}', false)">Unban</button>` : `<button class="action-btn ban-btn" onclick="toggleBan('${u.id}', true)" ${isMe?'disabled':''}>Ban</button>`}
+                            </td>
+                        </tr>`;
+                    });
+                }
+            } catch(e) { console.error("Users error", e); }
         }
 
         window.changeRole = async (id) => {
             const role = document.getElementById(`role-${id}`).value;
-            if(confirm(`Are you sure you want to set role to ${role}?`)) {
+            if(confirm(`Set role to ${role}?`)) {
                 try {
-                    await window.supabaseClient.rpc('change_user_role', { target_user_id: id, new_role: role });
+                    await window.supabaseClient.rpc('change_user_role', {target_user_id: id, new_role: role});
                     loadUsers();
                 } catch(e) { alert("Error changing role"); }
             }
         };
 
-        window.toggleBan = async (id, shouldBan) => {
+        window.toggleBan = async (id, ban) => {
             try {
-                if(shouldBan) {
-                    const r = prompt("Reason for banning?"); 
-                    if(!r) return;
-                    await window.supabaseClient.rpc('ban_user', { target_user_id: id, ban_reason_text: r });
+                if(ban) {
+                    const r = prompt("Reason?"); if(!r) return;
+                    await window.supabaseClient.rpc('ban_user', {target_user_id: id, ban_reason_text: r});
                 } else {
-                    await window.supabaseClient.rpc('unban_user', { target_user_id: id });
+                    await window.supabaseClient.rpc('unban_user', {target_user_id: id});
                 }
                 loadUsers();
-            } catch(e) { alert("Error updating ban status"); }
+            } catch(e) { alert("Error banning"); }
         };
 
-        // --- 5. THEME LOGIC ---
+        // --- 5. THEME ---
         async function loadTheme() {
-            const { data } = await window.supabaseClient.from('website_settings').select('*');
-            if(data) {
-                const color = data.find(s => s.setting_key === 'primary_color');
-                const opacity = data.find(s => s.setting_key === 'glassmorphism_opacity');
-                if(color) document.getElementById('primary_color').value = color.setting_value;
-                if(opacity) document.getElementById('glassmorphism_opacity').value = opacity.setting_value;
-            }
+            try {
+                const { data } = await window.supabaseClient.from('website_settings').select('*');
+                if(data) {
+                    const color = data.find(s => s.setting_key === 'primary_color');
+                    const opacity = data.find(s => s.setting_key === 'glassmorphism_opacity');
+                    if(color) document.getElementById('primary_color').value = color.setting_value;
+                    if(opacity) document.getElementById('glassmorphism_opacity').value = opacity.setting_value;
+                }
+            } catch(e) {}
         }
 
         document.getElementById('theme-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('save-theme-btn'); btn.disabled=true;
             const uid = window.authFunctions.getCurrentUser().id;
-            const btn = document.getElementById('save-theme-btn');
-            btn.disabled = true;
-            
             try {
-                await window.supabaseClient.from('website_settings')
-                    .update({setting_value: document.getElementById('primary_color').value, updated_by: uid})
-                    .eq('setting_key', 'primary_color');
-                    
-                await window.supabaseClient.from('website_settings')
-                    .update({setting_value: document.getElementById('glassmorphism_opacity').value, updated_by: uid})
-                    .eq('setting_key', 'glassmorphism_opacity');
-                
-                if(window.commonFunctions.applyWebsiteSettings) window.commonFunctions.applyWebsiteSettings();
-                feedback('theme-feedback', 'Theme Updated!', 'success');
-            } catch(err) {
-                feedback('theme-feedback', 'Error saving theme', 'error');
-            } finally {
-                btn.disabled = false;
-            }
+                await window.supabaseClient.from('website_settings').upsert({setting_key: 'primary_color', setting_value: document.getElementById('primary_color').value, updated_by: uid}, {onConflict: 'setting_key'});
+                await window.supabaseClient.from('website_settings').upsert({setting_key: 'glassmorphism_opacity', setting_value: document.getElementById('glassmorphism_opacity').value, updated_by: uid}, {onConflict: 'setting_key'});
+                feedback('theme-feedback', 'Updated!', 'success');
+            } catch(e) { feedback('theme-feedback', 'Error', 'error'); }
+            btn.disabled=false;
         });
 
     </script>
