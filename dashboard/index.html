@@ -4,204 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - ADV Technologies</title>
-
     <link rel="icon" type="image/png" href="/assets/logo.png">
-    <link rel="apple-touch-icon" href="/assets/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="/css/styles.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    
     <style>
-        /* Specific styles for the dashboard page */
-        body {
-            /* Keep particle background */
-        }
-        .navbar {
-            position: fixed; /* Keep navbar fixed */
-        }
-        .dashboard-container {
-            padding-top: 100px; /* Space below fixed navbar */
-            min-height: calc(100vh - 100px);
-            position: relative;
-            z-index: 5; /* Below navbar but above particles */
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); /* Darker overlay */
-            display: flex;
-            align-items: center; justify-content: center;
-            flex-direction: column; /* Stack icon and text */
-            gap: 1rem;
-            z-index: 3000;
-            color: var(--gold);
-            font-size: 1.5rem;
-            text-align: center;
-        }
-
-        /* Role-specific content visibility */
-        .member-only, .admin-only {
-            display: none; /* Hidden by default */
-        }
-        
-        /* Profile Details Grid */
-        .profile-details dl {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 1rem 1.5rem; /* row-gap column-gap */
-            align-items: center;
-        }
-        .profile-details dt {
-            font-weight: 600;
-            color: var(--gold);
-            text-align: right; /* Align labels */
-        }
-        .profile-details dd {
-            color: rgba(255, 255, 255, 0.9);
-            word-break: break-all; 
-        }
-        
-        .dashboard-header p {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 0.5rem;
-        }
-        
-        #user-role-display {
-            color: var(--gold);
-            font-weight: 700;
-            padding: 0.2rem 0.6rem;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            display: inline-block;
-            margin-top: 0.5rem;
-            text-transform: capitalize;
-        }
-        
-        /* Button style for Admin Panel link */
-        .form-btn {
-             /* styles.css should handle this, but adding fallback */
-             display: inline-flex;
-             padding: 1rem 1.5rem;
-             background: linear-gradient(45deg, var(--gold), var(--dark-gold));
-             border: none;
-             border-radius: 12px;
-             color: var(--black);
-             font-size: 1.1rem;
-             font-weight: 700;
-             cursor: pointer;
-             transition: all 0.3s ease;
-             margin-top: 1.5rem;
-             font-family: 'Montserrat', sans-serif;
-             align-items: center;
-             justify-content: center;
-             gap: 0.5rem;
-             text-decoration: none; /* For link styled as button */
-        }
-        .form-btn:hover {
-             transform: translateY(-3px);
-             box-shadow: 0 15px 35px var(--shadow-gold);
-             background: linear-gradient(45deg, var(--light-gold), var(--gold));
-        }
-
+        .dashboard-container { padding-top: 100px; min-height: 100vh; }
+        .admin-link { display: none; margin-top: 1rem; }
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
     </style>
 </head>
 <body>
-    
-    <div id="loading-overlay" class="loading-overlay">
-        <div>
-            <i class="fas fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 1rem;">Loading Dashboard...</p>
-        </div>
-    </div>
-
     <canvas id="particles-canvas"></canvas>
 
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="logo" onclick="window.location.href='/'">
-                <img src="/assets/logo.png" alt="ADV Technologies Logo" style="height: 50px; width: 50px; border-radius: 12px; object-fit: cover;">
+            <div class="logo" onclick="location.href='/'">
+                <img src="/assets/logo.png" style="height: 50px; border-radius: 12px;">
             </div>
-            
-            <div class="auth-buttons" id="auth-buttons" style="display: none;">
-                 <button class="btn-small" onclick="window.location.href='/login/'">Login</button>
-            </div>
-            <div class="user-profile" id="user-profile" style="display: none;">
-                <div class="user-avatar" id="user-avatar">AD</div>
-                <span id="profile-username">User</span>
-                <a href="/" class="btn-small" style="margin-left: 1rem; text-decoration: none;">Home</a>
-                <button class="btn-small" onclick="window.authFunctions.logout()" style="margin-left: 0.5rem;">Logout</button>
+            <div class="user-profile" style="display:flex; gap:15px; align-items:center;">
+                <span id="welcome-user" style="color:var(--gold);">User</span>
+                <button class="btn-small" onclick="window.authFunctions.logout()">Logout</button>
             </div>
         </div>
     </nav>
 
-    <div class="dashboard-container container section" id="dashboard-content" style="display: none;">
+    <div class="dashboard-container container section">
+        <h1 style="color: white;">Dashboard</h1>
         
-        <div class="dashboard-header">
-            <h1 id="welcome-message">Welcome!</h1>
-            <p>Your personal space within ADV Technologies.</p>
-            <p>Your Role: <strong id="user-role-display">Loading...</strong></p>
+        <div class="glass-panel" style="margin-top: 20px;">
+            <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+            <p><strong>Username:</strong> <span id="profile-username">Loading...</span></p>
+            <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
+            <p><strong>Role:</strong> <span id="profile-role" style="text-transform: capitalize;">Loading...</span></p>
+            
+            <div id="admin-area" class="admin-link">
+                <a href="/admin-panel/" class="project-btn" style="display:inline-block; margin-top:10px;">
+                    <i class="fas fa-cogs"></i> Go to Admin Panel
+                </a>
+            </div>
         </div>
 
-        <section class="dashboard-section glass-panel" id="profile-section">
-            <h2><i class="fas fa-user-circle"></i> Your Profile</h2>
-            <div class="profile-details">
-                <dl>
-                    <dt>Full Name:</dt><dd id="profile-fullname">Loading...</dd>
-                    <dt>Username:</dt><dd id="profile-username-detail">Loading...</dd>
-                    <dt>Email:</dt><dd id="profile-email">Loading...</dd>
-                    <dt>Date of Birth:</dt><dd id="profile-dob">Loading...</dd>
-                    <dt>Profession:</dt><dd id="profile-profession">Loading...</dd>
-                    <dt>Joined:</dt><dd id="profile-joined">Loading...</dd>
-                    <dt>Level:</dt><dd id="profile-level">Loading...</dd>
-                    <dt>XP:</dt><dd id="profile-xp">Loading...</dd>
-                </dl>
+        <div class="glass-panel" style="margin-top: 30px;">
+            <h2><i class="fas fa-rocket"></i> Available Projects</h2>
+            <div class="project-grid" id="project-list">
+                <p>Loading projects...</p>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <section class="dashboard-section glass-panel" id="projects-dashboard">
-             <h2><i class="fas fa-project-diagram"></i> Projects Overview</h2>
-             <p style="margin-bottom: 1rem;">Access available projects:</p>
-             <div id="dashboard-projects-grid" class="projects-grid">
-                 <div class="project-card">
-                     <h3><i class="fas fa-spinner fa-spin"></i> Loading Projects...</h3>
-                     <p>Fetching project data from the database...</p>
-                 </div>
-             </div>
-         </section>
-
-        <section class="dashboard-section glass-panel member-only" id="member-access-section">
-             <h2><i class="fas fa-star"></i> Member Access</h2>
-             <p>As a Member or Admin, you have access to exclusive content and previews.</p>
-             <ul>
-                 <li>Access to all lessons (even locked ones).</li>
-                 <li>Beta previews of upcoming projects.</li>
-                 <li>Ability to view system logs and user progress (monitoring).</li>
-             </ul>
-        </section>
-
-        <section class="dashboard-section glass-panel admin-only" id="admin-controls-link-section">
-             <h2><i class="fas fa-user-shield"></i> Admin Controls</h2>
-             <p>Manage users, site settings, and projects.</p>
-             <a href="/admin-panel/" class="form-btn">
-                Go to Admin Panel <i class="fas fa-cogs"></i>
-             </a>
-        </section>
-
-    </div> <script>
-        // Embed Supabase config directly
-        // *** NEW CREDENTIALS ***
+    <script>
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
         };
     </script>
-
     <script src="/js/config.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/particles.js"></script>
@@ -209,199 +67,67 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize Particles
-            if (typeof window.initParticles === 'function') {
-                window.initParticles();
-            } else {
-                console.error("Particle system initialization function not found.");
-            }
+            if(window.initParticles) window.initParticles();
 
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const dashboardContent = document.getElementById('dashboard-content');
-
-            // --- Authentication Check ---
-            if (typeof window.authFunctions === 'undefined') {
-                console.error("CRITICAL: auth.js failed to load.");
-                 loadingOverlay.innerHTML = `<p style="color:var(--error-red);">Error: Auth script failed. Redirecting...</p>`;
-                 setTimeout(() => { window.location.href = '/login/'; }, 2000);
+            // 1. Check Auth
+            if(!window.authFunctions) return;
+            const session = await window.supabaseClient.auth.getSession();
+            if(!session.data.session) {
+                window.location.href = '/login/';
                 return;
             }
 
-            try {
-                const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-                
-                if (error) throw error; // Handle Supabase error
-                
-                if (!session) {
-                    // Not logged in
-                    throw new Error("No active session. Redirecting to login.");
+            // 2. Fetch Profile
+            const profile = await window.authFunctions.fetchUserProfile();
+            if(profile) {
+                document.getElementById('welcome-user').textContent = profile.username;
+                document.getElementById('profile-username').textContent = profile.username;
+                document.getElementById('profile-email').textContent = profile.email;
+                document.getElementById('profile-role').textContent = profile.role;
+
+                // Show Admin Button if Admin
+                if(profile.role === 'admin') {
+                    document.getElementById('admin-area').style.display = 'block';
                 }
+            }
 
-                // --- User is Logged In ---
-                console.log("Dashboard: Session valid, loading profile...");
-                
-                window.isAuthenticated = true;
-                window.currentUser = session.user;
+            // 3. Fetch Projects (Public + Member specific logic)
+            const { data: projects } = await window.supabaseClient
+                .from('projects')
+                .select('*')
+                .order('display_order');
 
-                // Fetch user profile data (including role)
-                const profile = await window.authFunctions.fetchUserProfile(); 
-                
-                if (!profile) {
-                    // This is the error you were seeing.
-                    console.error("CRITICAL: Logged in but profile data is missing.");
+            const grid = document.getElementById('project-list');
+            grid.innerHTML = '';
+
+            if(projects && projects.length > 0) {
+                projects.forEach(p => {
+                    // Filter: Admins see all. Members see Public+Member. Users see Public.
+                    const myRole = profile ? profile.role : 'user';
                     
-                    if (session.user && !session.user.email_confirmed_at) {
-                         // Email not verified yet.
-                         loadingOverlay.innerHTML = `
-                            <div>
-                                <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
-                                <p style="margin-top: 1rem; color: var(--error-red);">Your email is not verified.</p>
-                                <p style="font-size: 1rem; margin-top: 1rem;">Please check your inbox to complete signup. Redirecting to login...</p>
-                            </div>`;
-                        // Log them out so they can't access this page again until verified
-                        await window.authFunctions.logout(); 
-                        setTimeout(() => { window.location.href = '/login/'; }, 3000);
-                        return;
+                    let canView = false;
+                    if (myRole === 'admin') canView = true;
+                    else if (myRole === 'member' && (p.access_level === 'public' || p.access_level === 'member')) canView = true;
+                    else if (p.access_level === 'public') canView = true;
+
+                    if(canView) {
+                        const btn = p.status === 'active' 
+                            ? `<a href="${p.url}" class="project-btn">Open <i class="fas fa-arrow-right"></i></a>`
+                            : `<button class="project-btn coming-soon" disabled>Coming Soon</button>`;
+
+                        grid.innerHTML += `
+                            <div class="project-card" style="border:1px solid var(--glass-border); padding:1.5rem; border-radius:10px; background:rgba(255,255,255,0.05);">
+                                <h3>${p.name}</h3>
+                                <p style="font-size:0.9rem; margin-bottom:1rem; color:rgba(255,255,255,0.8);">${p.description}</p>
+                                ${btn}
+                            </div>
+                        `;
                     }
-                    
-                    // If email IS verified but profile is missing (DB trigger issue)
-                    throw new Error("Critical Error: User profile not found in database. Please contact support.");
-                }
-
-                // --- Profile Fetched Successfully ---
-                
-                // Populate common UI (Navbar)
-                window.authFunctions.updateAuthUI(); // Updates navbar avatar, username, etc.
-                
-                // Populate Dashboard Content
-                populateDashboard(profile);
-
-                // Show/Hide Role-Specific Content
-                const userRole = profile.role || 'user';
-                document.getElementById('user-role-display').textContent = userRole;
-
-                if (userRole === 'admin') {
-                    document.querySelectorAll('.admin-only, .member-only').forEach(el => el.style.display = 'block');
-                } else if (userRole === 'member') {
-                    document.querySelectorAll('.member-only').forEach(el => el.style.display = 'block');
-                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-                } else { // 'user' role
-                    document.querySelectorAll('.member-only, .admin-only').forEach(el => el.style.display = 'none');
-                }
-
-                // Hide loading overlay and show content
-                loadingOverlay.style.display = 'none';
-                dashboardContent.style.display = 'block';
-                dashboardContent.classList.add('visible'); // Trigger fade-in
-
-                // Initialize inactivity timer
-                window.authFunctions.resetInactivityTimer();
-
-            } catch (err) {
-                 console.error("Dashboard Auth Check Error:", err.message);
-                 loadingOverlay.innerHTML = `
-                    <div>
-                        <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--error-red);"></i>
-                        <p style="margin-top: 1rem; color: var(--error-red);">${err.message}</p>
-                        <p style="font-size: 1rem; margin-top: 1rem;">Redirecting to login...</p>
-                    </div>`;
-                 setTimeout(() => { window.location.href = '/login/'; }, 3000);
+                });
+            } else {
+                grid.innerHTML = '<p>No projects available.</p>';
             }
         });
-
-        function populateDashboard(profile) {
-            document.getElementById('welcome-message').textContent = `Welcome back, ${profile.first_name || profile.username}!`;
-            document.getElementById('profile-fullname').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'N/A';
-            document.getElementById('profile-username-detail').textContent = profile.username || 'N/A';
-            document.getElementById('profile-email').textContent = profile.email || 'N/A';
-            document.getElementById('profile-dob').textContent = profile.date_of_birth ? new Date(profile.date_of_birth + 'T00:00:00').toLocaleDateString() : 'N/A'; 
-            document.getElementById('profile-profession').textContent = profile.profession || 'N/A';
-            document.getElementById('profile-joined').textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A';
-            document.getElementById('profile-level').textContent = profile.user_level || 1;
-            document.getElementById('profile-xp').textContent = profile.experience_points || 0;
-            
-            loadDashboardProjects();
-        }
-
-        async function loadDashboardProjects() {
-             const grid = document.getElementById('dashboard-projects-grid');
-             if (!grid) return;
-             
-             const userRole = window.authFunctions.getUserRole ? window.authFunctions.getUserRole() : 'user';
-
-             try {
-                 let query = window.supabaseClient
-                    .from('projects')
-                    .select('name, description, url, status, slug, image_url') 
-                    .order('display_order', { ascending: true });
-
-                // RLS policies now handle what users see.
-                // We don't need to filter by status in JS unless we want to.
-                if (userRole === 'user') {
-                    // A user's RLS policy *only* lets them see 'active' and 'coming_soon'
-                    // So this query is already safe
-                }
-                // Admins/Members will get all projects based on their RLS policy
-
-                const { data, error } = await query;
-
-                if (error) throw error;
-                
-                grid.innerHTML = ''; // Clear loading
-                
-                if (data && data.length > 0) {
-                     data.forEach(project => {
-                         const card = document.createElement('div');
-                         card.className = 'project-card'; 
-
-                         const iconClass = project.slug === 'adv-code-learner' ? 'fa-graduation-cap' : 'fa-rocket';
-                         let buttonHtml = '';
-                         let statusTag = '';
-
-                         switch(project.status) {
-                             case 'active':
-                                 buttonHtml = `<a href="${project.url || '#'}" class="project-btn">
-                                     Access Project <i class="fas fa-arrow-right"></i>
-                                 </a>`;
-                                 break;
-                             case 'maintenance':
-                                 buttonHtml = `<button class="project-btn coming-soon" disabled>
-                                     Maintenance <i class="fas fa-tools"></i>
-                                 </button>`;
-                                 statusTag = `(Maintenance)`;
-                                 break;
-                             case 'deprecated':
-                                  buttonHtml = `<button class="project-btn coming-soon" disabled style="opacity: 0.4;">
-                                     Deprecated <i class="fas fa-ban"></i>
-                                 </button>`;
-                                 statusTag = `(Deprecated)`;
-                                 break;
-                             case 'coming_soon':
-                             default:
-                                 buttonHtml = `<button class="project-btn coming-soon" disabled>
-                                     Coming Soon <i class="fas fa-hourglass-half"></i>
-                                 </button>`;
-                                 statusTag = `(Coming Soon)`;
-                                 break;
-                         }
-
-                         card.innerHTML = `
-                             <h3><i class="fas ${iconClass}"></i> ${project.name} ${userRole !== 'user' ? statusTag : ''}</h3>
-                             <p>${project.description}</p>
-                             ${buttonHtml}
-                         `;
-                         grid.appendChild(card);
-                     });
-                } else {
-                     grid.innerHTML = '<p>No projects available at the moment.</p>';
-                }
-
-             } catch (error) {
-                 console.error("Error loading projects:", error);
-                 grid.innerHTML = '<p style="color: var(--error-red);">Could not load projects.</p>';
-             }
-         }
-
     </script>
 </body>
 </html>
