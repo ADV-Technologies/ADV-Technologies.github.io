@@ -8,11 +8,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    
     <style>
         .dashboard-container { padding-top: 100px; min-height: 100vh; }
         .admin-link { display: none; margin-top: 1rem; }
         .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        
+        /* Specific Dashboard Card Styling */
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 0;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: var(--gold); font-weight: 600; }
+        .info-val { color: white; }
     </style>
 </head>
 <body>
@@ -24,32 +44,43 @@
                 <img src="/assets/logo.png" style="height: 50px; border-radius: 12px;">
             </div>
             <div class="user-profile" style="display:flex; gap:15px; align-items:center;">
-                <span id="welcome-user" style="color:var(--gold);">User</span>
-                <button class="btn-small" onclick="window.authFunctions.logout()">Logout</button>
+                <span id="nav-username" style="color:var(--gold);">Loading...</span>
+                <button class="btn-small" onclick="handleLogout()">Logout</button>
             </div>
         </div>
     </nav>
 
     <div class="dashboard-container container section">
-        <h1 style="color: white;">Dashboard</h1>
+        <h1 style="color: white;">Welcome, <span id="welcome-user">User</span></h1>
         
         <div class="glass-panel" style="margin-top: 20px;">
-            <h2><i class="fas fa-user-circle"></i> My Profile</h2>
-            <p><strong>Username:</strong> <span id="profile-username">Loading...</span></p>
-            <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
-            <p><strong>Role:</strong> <span id="profile-role" style="text-transform: capitalize;">Loading...</span></p>
+            <h2><i class="fas fa-user-circle"></i> Profile Details</h2>
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">Username</span>
+                    <span class="info-val" id="profile-username">...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-val" id="profile-email">...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Role</span>
+                    <span class="info-val" id="profile-role" style="text-transform: uppercase;">User</span>
+                </div>
+            </div>
             
             <div id="admin-area" class="admin-link">
-                <a href="/admin-panel/" class="project-btn" style="display:inline-block; margin-top:10px;">
-                    <i class="fas fa-cogs"></i> Go to Admin Panel
+                <a href="/admin-panel/" class="project-btn" style="display:inline-block; margin-top:20px; width: 100%; text-align: center;">
+                    <i class="fas fa-cogs"></i> Open Admin Panel
                 </a>
             </div>
         </div>
 
         <div class="glass-panel" style="margin-top: 30px;">
-            <h2><i class="fas fa-rocket"></i> Available Projects</h2>
+            <h2><i class="fas fa-rocket"></i> Your Projects</h2>
             <div class="project-grid" id="project-list">
-                <p>Loading projects...</p>
+                <p style="color: #888;">Checking for projects...</p>
             </div>
         </div>
     </div>
@@ -63,71 +94,117 @@
     <script src="/js/config.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/particles.js"></script>
-    <script src="/js/auth.js"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            if(window.initParticles) window.initParticles();
+        // Direct Logout Function
+        async function handleLogout() {
+            await window.supabaseClient.auth.signOut();
+            window.location.href = '/login/';
+        }
 
-            // 1. Check Auth
-            if(!window.authFunctions) return;
-            const session = await window.supabaseClient.auth.getSession();
-            if(!session.data.session) {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Init Visuals
+            if(window.initParticles) window.initParticles();
+            
+            // 2. CHECK SESSION DIRECTLY
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            
+            if (!session) {
+                console.log("No session found. Redirecting...");
                 window.location.href = '/login/';
                 return;
             }
 
-            // 2. Fetch Profile
-            const profile = await window.authFunctions.fetchUserProfile();
-            if(profile) {
-                document.getElementById('welcome-user').textContent = profile.username;
-                document.getElementById('profile-username').textContent = profile.username;
-                document.getElementById('profile-email').textContent = profile.email;
-                document.getElementById('profile-role').textContent = profile.role;
+            const user = session.user;
+            console.log("Logged in as:", user.email);
 
-                // Show Admin Button if Admin
-                if(profile.role === 'admin') {
-                    document.getElementById('admin-area').style.display = 'block';
+            // 3. SET FALLBACK DATA (This fixes "Loading..." stuck issue)
+            // If DB fetch fails, we at least show what Auth knows
+            document.getElementById('nav-username').textContent = "User";
+            document.getElementById('welcome-user').textContent = user.user_metadata.username || "User";
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-username').textContent = user.user_metadata.username || "No Username Set";
+
+            // 4. TRY FETCHING DATABASE PROFILE
+            try {
+                const { data: profile, error } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) {
+                    console.error("DB Profile Fetch Error:", error.message);
+                    // Don't crash, just stick with fallback data
+                } 
+                
+                if (profile) {
+                    console.log("DB Profile Loaded:", profile);
+                    
+                    // Update UI with real DB data
+                    document.getElementById('nav-username').textContent = profile.username;
+                    document.getElementById('welcome-user').textContent = profile.username;
+                    document.getElementById('profile-username').textContent = profile.username;
+                    document.getElementById('profile-email').textContent = profile.email;
+                    document.getElementById('profile-role').textContent = profile.role || 'user';
+
+                    // Show Admin Button
+                    if (profile.role === 'admin') {
+                        document.getElementById('admin-area').style.display = 'block';
+                    }
+                    
+                    // Load Projects based on Role
+                    loadProjects(profile.role);
+                } else {
+                    console.warn("Profile missing in DB. Using Auth data.");
+                    loadProjects('user'); // Default to user view
                 }
-            }
 
-            // 3. Fetch Projects (Public + Member specific logic)
+            } catch (err) {
+                console.error("Critical Dashboard Error:", err);
+            }
+        });
+
+        // 5. PROJECT LOADER
+        async function loadProjects(role) {
+            const grid = document.getElementById('project-list');
+            
             const { data: projects } = await window.supabaseClient
                 .from('projects')
                 .select('*')
                 .order('display_order');
 
-            const grid = document.getElementById('project-list');
-            grid.innerHTML = '';
+            grid.innerHTML = ''; // Clear loading text
 
-            if(projects && projects.length > 0) {
+            if (projects && projects.length > 0) {
+                let count = 0;
                 projects.forEach(p => {
-                    // Filter: Admins see all. Members see Public+Member. Users see Public.
-                    const myRole = profile ? profile.role : 'user';
-                    
-                    let canView = false;
-                    if (myRole === 'admin') canView = true;
-                    else if (myRole === 'member' && (p.access_level === 'public' || p.access_level === 'member')) canView = true;
-                    else if (p.access_level === 'public') canView = true;
+                    // Logic: Admin sees all. Member sees member+public. User sees public.
+                    let show = false;
+                    if (role === 'admin') show = true;
+                    else if (role === 'member' && p.access_level !== 'admin') show = true;
+                    else if (p.access_level === 'public') show = true;
 
-                    if(canView) {
+                    if (show) {
+                        count++;
                         const btn = p.status === 'active' 
-                            ? `<a href="${p.url}" class="project-btn">Open <i class="fas fa-arrow-right"></i></a>`
+                            ? `<a href="${p.url}" class="project-btn" target="_blank">Open Project <i class="fas fa-arrow-right"></i></a>`
                             : `<button class="project-btn coming-soon" disabled>Coming Soon</button>`;
 
                         grid.innerHTML += `
-                            <div class="project-card" style="border:1px solid var(--glass-border); padding:1.5rem; border-radius:10px; background:rgba(255,255,255,0.05);">
-                                <h3>${p.name}</h3>
-                                <p style="font-size:0.9rem; margin-bottom:1rem; color:rgba(255,255,255,0.8);">${p.description}</p>
+                            <div class="info-card" style="margin-top:0;">
+                                <h3 style="color:var(--gold); margin-bottom:0.5rem;">${p.name}</h3>
+                                <p style="font-size:0.9rem; color:#ccc; margin-bottom:1rem;">${p.description}</p>
                                 ${btn}
                             </div>
                         `;
                     }
                 });
+                
+                if (count === 0) grid.innerHTML = '<p>No projects available for your role.</p>';
             } else {
-                grid.innerHTML = '<p>No projects available.</p>';
+                grid.innerHTML = '<p>No projects found in database.</p>';
             }
-        });
+        }
     </script>
 </body>
 </html>
