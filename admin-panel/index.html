@@ -6,7 +6,6 @@
     <title>Admin Panel - ADV Technologies</title>
 
     <link rel="icon" type="image/png" href="/assets/logo.png">
-    <link rel="apple-touch-icon" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
@@ -15,8 +14,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     
     <style>
-        /* VISIBLE BY DEFAULT */
-        body { background: var(--dark-gray); }
+        /* --- CRITICAL FIX: FORCE VISIBILITY --- */
+        body { 
+            background: var(--dark-gray); 
+            display: block !important; 
+            opacity: 1 !important; 
+            visibility: visible !important;
+        }
+        
         .navbar { position: fixed; z-index: 1000; }
         
         .admin-panel-container {
@@ -25,6 +30,14 @@
             position: relative;
             z-index: 10;
             padding-bottom: 5rem;
+            display: block !important; /* Ensure content container is visible */
+        }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 1rem; z-index: 9999; color: var(--gold);
+            transition: opacity 0.5s ease;
         }
 
         /* Glass Panel */
@@ -81,12 +94,15 @@
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal.active { display: flex; }
         .modal-content { background: #111; border: 1px solid var(--gold); padding: 2rem; width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto; border-radius: 15px; position: relative; }
-        
-        .loading-overlay { display: none; } /* Hidden by default */
     </style>
 </head>
 <body>
     
+    <div id="loading-overlay" class="loading-overlay">
+        <i class="fas fa-spinner fa-spin fa-3x"></i>
+        <p style="margin-top: 1rem;">Loading...</p>
+    </div>
+
     <canvas id="particles-canvas"></canvas>
 
     <nav class="navbar" id="navbar">
@@ -278,6 +294,7 @@
     </div>
 
     <script>
+        // Supabase Credentials
         window.SUPABASE_CONFIG = {
             url: 'https://xblihylcpepkuriatqtg.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibGloeWxjcGVwa3VyaWF0cXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMDEwNDIsImV4cCI6MjA3NzY3NzA0Mn0.Ka_dkjTcPmzfhTBmCrUNrfxU_G8UncebUwM5h-Wlhns'
@@ -289,6 +306,7 @@
     <script src="/js/auth.js"></script>
 
     <script>
+        // --- SAFE LOADING LOGIC ---
         const feedback = (id, msg, type) => {
             const el = document.getElementById(id);
             if(el) { el.textContent = msg; el.className = `feedback-inline ${type}`; setTimeout(() => el.textContent='', 4000); }
@@ -299,8 +317,17 @@
             if(el) el.value = value;
         };
 
-        // --- SAFE INIT WITH ROUTE GUARD ---
+        // --- FORCE SHOW UI AFTER 1.5s (Safety Net) ---
+        setTimeout(() => {
+            const overlay = document.getElementById('loading-overlay');
+            if(overlay) overlay.style.display = 'none';
+            document.getElementById('admin-content').style.display = 'block';
+            console.log("Forced Admin Panel Visibility");
+        }, 1500);
+
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', async () => {
+            console.log("Admin Panel Init Started");
             if (typeof window.initParticles === 'function') window.initParticles();
             
             try {
@@ -308,28 +335,41 @@
 
                 // 1. Check Login
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
-                if (!session) { window.location.href = '/login/'; return; }
+                if (!session) { 
+                    console.warn("No session, redirecting...");
+                    window.location.href = '/login/'; 
+                    return; 
+                }
 
-                // 2. Check Role (Strict)
-                const { data: profile } = await window.supabaseClient.from('user_profiles').select('role').eq('id', session.user.id).single();
+                // 2. Check Admin Role
+                console.log("Checking Admin Role...");
+                const { data: profile } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+
                 if (!profile || profile.role !== 'admin') {
-                    alert("Access Denied: Admins Only");
+                    alert("⛔ Access Denied: Admins Only");
                     window.location.href = '/dashboard/';
                     return;
                 }
 
-                // 3. User is Admin -> Show UI & Load Data
+                console.log("Admin Verified. Loading Data...");
                 document.getElementById('user-profile').style.display = 'flex';
                 
                 // Safe parallel loading
-                loadContent();
-                loadContact();
-                loadProjects();
-                loadUsers();
-                loadTheme();
+                await Promise.allSettled([
+                    loadContent(),
+                    loadContact(),
+                    loadProjects(),
+                    loadUsers(),
+                    loadTheme()
+                ]);
+                console.log("All Data Loaded");
 
             } catch (err) {
-                console.error("Init Failed:", err);
+                console.error("Init Error:", err);
             }
         });
 
@@ -348,12 +388,12 @@
                     if(me) { safeSetValue('about_me_title', me.title); safeSetValue('about_me_content', me.content); }
                     if(adv) { safeSetValue('about_adv_title', adv.title); safeSetValue('about_adv_content', adv.content); }
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Content Error", e); }
         }
 
         document.getElementById('content-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('save-content-btn'); btn.disabled=true;
+            const btn = document.getElementById('save-content-btn'); btn.disabled=true; btn.textContent="Saving...";
             try {
                 const uid = window.authFunctions.getCurrentUser().id;
                 const upsertSet = async (k, v) => window.supabaseClient.from('website_settings').upsert({setting_key: k, setting_value: v, updated_by: uid}, {onConflict: 'setting_key'});
@@ -366,7 +406,7 @@
                 await upsertPage('about_adv', document.getElementById('about_adv_title').value, document.getElementById('about_adv_content').value);
                 feedback('content-feedback', 'Saved!', 'success');
             } catch(e) { feedback('content-feedback', 'Error', 'error'); }
-            btn.disabled=false;
+            btn.disabled=false; btn.textContent="Save Content";
         });
 
         // --- 2. CONTACT ---
@@ -379,12 +419,12 @@
                         safeSetValue(`txt-${c.platform}`, c.display_text || '');
                     });
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Contact Error", e); }
         }
 
         document.getElementById('contact-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('save-contact-btn'); btn.disabled=true;
+            const btn = document.getElementById('save-contact-btn'); btn.disabled=true; btn.textContent="Saving...";
             try {
                 const uid = window.authFunctions.getCurrentUser().id;
                 const platforms = ['email_professional', 'github_professional', 'email_personal', 'github_personal', 'facebook', 'instagram', 'x', 'linkedin'];
@@ -395,14 +435,14 @@
                 }
                 feedback('contact-feedback', 'Saved!', 'success');
             } catch(e) { feedback('contact-feedback', 'Error', 'error'); }
-            btn.disabled=false;
+            btn.disabled=false; btn.textContent="Save Contacts";
         });
 
         // --- 3. PROJECTS ---
         async function loadProjects() {
+            const tbody = document.getElementById('project-list-body');
             try {
                 const { data } = await window.supabaseClient.from('projects').select('*').order('display_order');
-                const tbody = document.getElementById('project-list-body');
                 tbody.innerHTML = '';
                 if(data && data.length) {
                     data.forEach(p => {
@@ -474,20 +514,19 @@
             }
         }
 
-        // --- 4. USERS (SIMPLE LOAD) ---
+        // --- 4. USERS ---
         async function loadUsers() {
+            const tbody = document.getElementById('user-list-body');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
             try {
-                // Fetch all users (Allowed by Step 1 SQL)
+                // IMPORTANT: Removed is_active
                 const { data: users } = await window.supabaseClient.from('user_profiles').select('id, username, email, role, is_banned').order('username');
-                const tbody = document.getElementById('user-list-body');
                 tbody.innerHTML = '';
-                
-                if(users && users.length > 0) {
+                if(users) {
                     users.forEach(u => {
                         const isMe = u.id === window.authFunctions.getCurrentUser().id;
                         tbody.innerHTML += `<tr>
-                            <td>${u.username} ${isMe?'(You)':''}</td>
-                            <td>${u.email}</td>
+                            <td>${u.username} ${isMe?'(You)':''}</td><td>${u.email}</td>
                             <td>
                                 <select id="role-${u.id}" ${isMe?'disabled':''}>
                                     <option value="user" ${u.role==='user'?'selected':''}>User</option>
@@ -498,17 +537,14 @@
                             </td>
                             <td>${u.is_banned ? '<span style="color:var(--error-red)">Banned</span>':'<span style="color:var(--success-green)">Active</span>'}</td>
                             <td>
-                                ${u.is_banned 
-                                    ? `<button class="action-btn unban-btn" onclick="toggleBan('${u.id}', false)">Unban</button>`
-                                    : `<button class="action-btn ban-btn" onclick="toggleBan('${u.id}', true)" ${isMe?'disabled':''}>Ban</button>`
-                                }
+                                ${u.is_banned ? `<button class="action-btn unban-btn" onclick="toggleBan('${u.id}', false)">Unban</button>` : `<button class="action-btn ban-btn" onclick="toggleBan('${u.id}', true)" ${isMe?'disabled':''}>Ban</button>`}
                             </td>
                         </tr>`;
                     });
                 } else {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No users found.</td></tr>';
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Users Error", e); }
         }
 
         window.changeRole = async (id) => {
