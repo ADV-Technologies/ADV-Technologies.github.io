@@ -10,148 +10,178 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    
     <link rel="stylesheet" href="/css/styles.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     
     <style>
-        /* Local overrides to fix specific UI bugs */
+        /* --- GLASSMORPHIC OVERRIDES --- */
         body {
-            background: #111;
+            background: #050505;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
         .auth-container {
-            margin-top: 100px;
-            margin-bottom: 50px;
+            margin-top: 120px;
+            margin-bottom: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
             position: relative;
             z-index: 10;
         }
 
         .glass-panel {
-            background: rgba(20, 20, 20, 0.7);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 215, 0, 0.2); /* Gold border hint */
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 24px;
             padding: 3rem;
             width: 100%;
-            max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 550px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Gold Glow effect behind panel */
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         h2 {
             color: white;
             text-align: center;
-            margin-bottom: 2rem;
-            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
         }
         
-        h2 i { color: #FFD700; margin-right: 10px; }
+        .subtitle {
+            color: #888;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 0.9rem;
+        }
 
         .input-group {
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         .input-group i {
             position: absolute;
-            left: 15px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #FFD700; /* Gold Icons */
+            color: #FFD700;
+            font-size: 1.1rem;
             pointer-events: none;
+            transition: 0.3s;
         }
 
-        /* Fixed Input Styling */
         .input-group input, 
         .input-group select {
             width: 100%;
-            padding: 12px 15px 12px 45px; /* Space for icon */
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
+            padding: 16px 20px 16px 50px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
             color: white;
             font-family: 'Montserrat', sans-serif;
             font-size: 1rem;
             outline: none;
-            transition: 0.3s;
+            transition: all 0.3s ease;
         }
 
         .input-group input:focus,
         .input-group select:focus {
+            background: rgba(0,0,0,0.6);
             border-color: #FFD700;
-            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
         }
-
-        /* Fix the dropdown specifically */
-        .input-group select {
-            appearance: none; /* Removes default ugly arrow */
-            cursor: pointer;
-        }
-        /* Custom arrow for dropdown */
-        .input-group::after {
-            content: '\f078'; /* FontAwesome Chevron Down */
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
+        
+        /* Dropdown Styling */
+        .input-group select { appearance: none; cursor: pointer; }
+        .caret-icon {
             position: absolute;
-            right: 15px;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
             color: #666;
             pointer-events: none;
         }
-        /* Only show custom arrow on select wrappers */
-        .input-group.select-wrapper::after { display: block; }
-        .input-group:not(.select-wrapper)::after { display: none; }
 
-        /* Calendar Fix */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1); /* Makes the calendar icon white */
-            cursor: pointer;
-        }
-
+        /* Submit Button */
         .btn-submit {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(45deg, #FFD700, #FDB931);
+            padding: 18px;
+            background: linear-gradient(135deg, #FFD700, #B8860B);
             border: none;
-            border-radius: 8px;
-            color: black;
-            font-weight: 700;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 800;
             font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: 0.3s;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.2);
         }
 
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+        
+        .btn-submit:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .auth-links {
             text-align: center;
-            margin-top: 1.5rem;
-            color: #aaa;
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.9rem;
         }
-        .auth-links a { color: #FFD700; text-decoration: none; font-weight: 500; }
-        .auth-links a:hover { text-decoration: underline; }
+        .auth-links a { color: #FFD700; text-decoration: none; font-weight: 600; transition: 0.3s; }
+        .auth-links a:hover { text-shadow: 0 0 10px rgba(255,215,0,0.5); }
 
-        .error-msg {
-            color: #ff4444;
+        .error-msg, .success-msg {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
             text-align: center;
-            margin-bottom: 1rem;
             display: none;
-            background: rgba(255,0,0,0.1);
-            padding: 10px;
-            border-radius: 5px;
+            font-size: 0.9rem;
         }
+        .error-msg { background: rgba(255, 0, 0, 0.1); border: 1px solid rgba(255,0,0,0.3); color: #ff6b6b; }
+        .success-msg { background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.3); color: #6bff96; }
+
+        /* Row Layout */
+        .form-row { display: flex; gap: 15px; }
+        .form-row .input-group { flex: 1; }
     </style>
 </head>
 <body>
@@ -172,12 +202,14 @@
 
     <div class="auth-container">
         <div class="glass-panel">
-            <h2><i class="fas fa-user-plus"></i> Join Us</h2>
+            <h2>Join the Future</h2>
+            <div class="subtitle">Create your ADV Technologies account</div>
             
             <div id="error-message" class="error-msg"></div>
+            <div id="success-message" class="success-msg"></div>
 
             <form id="signup-form">
-                <div style="display: flex; gap: 1rem;">
+                <div class="form-row">
                     <div class="input-group">
                         <i class="fas fa-user"></i>
                         <input type="text" id="first-name" placeholder="First Name" required>
@@ -190,15 +222,15 @@
 
                 <div class="input-group">
                     <i class="fas fa-at"></i>
-                    <input type="text" id="username" placeholder="Choose a Username" required>
+                    <input type="text" id="username" placeholder="Username" required>
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-calendar-alt"></i>
-                    <input type="date" id="dob" required style="color: #fff;">
+                    <input type="text" id="dob" placeholder="Select Date of Birth" required>
                 </div>
 
-                <div class="input-group select-wrapper">
+                <div class="input-group">
                     <i class="fas fa-briefcase"></i>
                     <select id="profession" required>
                         <option value="" disabled selected>Select Profession</option>
@@ -208,6 +240,7 @@
                         <option value="Manager">Manager</option>
                         <option value="Other">Other</option>
                     </select>
+                    <i class="fas fa-chevron-down caret-icon"></i>
                 </div>
 
                 <div class="input-group">
@@ -215,65 +248,108 @@
                     <input type="email" id="email" placeholder="Email Address" required>
                 </div>
 
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" placeholder="Password (Min 6 chars)" required minlength="6">
+                <div class="form-row">
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Password" required minlength="6">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-check-circle"></i>
+                        <input type="password" id="confirm-password" placeholder="Confirm" required>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-submit" id="submit-btn">Create Account</button>
             </form>
 
             <div class="auth-links">
-                <p>Already have an account? <a href="/login/">Login here</a></p>
+                <p>Already a member? <a href="/login/">Log In</a></p>
             </div>
         </div>
     </div>
 
     <script src="/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> <script src="/js/particles.js"></script>
     <script src="/js/common.js"></script>
-    <script src="/js/particles.js"></script>
-    <script src="/js/auth.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Init particles
             if(window.initParticles) window.initParticles();
 
-            // Form Handler
+            // 1. Initialize Fancy Calendar
+            flatpickr("#dob", {
+                theme: "dark",
+                dateFormat: "Y-m-d",
+                disableMobile: "true" // Forces the nice UI even on mobile
+            });
+
+            // 2. Form Handling
             const form = document.getElementById('signup-form');
             const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
             const btn = document.getElementById('submit-btn');
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 errorDiv.style.display = 'none';
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                successDiv.style.display = 'none';
+                
+                // --- Validation ---
+                const p1 = document.getElementById('password').value;
+                const p2 = document.getElementById('confirm-password').value;
+                
+                if (p1 !== p2) {
+                    errorDiv.textContent = "Passwords do not match!";
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (!window.supabaseClient) {
+                    errorDiv.textContent = "System Error: Supabase not configured.";
+                    errorDiv.style.display = 'block';
+                    return;
+                }
 
-                // Collect Data
-                const userData = {
-                    email: document.getElementById('email').value,
-                    password: document.getElementById('password').value,
+                // --- Loading State ---
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                // --- Collect Data ---
+                const email = document.getElementById('email').value;
+                const password = p1;
+                const meta = {
                     username: document.getElementById('username').value,
-                    firstName: document.getElementById('first-name').value,
-                    lastName: document.getElementById('last-name').value,
+                    first_name: document.getElementById('first-name').value,
+                    last_name: document.getElementById('last-name').value,
                     profession: document.getElementById('profession').value,
                     dob: document.getElementById('dob').value
                 };
 
                 try {
-                    // Call the Auth Function
-                    const result = await window.authFunctions.handleSignup(userData);
+                    // --- Send to Supabase ---
+                    const { data, error } = await window.supabaseClient.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: { data: meta }
+                    });
 
-                    if (result.success) {
-                        alert("Account Created! Redirecting to login...");
-                        window.location.href = '/login/';
-                    } else {
-                        throw new Error(result.error || "Signup failed");
-                    }
+                    if (error) throw error;
+
+                    // --- SUCCESS ---
+                    // IMPORTANT: Supabase sends a confirmation email by default.
+                    // If we don't warn the user, they will try to login and get "Invalid Credentials"
+                    
+                    successDiv.innerHTML = `
+                        <strong>Success!</strong><br>
+                        A confirmation link has been sent to <u>${email}</u>.<br>
+                        <small>Please click the link in your email before logging in.</small>
+                    `;
+                    successDiv.style.display = 'block';
+                    form.style.display = 'none'; // Hide form to prevent double submit
+                    
                 } catch (err) {
                     console.error("Signup Error:", err);
-                    errorDiv.textContent = err.message;
+                    errorDiv.textContent = err.message || "An error occurred during signup.";
                     errorDiv.style.display = 'block';
                     btn.disabled = false;
                     btn.textContent = 'Create Account';
